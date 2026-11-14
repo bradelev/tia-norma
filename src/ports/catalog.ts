@@ -19,5 +19,7 @@ export interface Catalog {
   saveDraft(draft: Draft): Promise<void>;
   /** Publishes the draft with the next number and closes it, in one step. */
   publish(previewId: string, piece: Omit<Piece, "number">): Promise<Piece>;
+  /** The piece a given preview turned into, if it was already published. */
+  publishedFrom(previewId: string): Promise<Piece | null>;
   published(): Promise<Piece[]>;
 }
