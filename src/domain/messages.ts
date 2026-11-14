@@ -1,0 +1,17 @@
+/** What Norma sends, already downloaded and normalized by the messenger adapter. */
+export type Incoming =
+  | { kind: "text"; text: string }
+  | { kind: "photo"; bytes: Uint8Array }
+  | { kind: "button"; id: string };
+
+export interface Button {
+  id: string;
+  title: string;
+}
+
+/** What the bot answers: one short phrase, optionally an image and up to two buttons. */
+export interface Reply {
+  text: string;
+  image?: string;
+  buttons?: [Button] | [Button, Button];
+}

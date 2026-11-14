@@ -1,0 +1,38 @@
+import { createBot } from "../../domain/bot";
+import type { Reply } from "../../domain/messages";
+import { createMemoryCatalog } from "./catalog";
+import { createMemoryInterpreter } from "./interpreter";
+import { createMemoryMediaStore } from "./media-store";
+
+/** The bot wired to in-memory doubles, driven the way Norma would. Used by tests. */
+export function createMemoryWorkshop() {
+  const catalog = createMemoryCatalog();
+  let ids = 0;
+  const bot = createBot({
+    catalog,
+    media: createMemoryMediaStore(),
+    interpreter: createMemoryInterpreter(),
+    newId: () => `p${++ids}`,
+  });
+  let last: Reply = { text: "" };
+
+  async function send(message: Parameters<typeof bot.receive>[0]) {
+    last = await bot.receive(message);
+    return last;
+  }
+
+  return {
+    sendPhoto: (bytes = new Uint8Array([1, 2, 3])) =>
+      send({ kind: "photo", bytes }),
+    say: (text: string) => send({ kind: "text", text }),
+    /** Taps a button from the last reply, like Norma would. */
+    tap(title: string) {
+      const button = last.buttons?.find((b) => b.title === title);
+      if (!button)
+        throw new Error(`No hay botón "${title}" en la última respuesta`);
+      return send({ kind: "button", id: button.id });
+    },
+    pressButton: (id: string) => send({ kind: "button", id }),
+    publishedPieces: () => catalog.published(),
+  };
+}
