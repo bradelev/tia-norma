@@ -41,3 +41,13 @@ Un PR que toca alguna de estas necesita revisión humana antes del merge.
 | Secretos                 | Ninguna clave ni teléfono real en el repo, fixtures ni logs.                                                    |
 | Legibilidad              | Mínimos del PRD, axe y prueba sin JavaScript.                                                                   |
 | Harness                  | `CLAUDE.md`, hooks y CI van en un PR propio.                                                                    |
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues de bradelev/tia-norma, vía `gh`. Ver `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Un solo contexto: `GLOSSARY.md` y `docs/adr/` en la raíz. Ver `docs/agents/domain.md`.
