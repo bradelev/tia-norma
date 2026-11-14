@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T00:00:00Z",
+  "title": "Design System: Taller de Norma",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Mesa de taller",
+        "canonical": "#efece6",
+        "tonalRamp": [
+          "oklch(15% 0.006 85)",
+          "oklch(25% 0.007 85)",
+          "oklch(35% 0.008 85)",
+          "oklch(45% 0.009 85)",
+          "oklch(55% 0.009 85)",
+          "oklch(68% 0.008 85)",
+          "oklch(82% 0.008 85)",
+          "oklch(94% 0.007 85)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel fotográfico",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(35% 0 0)",
+          "oklch(45% 0 0)",
+          "oklch(55% 0 0)",
+          "oklch(68% 0 0)",
+          "oklch(82% 0 0)",
+          "oklch(100% 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#1c1b19",
+        "tonalRamp": [
+          "oklch(15% 0.004 85)",
+          "oklch(21.5% 0.004 85)",
+          "oklch(35% 0.005 85)",
+          "oklch(45% 0.005 85)",
+          "oklch(55% 0.005 85)",
+          "oklch(68% 0.004 85)",
+          "oklch(82% 0.003 85)",
+          "oklch(95% 0.002 85)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#3d3a35",
+        "tonalRamp": [
+          "oklch(15% 0.008 80)",
+          "oklch(25% 0.009 80)",
+          "oklch(35.5% 0.009 80)",
+          "oklch(45% 0.009 80)",
+          "oklch(55% 0.008 80)",
+          "oklch(68% 0.007 80)",
+          "oklch(82% 0.005 80)",
+          "oklch(95% 0.003 80)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombre del taller, una vez por página."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "El dato más grande; nunca se achica; el monto no se parte."
+      },
+      "name": {
+        "displayName": "Name",
+        "purpose": "Nombre de la pieza en el pie de la foto."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corriente y crédito, base 20 px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "contact",
+        "value": "0 1px 3px rgb(28 27 25 / 0.2)",
+        "purpose": "Única sombra: el marco de la foto apoyado sobre la mesa."
+      }
+    ],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "column-max",
+        "value": "40rem + 2 × gutter; en pantallas bajas se angosta a max(20rem, 0.8 × (100svh − 19.5rem) + 2 × frame)"
+      }
+    ],
+    "focus": {
+      "value": "outline: 0.25rem solid var(--ink); outline-offset: 0.25rem",
+      "purpose": "Único estado interactivo."
+    }
+  },
+  "components": [
+    {
+      "name": "Foto instantánea",
+      "kind": "card",
+      "refersTo": "print",
+      "description": "Marco de papel con foto 4:5 enlazada, nombre y precio en el margen inferior ancho.",
+      "html": "<article class=\"ds-print\"><a class=\"ds-print-photo\" href=\"#\"><div class=\"ds-print-img\"></div></a><div class=\"ds-print-caption\"><h2 class=\"ds-print-name\">Cuenco esmaltado</h2><p class=\"ds-print-price\">$ <span class=\"ds-print-amount\">6.000</span></p></div></article>",
+      "css": ".ds-print { --frame: clamp(0.75rem, 3.5vw, 1.375rem); background: var(--paper, #ffffff); color: var(--ink, #1c1b19); padding: var(--frame) var(--frame) calc(var(--frame) * 1.5); box-shadow: 0 1px 3px rgb(28 27 25 / 0.2); border-radius: 0; max-width: 24rem; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; } .ds-print-photo { display: block; } .ds-print-photo:focus-visible { outline: 0.25rem solid var(--ink, #1c1b19); outline-offset: 0.25rem; } .ds-print-img { aspect-ratio: 4 / 5; background: var(--ground, #efece6); } .ds-print-caption { padding-top: calc(var(--frame) * 1.1); } .ds-print-name { margin: 0; font-size: 1.75rem; font-weight: 600; line-height: 1.2; text-wrap: balance; } .ds-print-price { margin: 0.25rem 0 0; font-size: 2.25rem; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; } .ds-print-amount { white-space: nowrap; }"
+    },
+    {
+      "name": "Precio",
+      "kind": "custom",
+      "refersTo": "price-tag",
+      "description": "Precio en pesos; el \"$\" puede caer de línea bajo zoom, el monto nunca se parte.",
+      "html": "<p class=\"ds-price\">$ <span class=\"ds-price-amount\">125.000</span></p>",
+      "css": ".ds-price { margin: 0; color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 2.25rem; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; } .ds-price-amount { white-space: nowrap; }"
+    },
+    {
+      "name": "Título de página",
+      "kind": "custom",
+      "refersTo": "page-title",
+      "description": "Nombre del taller arriba a la izquierda, una vez por página.",
+      "html": "<h1 class=\"ds-title\">Taller de Norma</h1>",
+      "css": ".ds-title { margin: 0; color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }"
+    },
+    {
+      "name": "Link",
+      "kind": "custom",
+      "description": "Link de texto en tinta con contorno de foco grueso separado.",
+      "html": "<a class=\"ds-link\" href=\"#\">Ver foto completa</a>",
+      "css": ".ds-link { color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 1.25rem; font-weight: 600; text-underline-offset: 0.2em; text-decoration-thickness: 0.08em; } .ds-link:focus-visible { outline: 0.25rem solid var(--ink, #1c1b19); outline-offset: 0.25rem; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La mesa del taller",
+    "overview": "Cada pieza es una foto instantánea apoyada sobre una mesa de trabajo: marco de papel blanco parejo, margen inferior más ancho, y ahí el nombre y el precio. La página es una sola columna de esas fotos, la más nueva arriba. No hay acento de color: el color lo ponen las piezas.\n\nEl sistema existe para que un comprador de 70 años lea nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ninguna decisión visual puede bajarlos. Solo modo claro: el modo oscuro fue rechazado.",
+    "keyCharacteristics": [
+      "Mesa gris cálida, marcos blancos, tinta casi negra; nada más.",
+      "Tipografía del sistema en dos pesos (600 y 800), cifras tabulares.",
+      "Una sola sombra, corta y de contacto.",
+      "Esquinas rectas en todo."
+    ],
+    "rules": [
+      {
+        "name": "The Sin Acento Rule",
+        "body": "No hay color de marca ni de interacción. Si un elemento necesita destacarse, lo hace con tamaño o peso, nunca con color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Siete a Uno Rule",
+        "body": "Todo texto, incluido el secundario, cumple 7:1 contra su fondo. Un gris más claro que ink-soft no entra.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dos Pesos Rule",
+        "body": "Solo 600 y 800. No hay 400 ni cursivas.",
+        "section": "typography"
+      },
+      {
+        "name": "The Precio Entero Rule",
+        "body": "El precio nunca se achica, tampoco con zoom. Bajo zoom fuerte el \"$\" puede pasar a su propia línea; el monto nunca se parte (`white-space: nowrap`). Límite declarado: un precio de seis cifras necesita unos 390 px de ancho con texto al 200 %; entre 320 y 360 px al 200 % el monto no entra, y no se resuelve achicando el precio.",
+        "section": "typography"
+      },
+      {
+        "name": "The Una Sombra Rule",
+        "body": "La sombra de contacto es la única. Nada de sombras largas, difusas, desplazadas ni de hover.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** apoyar cada pieza en un marco de papel con margen inferior ancho y nombre y precio debajo de la foto.",
+      "**Do** dejar que el precio crezca con el zoom y caiga de línea antes que achicarse.",
+      "**Do** usar la pila de fuentes del sistema en 600 y 800, con cifras tabulares en precios.",
+      "**Do** mantener 7:1 de contraste en todo texto."
+    ],
+    "donts": [
+      "**Don't** agregar color de acento, botones, badges ni grillas de tienda con tarjetas.",
+      "**Don't** usar más sombra que el contacto de 1px/3px.",
+      "**Don't** redondear esquinas.",
+      "**Don't** cargar fuentes web ni introducir un modo oscuro.",
+      "**Don't** bajar ningún tamaño por debajo de los mínimos: texto 20 px, nombre 28 px, precio 32 px en peso fuerte."
+    ]
+  }
+}
