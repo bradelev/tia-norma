@@ -73,6 +73,8 @@ Entran cinco capacidades. Todo lo demás queda afuera a propósito y la lista de
 | Panel web, login, PWA | Norma no tiene compu ni mail. |
 | Voz sintética para las respuestas | Suma un proveedor. Se usan tres audios grabados por una persona. |
 | Multi-tienda, multi-usuario | Es la página de Norma. |
+| Quitar el fondo de la foto | Necesita un modelo de segmentación que no entra en una función de Vercel, y reemplaza píxeles alrededor de la pieza (principio 6). |
+| Corregir perspectiva o nivelar el horizonte | Problema abierto de visión por computadora. Enderezar se limita a la orientación. |
 
 También queda afuera todo retoque que invente contenido: fondos generados, relleno o "mejora" con IA generativa. Muestra una pieza que no es la que el comprador recibe.
 
@@ -98,15 +100,13 @@ Cada foto pasa por el mismo tratamiento antes de la vista previa, y Norma aprueb
 
 | Paso | Qué hace |
 | --- | --- |
-| Enderezar | Corrige la orientación. |
-| Encuadrar | Recorta alrededor de la pieza en formato 4:5, con el mismo margen en todas. |
+| Enderezar | Corrige la orientación según los metadatos EXIF. No corrige perspectiva. |
+| Encuadrar | Recorta alrededor de la pieza en formato 4:5, con el mismo margen en todas. Primero con el recorte por atención de `sharp`; un modelo entra solo si el set de 20 fotos muestra que hace falta. |
 | Luz y color | Ajusta niveles y balance de blancos. |
 | Nitidez | Enfoque suave y reducción de ruido. |
 | Control de calidad | Si la foto salió movida o muy oscura, no avanza. El bot pide otra con un audio: "salió oscura, acercate a la ventana". |
 
 El tratamiento nunca agrega ni reemplaza píxeles de la pieza. Una foto movida no se arregla con filtros: se vuelve a sacar.
-
-Experimento acotado: quitar el fondo y poner uno neutro. Entra solo si en 20 fotos reales no deja bordes raros ni borra sombras.
 
 ### Otras operaciones
 
@@ -200,7 +200,7 @@ Diecisiete requisitos en dos tablas. Cada uno tiene un criterio que se verifica 
 
 ## Arquitectura y stack
 
-Un solo proyecto Next.js desplegado en Vercel sirve la página y recibe el webhook de WhatsApp. El dominio es código puro y todo lo externo entra por cinco puertos.
+Un solo proyecto Next.js desplegado en Vercel sirve la página y recibe el webhook de WhatsApp. El dominio es código puro y todo lo externo entra por seis puertos.
 
 Ciclo de una publicación: Norma manda foto → se arma la vista previa → ¿publica? → sí: se guarda la pieza y la página se regenera → no: el bot pide nombre y precio y arma otra vista previa. Nada llega a la página sin el sí de Norma.
 
@@ -212,20 +212,22 @@ La vista previa se arma con la foto tratada y con el nombre y el precio del audi
 | --- | --- | --- | --- |
 | Framework y hosting | Next.js (App Router) en Vercel | Un deploy para página y webhook | Dos servicios separados |
 | Lenguaje | TypeScript en modo estricto | Los contratos entre capas quedan en los tipos | JavaScript |
-| Datos | Postgres (Neon) con Drizzle | Unicidad por id de mensaje para R9 y escrituras atómicas | Un JSON en Blob: dos webhooks seguidos se pisan |
-| Imágenes | Vercel Blob | Subida directa y URLs públicas | Guardarlas en la base |
+| Datos | Postgres en Supabase, con Drizzle | Unicidad por id de mensaje para R9 y escrituras atómicas. Drizzle deja ver el SQL que enseña el tutorial | Un JSON en un archivo: dos webhooks seguidos se pisan. Prisma: suma un DSL y un paso de generación |
+| Imágenes | Supabase Storage | Mismo proveedor que la base: un servicio menos | Vercel Blob; guardarlas en la base |
 | Mensajería | WhatsApp Cloud API directa | Sin intermediario ni costo de plataforma | Un proveedor BSP |
-| Audio y encuadre | Un modelo multimodal detrás del puerto `Interpreter`, con salida validada por Zod | Cambiar de modelo es cambiar un adaptador | Atarse a un SDK en el dominio |
-| Elección del modelo | Se decide con el set de evaluación de R14 y queda en un ADR | La decisión se apoya en una medición | Elegir por costumbre |
+| Audio | Puerto `Transcriber` (audio a texto) separado de `Interpreter` (texto a intención) | Audio y texto escrito pasan por el mismo `Interpreter`: R3 se cumple por construcción. Claude no acepta audio | Un modelo multimodal para todo |
+| Intención | Claude Haiku 5.5 detrás de `Interpreter`, con salida validada por Zod | Extraer nombre y precio es una tarea chica; cambiar de modelo es cambiar un adaptador | Atarse a un SDK en el dominio |
+| Proveedor de transcripción | Se decide con el set de evaluación de R14 y queda en un ADR | La decisión se apoya en una medición | Elegir por costumbre |
 | Vista previa | Imagen generada en el servidor con los mismos tokens de diseño que la página | Norma ve lo mismo que el comprador | Describir la tarjeta con texto |
 | Publicación | Página estática que se revalida al escribir | R13 y el presupuesto de rendimiento | Render por pedido |
-| Webhook | Responde 200 enseguida y procesa después de responder | Meta reintenta si la respuesta tarda | Procesar antes de responder |
+| Webhook | Responde 200 enseguida y procesa con `after()` de Next | Meta reintenta si la respuesta tarda | Procesar antes de responder; un worker aparte |
+| Pausa del plan gratis | Cron diario de Vercel que consulta la base | Supabase pausa los proyectos gratis sin actividad y las fotos dejarían de verse | Plan pago |
 
 ### Tratamiento de imagen
 
-- Un quinto puerto, `ImageProcessor`, con un adaptador sobre `sharp`: orientación, recorte, niveles y nitidez. Es determinístico y se prueba con imágenes fijas.
-- El modelo multimodal solo devuelve la caja que rodea la pieza. El recorte lo hace `sharp`.
-- El control de calidad usa dos medidas baratas: varianza del laplaciano para la nitidez y luminancia media para la luz.
+- Un puerto, `ImageProcessor`, con un adaptador sobre `sharp` que corre dentro de Next: orientación, recorte, niveles y nitidez. Es determinístico y se prueba con imágenes fijas. Sin Python ni workers.
+- El encuadre usa el recorte por atención de `sharp`. Si en el set de 20 fotos falla, un modelo devuelve la caja que rodea la pieza y el recorte lo sigue haciendo `sharp`.
+- El control de calidad usa dos medidas baratas: varianza del laplaciano para la nitidez y luminancia media para la luz. Ninguna necesita un modelo.
 - Se guardan la original y la tratada. Deshacer y volver a tratar no pierde nada.
 
 ### Puertos y datos
@@ -233,7 +235,8 @@ La vista previa se arma con la foto tratada y con el nombre y el precio del audi
 ```
 Puertos
   Messenger       recibe y envía mensajes, botones, imágenes y audios
-  Interpreter     foto, audio o texto -> intención validada
+  Transcriber     audio -> texto
+  Interpreter     texto -> intención validada
   Catalog         piezas, borradores, acciones
   MediaStore      guarda fotos y vistas previas
   ImageProcessor  endereza, encuadra y corrige cada foto
@@ -270,8 +273,8 @@ El repo se evalúa como producto: alguien con menos seniority tiene que poder le
 ```
 src/
   domain/      reglas puras: intenciones, precio, numeración, deshacer
-  ports/       Messenger, Interpreter, Catalog, MediaStore, ImageProcessor
-  adapters/    whatsapp, modelo, postgres, blob, sharp, y sus dobles en memoria
+  ports/       Messenger, Transcriber, Interpreter, Catalog, MediaStore, ImageProcessor
+  adapters/    whatsapp, transcripción, claude, postgres, supabase-storage, sharp, y sus dobles en memoria
   app/         página pública y webhook
 evals/         20 audios y 20 fotos, y el script que los mide
 docs/adr/      una decisión por archivo
@@ -368,7 +371,7 @@ Un PR que toca una zona necesita revisión humana antes del merge. El resto pued
 | --- | --- | --- |
 | Webhook | `adapters/whatsapp`, ruta del webhook | Firma, lista de autorizados, respuesta 200 inmediata, test de contrato. El payload nunca se loguea. |
 | Escritura e idempotencia | `Catalog`, `processed_messages` | Unicidad por id de mensaje, transacción, test con mensaje duplicado. |
-| Borde con el modelo | `Interpreter` y su adaptador | Salida validada con Zod, límite de tiempo, plan B. Si cambia el prompt o el modelo, corre `pnpm eval` y el número va en el PR. |
+| Borde con el modelo | `Transcriber`, `Interpreter` y sus adaptadores | Salida validada con Zod, límite de tiempo, plan B. Si cambia el prompt o el modelo, corre `pnpm eval` y el número va en el PR. |
 | Esquema | Migraciones | Migración reversible. Ninguna columna con datos se borra. |
 | Secretos | Entorno, fixtures, logs | Ninguna clave ni número de teléfono real en el repo. |
 | Mínimos de legibilidad | Página y tokens de diseño | Tabla de mínimos, axe y la prueba sin JavaScript. |
@@ -377,7 +380,7 @@ Un PR que toca una zona necesita revisión humana antes del merge. El resto pued
 
 ## Orden de recorte
 
-Si algo se atrasa, se recorta en este orden: quitar el fondo, cambiar foto, tutorial capítulos 4 y 5, audios grabados. Publicar, el tratamiento básico de fotos, sacar y la página no se tocan.
+Si algo se atrasa, se recorta en este orden: cambiar foto, tutorial capítulos 4 y 5, audios grabados. Publicar, el tratamiento básico de fotos, sacar y la página no se tocan.
 
 ## Riesgos y preguntas abiertas
 
@@ -387,10 +390,11 @@ Si algo se atrasa, se recorta en este orden: quitar el fondo, cambiar foto, tuto
 | El alta en Meta se demora | Sin prueba real en WhatsApp | Empezar antes que nada; el simulador evita que bloquee el desarrollo |
 | Crece el alcance | No se termina nada perfecto | Principio 7 y orden de recorte |
 | La página sin forma de contacto confunde a un comprador nuevo | Alguien no sabe cómo comprar | Se revisa en la prueba con una persona real |
+| Supabase pausa el proyecto gratis | Las fotos dejan de verse tras una semana sin uso | Cron diario de Vercel; se reactiva desde el panel en un toque |
 
 Dos riesgos propios del tratamiento de fotos:
 
-- **Se come el tiempo.** El procesamiento de imágenes no tiene fondo. Por eso el nivel básico tiene un tope y quitar el fondo es un experimento acotado.
+- **Se come el tiempo.** El procesamiento de imágenes no tiene fondo. Por eso se limita a lo básico y quitar el fondo quedó afuera.
 - **El brief no lo pide.** Dice que los compradores no son exigentes con cómo se ve. El argumento que lo sostiene es de legibilidad: una pieza bien encuadrada y con luz se ve mejor para alguien con la vista cansada.
 
 ### Preguntas abiertas
