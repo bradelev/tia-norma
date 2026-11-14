@@ -47,3 +47,6 @@ next-env.d.ts
 # impeccable runtime
 /.impeccable/review/
 /.impeccable/sketches/
+
+# lighthouse
+/.lighthouseci/
