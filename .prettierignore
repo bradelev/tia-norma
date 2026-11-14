@@ -3,3 +3,4 @@ pnpm-lock.yaml
 docs/prd.md
 .impeccable/questions
 .lighthouseci
+.impeccable/hook.cache.json

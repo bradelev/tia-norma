@@ -11,3 +11,72 @@ const pesos = new Intl.NumberFormat("es-AR", {
 export function formatPrice(pesosAmount: number): string {
   return pesos.format(pesosAmount);
 }
+
+// Index = value: "cero" is 0, "un" is 1 ... "veintinueve" is 29.
+const ONES = (
+  "cero un dos tres cuatro cinco seis siete ocho nueve diez once doce trece catorce quince " +
+  "dieciseis diecisiete dieciocho diecinueve veinte veintiun veintidos veintitres veinticuatro " +
+  "veinticinco veintiseis veintisiete veintiocho veintinueve"
+).split(" ");
+const TENS = "treinta cuarenta cincuenta sesenta setenta ochenta noventa".split(
+  " ",
+);
+const HUNDREDS =
+  "ciento doscientos trescientos cuatrocientos quinientos seiscientos setecientos ochocientos novecientos".split(
+    " ",
+  );
+
+function wordValue(word: string): number | undefined {
+  if (word === "uno" || word === "una") return 1;
+  if (word === "veintiuno") return 21;
+  if (word === "cien") return 100;
+  const one = ONES.indexOf(word);
+  if (one !== -1) return one;
+  const ten = TENS.indexOf(word);
+  if (ten !== -1) return (ten + 3) * 10;
+  const hundred = HUNDREDS.indexOf(word);
+  if (hundred !== -1) return (hundred + 1) * 100;
+  return undefined;
+}
+
+/**
+ * Reads a price the way Norma says or writes it: "seis mil", "6 mil", "6000", "$6.000", "12,5 mil".
+ * Returns whole pesos, or null if the text is not a price.
+ */
+export function parsePrice(said: string): number | null {
+  const tokens = said
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\$|\bpesos\b/g, " ")
+    .split(/\s+/)
+    .filter((token) => token !== "" && token !== "y");
+  if (tokens.length === 0) return null;
+
+  let total = 0;
+  let current = 0;
+  for (const token of tokens) {
+    const value = numberToken(token) ?? wordValue(token);
+    if (value !== undefined) {
+      current += value;
+    } else if (token === "mil") {
+      total += (current || 1) * 1000;
+      current = 0;
+    } else if (token === "millon" || token === "millones") {
+      total = (total + (current || 1)) * 1_000_000;
+      current = 0;
+    } else {
+      return null;
+    }
+  }
+  const pesos = total + current;
+  return Number.isInteger(pesos) && pesos > 0 ? pesos : null;
+}
+
+/** "6000", "6.000" (thousands) or "12,5" (decimal comma). */
+function numberToken(token: string): number | undefined {
+  if (/^\d{1,3}(\.\d{3})+$/.test(token))
+    return Number(token.replaceAll(".", ""));
+  if (/^\d+(,\d+)?$/.test(token)) return Number(token.replace(",", "."));
+  return undefined;
+}
