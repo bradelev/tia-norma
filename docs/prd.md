@@ -10,7 +10,7 @@ La apuesta tiene tres partes, en este orden de prioridad:
 
 1. **Buenas fotos desde un celular de gama media.** Cada foto se endereza, se encuadra y se corrige de luz antes de publicarse, sin inventar nada de la pieza. Es el diferencial visible.
 2. **Legibilidad de verdad.** La página se diseña para alguien que ve mal y usa un celular viejo. Es el criterio del brief que más pesa.
-3. **Repo de referencia.** El código y la documentación se tratan como parte del producto. Sirven de tutorial para ingenieros con menos seniority.
+3. **Un repo fácil de recorrer.** El código y la documentación se tratan como parte del producto: se entiende qué hace cada parte y por qué se decidió así.
 
 Regla que gobierna el documento: pocas cosas, terminadas. Toda feature que no esté en este PRD queda afuera y se documenta por qué.
 
@@ -34,7 +34,7 @@ Hay tres usuarios y cada uno juzga algo distinto.
 | --- | --- | --- | --- |
 | Norma | 70 años, ve mal, solo WhatsApp, profe de plástica | Publicar y sacar piezas sin aprender nada nuevo | Publica una pieza con una foto, un audio y un toque, en menos de 30 segundos y sin ayuda |
 | Compradores | Misma generación, celular modesto, vista cansada | Ver piezas y precios sin esfuerzo | Leen nombre y precio a un brazo de distancia |
-| Ingeniero que lee el repo | Menos seniority, busca un ejemplo para copiar | Entender por qué se decidió cada cosa | Levanta el proyecto en 5 minutos y sigue el tutorial sin preguntar |
+| Quien lee el repo | Llega sin contexto del proyecto | Entender rápido cómo está armado y por qué se decidió cada cosa | Levanta el proyecto en 5 minutos y sigue el tutorial sin preguntar |
 
 ## Principios
 
@@ -264,9 +264,9 @@ Cada puerto tiene un adaptador real y un doble en memoria. Los tests y el simula
 - Los botones de respuesta admiten hasta 3 opciones de 20 caracteres ([Meta, Messages](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages)).
 - Los audios que se envían como mensaje de voz deben ser `.ogg` con códec OPUS ([Meta, Audio messages](https://developers.facebook.com/documentation/business-messaging/whatsapp/messages/audio-messages)).
 
-## Repo como referencia
+## Un repo fácil de recorrer
 
-El repo se evalúa como producto: alguien con menos seniority tiene que poder leerlo de arriba abajo y entender qué se hizo y por qué.
+El repo se trata como producto: alguien que llega sin contexto tiene que poder recorrerlo de arriba abajo y entender qué se hizo y por qué.
 
 ### Estructura
 
