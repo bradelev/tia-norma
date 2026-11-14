@@ -292,7 +292,7 @@ docs/tutorial/ cinco capítulos
 | Evaluación del modelo | `pnpm eval` corre el set de audios y de fotos y reporta aciertos. El resultado va al README. |
 | CI | GitHub Actions: lint, tipos, tests, build y Lighthouse en cada PR. Nada entra a `main` en rojo. |
 | Historial | Commits convencionales y PRs chicos con el porqué en la descripción. El historial se lee como un relato. |
-| Decisiones | Un ADR corto por cada fila de la tabla de decisiones. |
+| Decisiones | Un ADR corto solo para las decisiones que alguien nuevo cuestionaría. |
 | Simulador | `pnpm sim` permite conversar con el bot en la terminal, sin cuenta de Meta ni claves. |
 | Arranque | `pnpm dev` funciona con datos de ejemplo y los dobles en memoria, en menos de 5 minutos. |
 
@@ -321,23 +321,22 @@ El proyecto se construye con las skills de Matt Pocock, y cada PR se lee en una 
 | Paso | Skill | Qué deja en el repo |
 | --- | --- | --- |
 | 1. Configurar | `setup-matt-pocock-skills` | Bloque de skills en `CLAUDE.md`, GitHub Issues como tracker, `docs/agents/` |
-| 2. Afinar este PRD | `grill-with-docs` | `CONTEXT.md` con el vocabulario del dominio y los primeros ADRs |
-| 3. Publicar el PRD | `to-prd` | Issue padre |
-| 4. Partir el trabajo | `to-issues` | Issues en rebanadas verticales, cada una demostrable sola |
+| 2. Afinar este PRD | `grill-with-docs` | `GLOSSARY.md` con el vocabulario del dominio y los primeros ADRs |
+| 3. Publicar el PRD | `to-spec` | Issue padre |
+| 4. Partir el trabajo | `to-tickets` | Issues en rebanadas verticales, cada una demostrable sola |
 | 5. Construir | `tdd` | Un ciclo rojo, verde, refactor por issue |
-| 6. Revisar | `code-review` | Reporte en dos ejes: estándares del repo y fidelidad al issue |
-| 7. Proteger git | `git-guardrails-claude-code` | Hooks que bloquean push, reset y borrados destructivos |
+| 6. Revisar | `two-axis-review` | Reporte en dos ejes: estándares del repo y fidelidad al issue |
 
 ### Archivos del harness
 
 | Archivo | Contenido | Límite |
 | --- | --- | --- |
 | `CLAUDE.md` | Comandos, reglas de PR, zonas de peligro, links a los demás | 60 líneas |
-| `CONTEXT.md` | Glosario: pieza, foto tratada, vista previa, borrador, sacar | Una línea por término |
+| `GLOSSARY.md` | Glosario: pieza, foto tratada, vista previa, borrador, sacar | Una línea por término |
 | `CODING_STANDARDS.md` | Solo lo que el linter no puede verificar | 40 líneas |
 | `docs/adr/` | Una decisión por archivo | Una pantalla cada uno |
 | `.github/pull_request_template.md` | La plantilla de abajo | 4 secciones |
-| Hooks | Guardrails de git; lint, tipos y tests antes de cada commit | |
+| Hooks | Lint, tipos y tests antes de cada commit | |
 
 ### Reglas de PR
 
@@ -345,7 +344,7 @@ El proyecto se construye con las skills de Matt Pocock, y cada PR se lee en una 
 - Hasta 300 líneas de diff, sin contar lockfile ni fixtures. Si pasa, se parte.
 - La descripción usa la plantilla y no supera 12 líneas.
 - El razonamiento largo va a un ADR. El PR lo enlaza.
-- El reporte de `code-review` se pega como comentario solo si tiene hallazgos.
+- El reporte de `two-axis-review` se pega como comentario solo si tiene hallazgos.
 
 ```
 ## Qué cambia
