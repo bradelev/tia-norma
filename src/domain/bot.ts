@@ -49,9 +49,9 @@ export function createBot(ports: BotPorts): Bot {
 
   async function takeDown(ref: PieceRef): Promise<Reply> {
     if ("name" in ref) {
-      const found = (await catalog.published()).filter((piece) =>
-        matchesName(piece.name, ref.name),
-      );
+      const found = (await catalog.published())
+        .filter((piece) => matchesName(piece.name, ref.name))
+        .sort((a, b) => a.number - b.number);
       const [only, ...rest] = found;
       if (!only)
         return { text: `No encontré ninguna pieza que se llame ${ref.name}` };

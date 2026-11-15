@@ -232,7 +232,7 @@ async function withPublished(...pieces: string[]) {
 describe("sacar una pieza", () => {
   it('"vendí la 2" la saca de la página y ofrece Deshacer', async () => {
     const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
-    const [, plate] = await norma.publishedPieces();
+    const [plate] = await norma.publishedPieces();
 
     const reply = await norma.say("vendí la 2");
 
@@ -279,7 +279,7 @@ describe("sacar una pieza", () => {
       "plato, ocho mil",
       "taza roja, seis mil",
     );
-    const [blue, , red] = await norma.publishedPieces();
+    const [red, , blue] = await norma.publishedPieces();
 
     const reply = await norma.say("vendí la taza");
 
@@ -326,7 +326,7 @@ describe("deshacer", () => {
     const reply = await norma.tap("Deshacer");
 
     expect(reply.text).toBe("La pieza 1 volvió a la página");
-    expect(reply.image).toBe(before[0]?.image);
+    expect(reply.image).toBe(before.at(-1)?.image);
     expect(await norma.publishedPieces()).toEqual(before);
   });
 
