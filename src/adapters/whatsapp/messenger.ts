@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Reply } from "../../domain/messages";
 import type { Messenger } from "../../ports/messenger";
 
-const GRAPH = "https://graph.facebook.com/v23.0";
+const GRAPH = "https://graph.facebook.com/v25.0";
 
 /** What Meta answers when asked for a media id. */
 const mediaInfo = z.object({ url: z.url(), mime_type: z.string().min(1) });
