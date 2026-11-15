@@ -8,7 +8,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
-import type { Draft } from "../../ports/catalog";
+import type { Action, Draft } from "../../ports/catalog";
 
 /** A taken-down piece keeps its row and its number; rows are never deleted. */
 export const pieceStatus = pgEnum("piece_status", ["published", "takenDown"]);
@@ -42,8 +42,9 @@ export const drafts = pgTable("drafts", {
 export const lastAction = pgTable("last_action", {
   id: smallint("id").primaryKey().default(1),
   actionId: text("action_id").notNull(),
-  kind: text("kind").$type<"publish" | "takeDown">().notNull(),
+  kind: text("kind").$type<Action["kind"]>().notNull(),
   pieceNumber: integer("piece_number")
     .notNull()
     .references(() => pieces.number),
+  previousPrice: integer("previous_price"),
 }).enableRLS();

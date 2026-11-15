@@ -1,0 +1,1 @@
+ALTER TABLE "last_action" ADD COLUMN "previous_price" integer;

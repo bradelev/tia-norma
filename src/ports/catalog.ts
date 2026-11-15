@@ -12,8 +12,14 @@ export type StoredPiece = Piece & { status: "published" | "takenDown" };
 export interface Action {
   /** A publish takes its preview id. */
   id: string;
-  kind: "publish" | "takeDown";
+  kind: "publish" | "takeDown" | "changePrice";
   piece: Piece;
+}
+
+/** A new price for a published piece, waiting for "Sí, cambiar". */
+export interface Change {
+  number: number;
+  price: number;
 }
 
 /** What Norma sent for a new piece and has not confirmed yet. */
@@ -23,6 +29,8 @@ export interface Draft {
   price?: number;
   /** Changes every time the bot sends a new preview, so a stale "Sí" can be told apart. */
   previewId?: string;
+  /** Set when the open preview is a change instead of a new piece. */
+  change?: Change;
 }
 
 export interface Catalog {
@@ -43,9 +51,16 @@ export interface Catalog {
   /** Takes a published piece off the page. Becomes the last action. */
   takeDown(number: number, actionId: string): Promise<void>;
   /**
+   * Applies the change and closes the draft, in one step; null if `previewId`
+   * is no longer the open preview. Becomes the last action under that id,
+   * keeping the previous price for Deshacer.
+   */
+  change(previewId: string, change: Change): Promise<Piece | null>;
+  /**
    * Reverts the last action in one step and forgets it; null if there is none,
    * or if `actionId` is given and is no longer the last one.
-   * A reverted publish takes the piece down and keeps its number.
+   * A reverted publish takes the piece down and keeps its number;
+   * a reverted change brings back the previous price.
    */
   undo(actionId?: string): Promise<Action | null>;
 }

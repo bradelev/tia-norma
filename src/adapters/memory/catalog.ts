@@ -5,7 +5,8 @@ export function createMemoryCatalog(): Catalog {
   const pieces: Piece[] = [];
   const byPreview = new Map<string, Piece>();
   const takenDown = new Set<number>();
-  let last: Action | null = null;
+  /** `before` is the piece as it was, for a change. */
+  let last: { action: Action; before?: Piece } | null = null;
 
   return {
     async draft() {
@@ -21,7 +22,7 @@ export function createMemoryCatalog(): Catalog {
       pieces.push(piece);
       byPreview.set(previewId, piece);
       draft = null;
-      last = { id: previewId, kind: "publish", piece };
+      last = { action: { id: previewId, kind: "publish", piece } };
       return piece;
     },
     async publishedFrom(previewId) {
@@ -39,14 +40,27 @@ export function createMemoryCatalog(): Catalog {
     async takeDown(number, id) {
       takenDown.add(number);
       const piece = pieces[number - 1];
-      if (piece) last = { id, kind: "takeDown", piece };
+      if (piece) last = { action: { id, kind: "takeDown", piece } };
+    },
+    async change(previewId, change) {
+      const before = pieces[change.number - 1];
+      if (draft?.previewId !== previewId || !before) return null;
+      const piece = { ...before, price: change.price };
+      pieces[piece.number - 1] = piece;
+      draft = null;
+      last = { action: { id: previewId, kind: "changePrice", piece }, before };
+      return piece;
     },
     async undo(actionId) {
-      const action = last;
-      if (!action || (actionId && actionId !== action.id)) return null;
+      if (!last || (actionId && actionId !== last.action.id)) return null;
+      const { action, before } = last;
+      last = null;
+      if (before) {
+        pieces[before.number - 1] = before;
+        return { ...action, piece: before };
+      }
       if (action.kind === "publish") takenDown.add(action.piece.number);
       else takenDown.delete(action.piece.number);
-      last = null;
       return action;
     },
   };
