@@ -10,8 +10,10 @@ import stranger from "../adapters/whatsapp/fixtures/stranger.json";
 import text from "../adapters/whatsapp/fixtures/text.json";
 import { createMemoryInterpreter } from "../adapters/memory/interpreter";
 import { createMemoryMessenger } from "../adapters/memory/messenger";
+import { createMemoryTranscriber } from "../adapters/memory/transcriber";
 import { createMemoryWorkshop } from "../adapters/memory/workshop";
 import type { Interpreter } from "../ports/interpreter";
+import type { Transcriber } from "../ports/transcriber";
 import { createWebhook } from "./webhook";
 
 const NORMA = "5491100000000";
@@ -25,12 +27,23 @@ function sign(body: string, secret = APP_SECRET) {
 function setup({
   photos = true,
   interpreter = createMemoryInterpreter(),
+  transcriber = createMemoryTranscriber(),
+}: {
+  photos?: boolean;
+  interpreter?: Interpreter;
+  transcriber?: Transcriber;
 } = {}) {
   const { bot, catalog } = createMemoryWorkshop({ interpreter });
   const photo = { bytes: new Uint8Array([1, 2, 3]), contentType: "image/jpeg" };
-  const messenger = createMemoryMessenger(
-    photos ? { "300000000000003": photo } : {},
-  );
+  // The memory transcriber hears the bytes as text.
+  const voice = {
+    bytes: new TextEncoder().encode("Taza azul, seis mil"),
+    contentType: "audio/ogg; codecs=opus",
+  };
+  const messenger = createMemoryMessenger({
+    ...(photos && { "300000000000003": photo }),
+    "300000000000004": voice,
+  });
   const webhook = createWebhook({
     appSecret: APP_SECRET,
     verifyToken: "token-de-verificacion",
@@ -38,6 +51,7 @@ function setup({
     messenger,
     catalog,
     bot,
+    transcriber,
     limitMs: 50,
   });
 
@@ -118,15 +132,44 @@ describe("webhook de WhatsApp", () => {
     ]);
   });
 
-  it("un audio recibe ayuda; una reacción o un sticker, nada", async () => {
+  it("un audio y un texto con lo mismo dan la misma vista previa (R3)", async () => {
+    const written = setup();
+    const spoken = setup();
+
+    await written.deliver(image);
+    await written.deliver(text);
+    await spoken.deliver(image);
+    await spoken.deliver(audio);
+
+    expect(spoken.sent.at(-1)?.reply.buttons?.[0]?.title).toBe("Sí, publicar");
+    expect(spoken.sent).toEqual(written.sent);
+  });
+
+  it("si la transcripción falla, Norma recibe probá de nuevo y el borrador no cambia", async () => {
+    const deaf = { transcribe: () => Promise.reject(new Error("Groq 503")) };
+    const { deliver, texts, catalog } = setup({ transcriber: deaf });
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await deliver(image);
+    const before = await catalog.draft();
+    await deliver(audio);
+
+    expect(texts().at(-1)).toBe("No me salió. Probá de nuevo.");
+    expect(await catalog.draft()).toEqual(before);
+    log.mockRestore();
+  });
+
+  it("un video recibe ayuda; una reacción o un sticker, nada", async () => {
     const { deliver, texts } = setup();
+    const video = structuredClone(audio);
+    video.entry[0]!.changes[0]!.value.messages[0]!.type = "video";
 
     await deliver(reaction);
     await deliver(sticker);
-    await deliver(audio);
+    await deliver(video);
 
     expect(texts()).toEqual([
-      "Por ahora entiendo fotos y texto. Escribime el nombre y el precio.",
+      "Por ahora entiendo fotos, texto y audios. Escribime el nombre y el precio.",
     ]);
   });
 

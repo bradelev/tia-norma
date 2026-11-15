@@ -72,9 +72,10 @@ describe("mensajes de un webhook", () => {
     });
   });
 
-  it("un audio todavía no se lee", () => {
+  it("un audio trae el id para bajarlo", () => {
     expect(parseMessages(bytes(audio))?.[0]?.content).toEqual({
-      kind: "other",
+      kind: "audio",
+      mediaId: "300000000000004",
     });
   });
 

@@ -9,9 +9,10 @@ import type { Bot } from "../domain/bot";
 import { FIXED_REPLIES, type Reply } from "../domain/messages";
 import type { Catalog } from "../ports/catalog";
 import type { Messenger } from "../ports/messenger";
+import type { Transcriber } from "../ports/transcriber";
 
 const NOT_YET: Reply = {
-  text: "Por ahora entiendo fotos y texto. Escribime el nombre y el precio.",
+  text: "Por ahora entiendo fotos, texto y audios. Escribime el nombre y el precio.",
 };
 const LIMIT_MS = 15_000;
 
@@ -23,6 +24,7 @@ export interface WebhookSettings {
   messenger: Messenger;
   catalog: Pick<Catalog, "recordMessage">;
   bot: Bot;
+  transcriber: Transcriber;
   /** R10: past this, Norma hears "probá de nuevo" and the late result is dropped. */
   limitMs?: number;
 }
@@ -37,7 +39,7 @@ export interface Webhook {
 }
 
 export function createWebhook(settings: WebhookSettings): Webhook {
-  const { messenger, bot, limitMs = LIMIT_MS } = settings;
+  const { messenger, bot, transcriber, limitMs = LIMIT_MS } = settings;
 
   /** What to send back; null for a reaction or a sticker. */
   async function reply(
@@ -55,6 +57,13 @@ export function createWebhook(settings: WebhookSettings): Webhook {
           await bot.receive({ kind: "text", text: content.caption }, deadline);
         const { bytes } = await messenger.download(content.mediaId);
         return bot.receive({ kind: "photo", bytes }, deadline);
+      }
+      case "audio": {
+        // R3: what she said follows the same path as what she writes.
+        const said = await transcriber.transcribe(
+          await messenger.download(content.mediaId),
+        );
+        return bot.receive({ kind: "text", text: said }, deadline);
       }
       case "ignored":
         return null;
