@@ -1,5 +1,5 @@
 import type { Catalog, Draft } from "../ports/catalog";
-import type { Interpreter } from "../ports/interpreter";
+import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
 import type { Incoming, Reply } from "./messages";
 import { formatPrice, parsePrice } from "./price";
@@ -47,8 +47,53 @@ export function createBot(ports: BotPorts): Bot {
     };
   }
 
-  async function describe(text: string): Promise<Reply> {
+  async function takeDown(ref: PieceRef): Promise<Reply> {
+    if ("name" in ref) {
+      const found = (await catalog.published()).filter((piece) =>
+        matchesName(piece.name, ref.name),
+      );
+      const [only, ...rest] = found;
+      if (!only)
+        return { text: `No encontré ninguna pieza que se llame ${ref.name}` };
+      if (rest.length > 0)
+        return {
+          text: "¿Cuál? Decime el número.",
+          album: found.map((piece) => ({
+            image: piece.image,
+            caption: `La ${piece.number}, ${piece.name}`,
+          })),
+        };
+      return takeDown({ number: only.number });
+    }
+    const piece = await catalog.piece(ref.number);
+    if (!piece) return { text: `No tengo ninguna pieza ${ref.number}` };
+    if (piece.status === "takenDown")
+      return { text: `La ${piece.number} ya no está en la página` };
+    const actionId = ports.newId();
+    await catalog.takeDown(piece.number, actionId);
+    return {
+      text: `Saqué la pieza ${piece.number}`,
+      image: piece.image,
+      buttons: [{ id: `undo:${actionId}`, title: "Deshacer" }],
+    };
+  }
+
+  /** Said, it undoes the last action; a button only undoes the action it was offered for. */
+  async function undo(actionId?: string): Promise<Reply> {
+    const action = await catalog.undo(actionId);
+    if (!action) return { text: "No hay nada para deshacer" };
+    const { number, image } = action.piece;
+    const text =
+      action.kind === "publish"
+        ? `La pieza ${number} ya no está en la página`
+        : `La pieza ${number} volvió a la página`;
+    return { text, image };
+  }
+
+  async function understand(text: string): Promise<Reply> {
     const intent = await ports.interpreter.interpret(text);
+    if (intent.kind === "takeDown") return takeDown(intent.piece);
+    if (intent.kind === "undo") return undo();
     if (intent.kind !== "describe") return { text: HELP };
     const change: Partial<Draft> = {};
     if (intent.name !== undefined) {
@@ -89,15 +134,32 @@ export function createBot(ports: BotPorts): Bot {
           return update({ photo });
         }
         case "text":
-          return describe(message.text);
+          return understand(message.text);
         case "button": {
-          const [action, previewId = ""] = message.id.split(":");
-          if (action === "publish") return publish(previewId);
+          const [action, id = ""] = message.id.split(":");
+          if (action === "publish") return publish(id);
+          if (action === "undo") return undo(id);
           return { text: "¿Qué cambio?" };
         }
       }
     },
   };
+}
+
+/** Every word Norma said appears in the name, ignoring accents and case. */
+function matchesName(name: string, said: string): boolean {
+  const own = new Set(words(name));
+  const wanted = words(said);
+  return wanted.length > 0 && wanted.every((word) => own.has(word));
+}
+
+function words(text: string): string[] {
+  return text
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
 }
 
 function askForMissing({ photo, name, price }: Draft): string {

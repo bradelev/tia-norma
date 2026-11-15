@@ -218,3 +218,150 @@ describe("mensajes que no son una pieza", () => {
     );
   });
 });
+
+async function withPublished(...pieces: string[]) {
+  const norma = createMemoryWorkshop();
+  for (const piece of pieces) {
+    await norma.sendPhoto();
+    await norma.say(piece);
+    await norma.tap("Sí, publicar");
+  }
+  return norma;
+}
+
+describe("sacar una pieza", () => {
+  it('"vendí la 2" la saca de la página y ofrece Deshacer', async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    const [, plate] = await norma.publishedPieces();
+
+    const reply = await norma.say("vendí la 2");
+
+    expect(reply.text).toBe("Saqué la pieza 2");
+    expect(reply.image).toBe(plate?.image);
+    expect(reply.buttons?.map((b) => b.title)).toEqual(["Deshacer"]);
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 1 }]);
+  });
+
+  it("una pieza ya sacada avisa y no cambia nada", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    await norma.say("vendí la 2");
+
+    const reply = await norma.say("sacá la 2");
+
+    expect(reply).toEqual({ text: "La 2 ya no está en la página" });
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 1 }]);
+  });
+
+  it("un número que nunca se publicó lo dice y no cambia nada", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+
+    const reply = await norma.say("sacá la 9");
+
+    expect(reply).toEqual({ text: "No tengo ninguna pieza 9" });
+    expect(await norma.publishedPieces()).toHaveLength(1);
+  });
+
+  it("por nombre, sin importar tildes ni mayúsculas", async () => {
+    const norma = await withPublished(
+      "jarrón azul, seis mil",
+      "plato, ocho mil",
+    );
+
+    const reply = await norma.say("vendí el JARRON");
+
+    expect(reply.text).toBe("Saqué la pieza 1");
+    expect(await norma.publishedPieces()).toMatchObject([{ name: "Plato" }]);
+  });
+
+  it("si el nombre coincide con varias, muestra las fotos y pregunta", async () => {
+    const norma = await withPublished(
+      "taza azul, seis mil",
+      "plato, ocho mil",
+      "taza roja, seis mil",
+    );
+    const [blue, , red] = await norma.publishedPieces();
+
+    const reply = await norma.say("vendí la taza");
+
+    expect(reply.text).toBe("¿Cuál? Decime el número.");
+    expect(reply.album).toEqual([
+      { image: blue?.image, caption: "La 1, Taza azul" },
+      { image: red?.image, caption: "La 3, Taza roja" },
+    ]);
+    expect(await norma.publishedPieces()).toHaveLength(3);
+  });
+
+  it("si el nombre no coincide con ninguna, lo dice y no cambia nada", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+
+    const reply = await norma.say("vendí la jarra");
+
+    expect(reply).toEqual({
+      text: "No encontré ninguna pieza que se llame jarra",
+    });
+    expect(await norma.publishedPieces()).toHaveLength(1);
+  });
+
+  it("sacar con una vista previa abierta no la toca", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    await norma.sendPhoto();
+    const preview = await norma.say("plato, ocho mil");
+
+    await norma.say("vendí la 1");
+    const done = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+
+    expect(done.text).toBe("Listo. Es la pieza 2.");
+    expect(await norma.publishedPieces()).toMatchObject([
+      { number: 2, name: "Plato", price: 8000 },
+    ]);
+  });
+});
+
+describe("deshacer", () => {
+  it("el botón Deshacer devuelve a la página la pieza sacada", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    const before = await norma.publishedPieces();
+    await norma.say("vendí la 1");
+
+    const reply = await norma.tap("Deshacer");
+
+    expect(reply.text).toBe("La pieza 1 volvió a la página");
+    expect(reply.image).toBe(before[0]?.image);
+    expect(await norma.publishedPieces()).toEqual(before);
+  });
+
+  it('"deshacer" dicho saca lo recién publicado y no libera el número', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+
+    const reply = await norma.say("deshacé");
+    await norma.sendPhoto();
+    await norma.say("plato, ocho mil");
+    const next = await norma.tap("Sí, publicar");
+
+    expect(reply.text).toBe("La pieza 1 ya no está en la página");
+    expect(next.text).toBe("Listo. Es la pieza 2.");
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 2 }]);
+  });
+
+  it("revierte solo la última acción, no las anteriores", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    await norma.say("vendí la 1");
+    await norma.say("deshacer");
+
+    const again = await norma.say("deshacer");
+
+    expect(again).toEqual({ text: "No hay nada para deshacer" });
+    expect(await norma.publishedPieces()).toHaveLength(2);
+  });
+
+  it("un Deshacer viejo no deshace una acción más nueva", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    const old = await norma.say("vendí la 1");
+    await norma.say("vendí la 2");
+
+    const reply = await norma.pressButton(old.buttons?.[0]?.id ?? "");
+
+    expect(reply).toEqual({ text: "No hay nada para deshacer" });
+    expect(await norma.publishedPieces()).toEqual([]);
+  });
+});

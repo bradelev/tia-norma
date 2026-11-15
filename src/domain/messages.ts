@@ -14,4 +14,6 @@ export interface Reply {
   text: string;
   image?: string;
   buttons?: [Button] | [Button, Button];
+  /** Several photos with a caption each, sent before the text, when Norma has to pick one. */
+  album?: { image: string; caption: string }[];
 }
