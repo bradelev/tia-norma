@@ -73,12 +73,8 @@
           "name": "last_action_piece_number_pieces_number_fk",
           "tableFrom": "last_action",
           "tableTo": "pieces",
-          "columnsFrom": [
-            "piece_number"
-          ],
-          "columnsTo": [
-            "number"
-          ],
+          "columnsFrom": ["piece_number"],
+          "columnsTo": ["number"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -159,16 +155,12 @@
         "pieces_number_unique": {
           "name": "pieces_number_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "number"
-          ]
+          "columns": ["number"]
         },
         "pieces_preview_id_unique": {
           "name": "pieces_preview_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "preview_id"
-          ]
+          "columns": ["preview_id"]
         }
       },
       "policies": {},
@@ -180,10 +172,7 @@
     "public.piece_status": {
       "name": "piece_status",
       "schema": "public",
-      "values": [
-        "published",
-        "takenDown"
-      ]
+      "values": ["published", "takenDown"]
     }
   },
   "schemas": {},

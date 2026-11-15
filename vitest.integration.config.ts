@@ -5,5 +5,6 @@ import { defineConfig } from "vitest/config";
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 export default defineConfig({
-  test: { include: ["src/**/*.integration.test.ts"] },
+  // Each call crosses the network to Supabase.
+  test: { include: ["src/**/*.integration.test.ts"], testTimeout: 20_000 },
 });

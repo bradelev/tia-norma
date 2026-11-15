@@ -28,9 +28,7 @@ export function createMemoryCatalog(): Catalog {
       return byPreview.get(previewId) ?? null;
     },
     async published() {
-      return pieces
-        .filter((piece) => !takenDown.has(piece.number))
-        .reverse();
+      return pieces.filter((piece) => !takenDown.has(piece.number)).reverse();
     },
     async piece(number) {
       const piece = pieces[number - 1];

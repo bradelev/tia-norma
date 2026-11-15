@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { Action, Catalog, Piece } from "../../ports/catalog";
@@ -62,7 +62,10 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
       return rows.map(toPiece);
     },
     async piece(number) {
-      const [row] = await db.select().from(pieces).where(eq(pieces.number, number));
+      const [row] = await db
+        .select()
+        .from(pieces)
+        .where(eq(pieces.number, number));
       return row ? { ...toPiece(row), status: row.status } : null;
     },
     takeDown(number, actionId) {
