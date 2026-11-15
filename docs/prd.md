@@ -240,6 +240,7 @@ Puertos
   Catalog         piezas, borradores, acciones
   MediaStore      guarda fotos y vistas previas
   ImageProcessor  endereza, encuadra y corrige cada foto
+  PreviewRenderer dibuja la vista previa como la ficha de la página
 
 Tablas
   pieces              id, number, name, price, image_url, status, created_at, updated_at
@@ -273,8 +274,8 @@ El repo se trata como producto: alguien que llega sin contexto tiene que poder r
 ```
 src/
   domain/      reglas puras: intenciones, precio, numeración, deshacer
-  ports/       Messenger, Transcriber, Interpreter, Catalog, MediaStore, ImageProcessor
-  adapters/    whatsapp, transcripción, claude, postgres, supabase-storage, sharp, y sus dobles en memoria
+  ports/       Messenger, Transcriber, Interpreter, Catalog, MediaStore, ImageProcessor, PreviewRenderer
+  adapters/    whatsapp, transcripción, claude, postgres, supabase-storage, sharp, satori, y sus dobles en memoria
   app/         página pública y webhook
 evals/         20 audios y 20 fotos, y el script que los mide
 docs/adr/      una decisión por archivo
