@@ -489,3 +489,109 @@ describe("cambiar el precio", () => {
     ]);
   });
 });
+
+describe("cambiar la foto", () => {
+  it('una foto con "esta es la 1" muestra la nueva, la aplica al confirmar y se deshace', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const [cup] = await norma.publishedPieces();
+
+    await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+    const preview = await norma.say("esta es la 1");
+
+    expect(preview.text).toBe("Foto nueva para la pieza 1");
+    expect(preview.image).not.toBe(cup?.image);
+    expect(preview.buttons?.map((b) => b.title)).toEqual(["Sí, cambiar", "No"]);
+    expect(await norma.publishedPieces()).toEqual([cup]);
+
+    const done = await norma.tap("Sí, cambiar");
+
+    expect(done.text).toBe("Listo. La pieza 1 tiene la foto nueva");
+    expect(await norma.publishedPieces()).toEqual([
+      { ...cup, image: preview.image },
+    ]);
+
+    const undone = await norma.tap("Deshacer");
+
+    expect(undone).toEqual({
+      text: "La pieza 1 vuelve a tener la foto anterior",
+      image: cup?.image,
+    });
+    expect(await norma.publishedPieces()).toEqual([cup]);
+  });
+
+  it('con "esta es la 1" antes que la foto, pide la foto y la foto abre la vista previa', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+
+    const asked = await norma.say("esta es la 1");
+    const preview = await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+
+    expect(asked).toEqual({ text: "Mandame la foto nueva de la pieza 1." });
+    expect(preview.text).toBe("Foto nueva para la pieza 1");
+    expect(preview.buttons?.map((b) => b.title)).toEqual(["Sí, cambiar", "No"]);
+  });
+
+  it("una foto movida no abre la vista previa ni cambia la pieza", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const before = await norma.publishedPieces();
+
+    const after = await norma.sendPhoto(BLURRY_PHOTO);
+    const asked = await norma.say("esta es la 1");
+    const rejected = await norma.sendPhoto(BLURRY_PHOTO);
+
+    expect(after).toEqual({ text: "La foto salió movida. ¿Me mandás otra?" });
+    expect(asked).toEqual({ text: "Mandame la foto nueva de la pieza 1." });
+    expect(rejected).toEqual(after);
+    expect(await norma.publishedPieces()).toEqual(before);
+    expect((await norma.sendPhoto()).text).toBe("Foto nueva para la pieza 1");
+  });
+
+  it("empezar una pieza nueva descarta el cambio abierto y avisa", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const [cup] = await norma.publishedPieces();
+    await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+    const preview = await norma.say("esta es la 1");
+
+    const reply = await norma.say("plato, ocho mil");
+    const old = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+
+    expect(reply.text).toBe(
+      "La pieza 1 quedó sin cambiar. Mandame una foto de la pieza.",
+    );
+    expect(old.text).toBe(
+      "Esa vista previa ya cambió. Fijate en la última que te mandé.",
+    );
+    expect(await norma.publishedPieces()).toEqual([cup]);
+  });
+
+  it("una pieza sacada no acepta la foto nueva, ni antes ni después de la vista previa", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const [cup] = await norma.publishedPieces();
+    await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+    const preview = await norma.say("esta es la 1");
+    await norma.say("vendí la 1");
+
+    const late = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+    await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+    const asked = await norma.say("esta es la 1");
+    await norma.say("deshacer");
+
+    expect(late).toEqual({ text: "La 1 ya no está en la página" });
+    expect(asked).toEqual({ text: "La 1 ya no está en la página" });
+    expect(await norma.publishedPieces()).toEqual([cup]);
+  });
+
+  it('un "Sí, cambiar" después de "No" no cambia la foto', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const [cup] = await norma.publishedPieces();
+    await norma.sendPhoto(new Uint8Array([4, 5, 6]));
+    const preview = await norma.say("esta es la 1");
+    await norma.tap("No");
+
+    const late = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+
+    expect(late.text).toBe(
+      "Esa vista previa ya cambió. Fijate en la última que te mandé.",
+    );
+    expect(await norma.publishedPieces()).toEqual([cup]);
+  });
+});

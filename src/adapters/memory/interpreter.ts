@@ -24,6 +24,11 @@ export function createMemoryInterpreter(): Interpreter {
           piece: pieceRef(changePrice[1]),
           priceText: changePrice[2],
         };
+      const changePhoto = /^[eé]sta\s+es\s+(?:la|el)\s+(.+)$/i.exec(
+        text.trim(),
+      );
+      if (changePhoto?.[1])
+        return { kind: "changePhoto", piece: pieceRef(changePhoto[1]) };
       if (/[¿?]/.test(text)) return { kind: "unknown" };
       if (parsePrice(text) !== null)
         return { kind: "describe", priceText: text.trim() };

@@ -45,10 +45,13 @@ export function createMemoryCatalog(): Catalog {
     async change(previewId, change) {
       const before = pieces[change.number - 1];
       if (draft?.previewId !== previewId || !before) return null;
-      const piece = { ...before, price: change.price };
+      const [kind, piece]: [Action["kind"], Piece] =
+        "price" in change
+          ? ["changePrice", { ...before, price: change.price }]
+          : ["changePhoto", { ...before, image: change.image }];
       pieces[piece.number - 1] = piece;
       draft = null;
-      last = { action: { id: previewId, kind: "changePrice", piece }, before };
+      last = { action: { id: previewId, kind, piece }, before };
       return piece;
     },
     async undo(actionId) {

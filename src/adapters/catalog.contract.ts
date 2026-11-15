@@ -96,4 +96,24 @@ export function catalogContract(create: () => Catalog) {
     });
     expect(await catalog.piece(number)).toMatchObject({ price: 6000 });
   });
+
+  it("cambiar la foto la reemplaza y Deshacer devuelve la anterior", async () => {
+    const catalog = create();
+    const { number } = await catalog.publish(randomUUID(), piece);
+    const change = { number, image: piece.image.replace("taza", "nueva") };
+    const previewId = randomUUID();
+    await catalog.saveDraft({ change, previewId });
+
+    expect(await catalog.change(previewId, change)).toMatchObject(change);
+    expect(await catalog.piece(number)).toMatchObject({
+      ...change,
+      price: 6000,
+    });
+
+    expect(await catalog.undo(previewId)).toMatchObject({
+      kind: "changePhoto",
+      piece: { number, image: piece.image },
+    });
+    expect(await catalog.piece(number)).toMatchObject({ image: piece.image });
+  });
 }
