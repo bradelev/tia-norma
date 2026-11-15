@@ -6,14 +6,13 @@ import {
   type WhatsAppMessage,
 } from "../adapters/whatsapp/webhook";
 import type { Bot } from "../domain/bot";
-import type { Reply } from "../domain/messages";
+import { FIXED_REPLIES, type Reply } from "../domain/messages";
 import type { Catalog } from "../ports/catalog";
 import type { Messenger } from "../ports/messenger";
 
 const NOT_YET: Reply = {
   text: "Por ahora entiendo fotos y texto. Escribime el nombre y el precio.",
 };
-const TRY_AGAIN: Reply = { text: "No me salió. Probá de nuevo." };
 const LIMIT_MS = 15_000;
 
 export interface WebhookSettings {
@@ -90,7 +89,7 @@ export function createWebhook(settings: WebhookSettings): Webhook {
     // The message id and the error only: never the number or what she said.
     console.error(`Falló el mensaje ${id}:`, reason(error));
     try {
-      await messenger.send(from, TRY_AGAIN);
+      await messenger.send(from, FIXED_REPLIES.tryAgain);
     } catch (again) {
       console.error(`Tampoco salió el aviso del mensaje ${id}:`, reason(again));
     }

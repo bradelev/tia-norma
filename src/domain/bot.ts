@@ -2,14 +2,12 @@ import type { Catalog, Change, Draft, StoredPiece } from "../ports/catalog";
 import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
-import type { Incoming, Reply } from "./messages";
+import { FIXED_REPLIES, type Incoming, type Reply } from "./messages";
 import type { PhotoProblem } from "./photo-quality";
 import { formatPrice, parsePrice } from "./price";
 
 const MAX_PRICE = 10_000_000;
 const MAX_NAME_LENGTH = 40;
-const HELP =
-  "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.";
 const ASK_PRICE_AGAIN =
   "¿Cuánto sale? Decímelo en pesos, por ejemplo seis mil.";
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
@@ -234,7 +232,7 @@ function conversation(ports: BotPorts): Bot {
       return changePrice(intent.piece, intent.priceText);
     if (intent.kind === "changePhoto") return changePhoto(intent.piece);
     if (intent.kind === "undo") return undo();
-    if (intent.kind !== "describe") return { text: HELP };
+    if (intent.kind !== "describe") return FIXED_REPLIES.help;
     const change: Partial<Draft> = {};
     if (intent.name !== undefined) {
       if (intent.name.length > MAX_NAME_LENGTH)
