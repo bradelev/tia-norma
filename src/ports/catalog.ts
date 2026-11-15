@@ -10,6 +10,8 @@ export type StoredPiece = Piece & { status: "published" | "takenDown" };
 
 /** A change applied to the page, kept so Deshacer can revert it. */
 export interface Action {
+  /** A publish takes its preview id. */
+  id: string;
   kind: "publish" | "takeDown";
   piece: Piece;
 }
@@ -35,10 +37,11 @@ export interface Catalog {
   /** Any piece ever published, sacada or not. */
   piece(number: number): Promise<StoredPiece | null>;
   /** Takes a published piece off the page. Becomes the last action. */
-  takeDown(number: number): Promise<void>;
+  takeDown(number: number, actionId: string): Promise<void>;
   /**
-   * Reverts the last action in one step and forgets it; null if there is none.
+   * Reverts the last action in one step and forgets it; null if there is none,
+   * or if `actionId` is given and is no longer the last one.
    * A reverted publish takes the piece down and keeps its number.
    */
-  undo(): Promise<Action | null>;
+  undo(actionId?: string): Promise<Action | null>;
 }

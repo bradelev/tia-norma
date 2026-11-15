@@ -69,16 +69,18 @@ export function createBot(ports: BotPorts): Bot {
     if (!piece) return { text: `No tengo ninguna pieza ${ref.number}` };
     if (piece.status === "takenDown")
       return { text: `La ${piece.number} ya no está en la página` };
-    await catalog.takeDown(piece.number);
+    const actionId = ports.newId();
+    await catalog.takeDown(piece.number, actionId);
     return {
       text: `Saqué la pieza ${piece.number}`,
       image: piece.image,
-      buttons: [{ id: "undo", title: "Deshacer" }],
+      buttons: [{ id: `undo:${actionId}`, title: "Deshacer" }],
     };
   }
 
-  async function undo(): Promise<Reply> {
-    const action = await catalog.undo();
+  /** Said, it undoes the last action; a button only undoes the action it was offered for. */
+  async function undo(actionId?: string): Promise<Reply> {
+    const action = await catalog.undo(actionId);
     if (!action) return { text: "No hay nada para deshacer" };
     const { number, image } = action.piece;
     const text =
@@ -134,9 +136,9 @@ export function createBot(ports: BotPorts): Bot {
         case "text":
           return understand(message.text);
         case "button": {
-          const [action, previewId = ""] = message.id.split(":");
-          if (action === "publish") return publish(previewId);
-          if (action === "undo") return undo();
+          const [action, id = ""] = message.id.split(":");
+          if (action === "publish") return publish(id);
+          if (action === "undo") return undo(id);
           return { text: "¿Qué cambio?" };
         }
       }

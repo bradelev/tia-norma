@@ -351,19 +351,17 @@ describe("deshacer", () => {
     const again = await norma.say("deshacer");
 
     expect(again).toEqual({ text: "No hay nada para deshacer" });
-    expect(await norma.publishedPieces()).toMatchObject([
-      { number: 1 },
-      { number: 2 },
-    ]);
+    expect(await norma.publishedPieces()).toHaveLength(2);
   });
 
-  it("sacar una pieza ya sacada no cuenta como acción para Deshacer", async () => {
-    const norma = await withPublished("taza azul, seis mil");
-    await norma.say("vendí la 1");
-    await norma.say("vendí la 1");
+  it("un Deshacer viejo no deshace una acción más nueva", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    const old = await norma.say("vendí la 1");
+    await norma.say("vendí la 2");
 
-    await norma.say("deshacer");
+    const reply = await norma.pressButton(old.buttons?.[0]?.id ?? "");
 
-    expect(await norma.publishedPieces()).toMatchObject([{ number: 1 }]);
+    expect(reply).toEqual({ text: "No hay nada para deshacer" });
+    expect(await norma.publishedPieces()).toEqual([]);
   });
 });

@@ -19,7 +19,7 @@ export function createMemoryCatalog(): Catalog {
       pieces.push(piece);
       byPreview.set(previewId, piece);
       draft = null;
-      last = { kind: "publish", piece };
+      last = { id: previewId, kind: "publish", piece };
       return piece;
     },
     async publishedFrom(previewId) {
@@ -34,14 +34,14 @@ export function createMemoryCatalog(): Catalog {
       const status = takenDown.has(number) ? "takenDown" : "published";
       return { ...piece, status };
     },
-    async takeDown(number) {
+    async takeDown(number, id) {
       takenDown.add(number);
       const piece = pieces[number - 1];
-      if (piece) last = { kind: "takeDown", piece };
+      if (piece) last = { id, kind: "takeDown", piece };
     },
-    async undo() {
+    async undo(actionId) {
       const action = last;
-      if (!action) return null;
+      if (!action || (actionId && actionId !== action.id)) return null;
       if (action.kind === "publish") takenDown.add(action.piece.number);
       else takenDown.delete(action.piece.number);
       last = null;
