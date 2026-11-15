@@ -1,14 +1,15 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
-/** What a WhatsApp message brings, before the photo is downloaded. */
+/** What a WhatsApp message brings, before the photo or audio is downloaded. */
 export type Content =
   | { kind: "text"; text: string }
   | { kind: "photo"; mediaId: string; caption?: string }
+  | { kind: "audio"; mediaId: string }
   | { kind: "button"; id: string }
   /** Reactions and stickers: no answer at all. */
   | { kind: "ignored" }
-  /** Audio and anything else the bot does not read yet. */
+  /** Videos, documents and anything else the bot does not read. */
   | { kind: "other" };
 
 export interface WhatsAppMessage {
@@ -26,6 +27,7 @@ const message = z.object({
   image: z
     .object({ id: z.string().min(1), caption: z.string().optional() })
     .optional(),
+  audio: z.object({ id: z.string().min(1) }).optional(),
   interactive: z
     .object({ button_reply: z.object({ id: z.string().min(1) }).optional() })
     .optional(),
@@ -81,6 +83,7 @@ function content({
   type,
   text,
   image,
+  audio,
   interactive,
 }: Omit<z.infer<typeof message>, "id" | "from">): Content {
   const button = interactive?.button_reply;
@@ -89,6 +92,7 @@ function content({
     const { id: mediaId, caption } = image;
     return { kind: "photo", mediaId, ...(caption && { caption }) };
   }
+  if (type === "audio" && audio) return { kind: "audio", mediaId: audio.id };
   if (type === "interactive" && button)
     return { kind: "button", id: button.id };
   if (type === "reaction" || type === "sticker") return { kind: "ignored" };

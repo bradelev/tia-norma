@@ -3,6 +3,7 @@ import {
   claudeMessages,
   createClaudeInterpreter,
 } from "@/adapters/claude/interpreter";
+import { createGroqTranscriber } from "@/adapters/groq/transcriber";
 import { createSharpImageProcessor } from "@/adapters/sharp/image-processor";
 import { createSupabaseMediaStore } from "@/adapters/supabase-storage/media-store";
 import { createCloudApiMessenger } from "@/adapters/whatsapp/messenger";
@@ -44,6 +45,7 @@ export function whatsapp(): Webhook {
     messenger,
     catalog: real,
     bot,
+    transcriber: createGroqTranscriber({ apiKey: env.GROQ_API_KEY }),
   });
   return cached;
 }

@@ -39,6 +39,8 @@ const whatsappSchema = z.object({
     .pipe(z.array(z.string().min(8)).min(1)),
   /** The Interpreter: without it the bot understands nothing she writes. */
   ANTHROPIC_API_KEY: z.string().min(1),
+  /** The Transcriber: without it the bot hears no audio. */
+  GROQ_API_KEY: z.string().min(1),
 });
 
 export type WhatsAppEnv = z.infer<typeof whatsappSchema>;
