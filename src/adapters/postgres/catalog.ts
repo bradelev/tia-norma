@@ -88,18 +88,22 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
           .from(pieces)
           .where(eq(pieces.number, change.number));
         if (!before) return null;
+        const set =
+          "price" in change
+            ? { price: change.price }
+            : { imageUrl: change.image };
         const [row] = await tx
           .update(pieces)
-          .set({ price: change.price, updatedAt: sql`now()` })
+          .set({ ...set, updatedAt: sql`now()` })
           .where(eq(pieces.number, change.number))
           .returning();
         await tx.delete(drafts);
         await remember(
           tx,
           previewId,
-          "changePrice",
+          "price" in change ? "changePrice" : "changePhoto",
           change.number,
-          before.price,
+          { previousPrice: before.price, previousImageUrl: before.imageUrl },
         );
         return toPiece(row!);
       });
@@ -135,9 +139,16 @@ function remember(
   actionId: string,
   kind: Action["kind"],
   pieceNumber: number,
-  previousPrice: number | null = null,
+  /** What a change replaced, for Deshacer. */
+  previous: { previousPrice: number; previousImageUrl: string } | null = null,
 ) {
-  const values = { actionId, kind, pieceNumber, previousPrice };
+  const values = {
+    actionId,
+    kind,
+    pieceNumber,
+    previousPrice: previous?.previousPrice ?? null,
+    previousImageUrl: previous?.previousImageUrl ?? null,
+  };
   return tx
     .insert(lastAction)
     .values(values)
@@ -155,6 +166,10 @@ function revert(
       return { status: "published" };
     case "changePrice":
       return last.previousPrice === null ? {} : { price: last.previousPrice };
+    case "changePhoto":
+      return last.previousImageUrl === null
+        ? {}
+        : { imageUrl: last.previousImageUrl };
   }
 }
 

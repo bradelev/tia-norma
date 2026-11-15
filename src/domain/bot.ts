@@ -1,4 +1,4 @@
-import type { Catalog, Draft, StoredPiece } from "../ports/catalog";
+import type { Catalog, Change, Draft, StoredPiece } from "../ports/catalog";
 import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
@@ -35,17 +35,20 @@ export interface Bot {
 export function createBot(ports: BotPorts): Bot {
   const { catalog } = ports;
 
-  async function update(change: Partial<Draft>): Promise<Reply> {
-    const draft = { ...(await catalog.draft()), ...change };
+  /** Adds to the draft of a new piece; an open change is dropped. */
+  async function update(fields: Partial<Draft>): Promise<Reply> {
+    const open = await catalog.draft();
+    const left = forChange(open) ? discarded(open) : "";
+    const draft = { ...pieceDraft(open), ...fields };
     if (!isComplete(draft)) {
       await catalog.saveDraft(draft);
-      return { text: askForMissing(draft) };
+      return { text: left + askForMissing(draft) };
     }
     const { photo, name, price } = draft;
     const previewId = ports.newId();
     await catalog.saveDraft({ ...draft, previewId });
     return {
-      text: `${name}, ${formatPrice(price)}`,
+      text: `${left}${name}, ${formatPrice(price)}`,
       image: photo,
       buttons: [
         { id: `publish:${previewId}`, title: "Sí, publicar" },
@@ -62,6 +65,11 @@ export function createBot(ports: BotPorts): Bot {
       ports.media.save(original, "image/jpeg"),
       ports.media.save(result.treated, "image/jpeg"),
     ]);
+    const photoFor = (await catalog.draft())?.photoFor;
+    if (photoFor !== undefined) {
+      await catalog.saveDraft({});
+      return changePhoto({ number: photoFor }, photo);
+    }
     return update({ photo });
   }
 
@@ -108,15 +116,37 @@ export function createBot(ports: BotPorts): Bot {
     if ("text" in piece) return piece;
     const price = parsePrice(priceText);
     if (price === null || price > MAX_PRICE) return { text: ASK_PRICE_AGAIN };
+    const text = `Antes ${formatPrice(piece.price)}, ahora ${formatPrice(price)}`;
+    return propose({ number: piece.number, price }, text, piece.image);
+  }
+
+  /** Without a photo, takes the one in the draft or waits for the next one. */
+  async function changePhoto(ref: PieceRef, photo?: string): Promise<Reply> {
+    const piece = await find(ref);
+    if ("text" in piece) return piece;
+    const draft = await catalog.draft();
+    const image = photo ?? draft?.photo;
+    if (image === undefined) {
+      await catalog.saveDraft({ photoFor: piece.number });
+      const text = `Mandame la foto nueva de la pieza ${piece.number}.`;
+      return { text: discarded(draft) + text };
+    }
+    const text = `Foto nueva para la pieza ${piece.number}`;
+    return propose({ number: piece.number, image }, text, image);
+  }
+
+  /** Opens a change preview in place of whatever was open. */
+  async function propose(
+    change: Change,
+    text: string,
+    image: string,
+  ): Promise<Reply> {
     const previewId = ports.newId();
     const left = discarded(await catalog.draft());
-    await catalog.saveDraft({
-      change: { number: piece.number, price },
-      previewId,
-    });
+    await catalog.saveDraft({ change, previewId });
     return {
-      text: `${left}Antes ${formatPrice(piece.price)}, ahora ${formatPrice(price)}`,
-      image: piece.image,
+      text: left + text,
+      image,
       buttons: [
         { id: `change:${previewId}`, title: "Sí, cambiar" },
         { id: `keep:${previewId}`, title: "No" },
@@ -132,7 +162,10 @@ export function createBot(ports: BotPorts): Bot {
     const piece = await catalog.change(previewId, change);
     if (!piece) return { text: STALE_PREVIEW };
     return {
-      text: `Listo. La pieza ${piece.number} ahora sale ${formatPrice(piece.price)}`,
+      text:
+        "price" in change
+          ? `Listo. La pieza ${piece.number} ahora sale ${formatPrice(piece.price)}`
+          : `Listo. La pieza ${piece.number} tiene la foto nueva`,
       image: piece.image,
       buttons: [{ id: `undo:${previewId}`, title: "Deshacer" }],
     };
@@ -154,6 +187,7 @@ export function createBot(ports: BotPorts): Bot {
       publish: `La pieza ${number} ya no está en la página`,
       takeDown: `La pieza ${number} volvió a la página`,
       changePrice: `La pieza ${number} vuelve a salir ${formatPrice(price)}`,
+      changePhoto: `La pieza ${number} vuelve a tener la foto anterior`,
     };
     return { text: texts[action.kind], image };
   }
@@ -163,6 +197,7 @@ export function createBot(ports: BotPorts): Bot {
     if (intent.kind === "takeDown") return takeDown(intent.piece);
     if (intent.kind === "changePrice")
       return changePrice(intent.piece, intent.priceText);
+    if (intent.kind === "changePhoto") return changePhoto(intent.piece);
     if (intent.kind === "undo") return undo();
     if (intent.kind !== "describe") return { text: HELP };
     const change: Partial<Draft> = {};
@@ -174,7 +209,10 @@ export function createBot(ports: BotPorts): Bot {
     if (intent.priceText !== undefined) {
       const price = parsePrice(intent.priceText);
       if (price === null || price > MAX_PRICE) {
-        await catalog.saveDraft({ ...(await catalog.draft()), ...change });
+        await catalog.saveDraft({
+          ...pieceDraft(await catalog.draft()),
+          ...change,
+        });
         return { text: ASK_PRICE_AGAIN };
       }
       change.price = price;
@@ -234,10 +272,19 @@ function words(text: string): string[] {
 
 /** What Norma is told when a new preview replaces what she had open. */
 function discarded(draft: Draft | null): string {
-  if (draft?.change)
-    return `La pieza ${draft.change.number} quedó sin cambiar. `;
+  const number = draft?.change?.number ?? draft?.photoFor;
+  if (number !== undefined) return `La pieza ${number} quedó sin cambiar. `;
   if (draft?.name) return `${draft.name} quedó sin publicar. `;
   return "";
+}
+
+function forChange(draft: Draft | null): boolean {
+  return draft?.change !== undefined || draft?.photoFor !== undefined;
+}
+
+/** The draft of a new piece, without an open change. */
+function pieceDraft(draft: Draft | null): Draft {
+  return draft && !forChange(draft) ? draft : {};
 }
 
 function askForMissing({ photo, name, price }: Draft): string {

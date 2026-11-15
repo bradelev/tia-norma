@@ -38,7 +38,10 @@ export const drafts = pgTable("drafts", {
     .defaultNow(),
 }).enableRLS();
 
-/** The last action applied to the page, so Deshacer can revert it. At most one row. */
+/**
+ * The last action applied to the page, so Deshacer can revert it. At most one row.
+ * A change keeps the price or photo it replaced.
+ */
 export const lastAction = pgTable("last_action", {
   id: smallint("id").primaryKey().default(1),
   actionId: text("action_id").notNull(),
@@ -47,4 +50,5 @@ export const lastAction = pgTable("last_action", {
     .notNull()
     .references(() => pieces.number),
   previousPrice: integer("previous_price"),
+  previousImageUrl: text("previous_image_url"),
 }).enableRLS();
