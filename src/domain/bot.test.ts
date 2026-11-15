@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { BLURRY_PHOTO, DARK_PHOTO } from "../adapters/memory/image-processor";
 import { createMemoryWorkshop } from "../adapters/memory/workshop";
 
 describe("publicar una pieza", () => {
@@ -363,5 +364,43 @@ describe("deshacer", () => {
 
     expect(reply).toEqual({ text: "No hay nada para deshacer" });
     expect(await norma.publishedPieces()).toEqual([]);
+  });
+});
+
+describe("foto tratada", () => {
+  it("guarda la original y muestra la tratada", async () => {
+    const norma = createMemoryWorkshop();
+    const original = new Uint8Array([7, 8, 9]);
+
+    await norma.sendPhoto(original);
+    const preview = await norma.say("taza azul, seis mil");
+
+    const stored = norma.storedPhotos();
+    const kept = stored.find(({ bytes }) => bytes.join() === original.join());
+    expect(stored).toHaveLength(2);
+    expect(kept).toBeDefined();
+    expect(preview.image).not.toBe(kept?.url);
+  });
+
+  it("una foto movida no reemplaza la del borrador y se pide otra", async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    const first = await norma.say("taza azul, seis mil");
+
+    const reply = await norma.sendPhoto(BLURRY_PHOTO);
+    const preview = await norma.say("siete mil");
+
+    expect(reply).toEqual({ text: "La foto salió movida. ¿Me mandás otra?" });
+    expect(preview.image).toBe(first.image);
+  });
+
+  it("una foto oscura pide otra con más luz", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.sendPhoto(DARK_PHOTO);
+
+    expect(reply).toEqual({
+      text: "La foto salió oscura. ¿Me mandás otra con más luz?",
+    });
   });
 });
