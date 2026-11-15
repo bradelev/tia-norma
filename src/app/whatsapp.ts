@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { createMemoryInterpreter } from "@/adapters/memory/interpreter";
+import {
+  claudeMessages,
+  createClaudeInterpreter,
+} from "@/adapters/claude/interpreter";
 import { createSharpImageProcessor } from "@/adapters/sharp/image-processor";
 import { createSupabaseMediaStore } from "@/adapters/supabase-storage/media-store";
 import { createCloudApiMessenger } from "@/adapters/whatsapp/messenger";
@@ -28,9 +31,9 @@ export function whatsapp(): Webhook {
       supabase.SUPABASE_SECRET_KEY,
     ),
     images: createSharpImageProcessor(),
-    // TEMPORARY: the rule-based double stands in until the real Interpreter (#13).
-    // It only understands "nombre, precio" and a few fixed phrases.
-    interpreter: createMemoryInterpreter(),
+    interpreter: createClaudeInterpreter({
+      messages: claudeMessages(env.ANTHROPIC_API_KEY),
+    }),
     newId: () => randomUUID(),
   });
   cached = createWebhook({

@@ -32,6 +32,7 @@ describe("variables de WhatsApp", () => {
     WHATSAPP_APP_SECRET: "secreto-de-prueba",
     WHATSAPP_VERIFY_TOKEN: "token-de-verificacion",
     AUTHORIZED_NUMBERS: "+54 9 11 0000-0000, 5491100000001",
+    ANTHROPIC_API_KEY: "clave-de-prueba",
   };
 
   it("lee los autorizados como los manda WhatsApp, solo dígitos", () => {
@@ -45,5 +46,9 @@ describe("variables de WhatsApp", () => {
     expect(() =>
       whatsappEnv({ ...whatsapp, AUTHORIZED_NUMBERS: " , " }),
     ).toThrow();
+  });
+
+  it("sin la clave de Anthropic, falla al arrancar", () => {
+    expect(() => whatsappEnv({ ...whatsapp, ANTHROPIC_API_KEY: "" })).toThrow();
   });
 });
