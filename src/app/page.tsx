@@ -1,21 +1,24 @@
 import Image from "next/image";
 import { formatPrice } from "@/domain/price";
+import type { Piece } from "@/ports/catalog";
+import { pageContent } from "./catalog";
 import styles from "./page.module.css";
-import { type Piece, samplePieces } from "./sample-pieces";
 
 const photoSizes = "(min-width: 42rem) 37rem, calc(100vw - 4.5rem)";
 
-export default function Home() {
-  const pieces = samplePieces;
+export default async function Home() {
+  const { pieces, samples } = await pageContent();
 
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>Taller de Norma</h1>
       {pieces.length === 0 ? <EmptyWorkshop /> : <PieceList pieces={pieces} />}
-      <p className={styles.credit}>
-        Piezas de muestra. Fotos: The Metropolitan Museum of Art, dominio
-        público.
-      </p>
+      {samples && (
+        <p className={styles.credit}>
+          Piezas de muestra. Fotos: The Metropolitan Museum of Art, dominio
+          público.
+        </p>
+      )}
     </main>
   );
 }
@@ -26,12 +29,14 @@ function PieceList({ pieces }: { pieces: Piece[] }) {
       {pieces.map((piece, index) => {
         const price = formatPrice(piece.price);
         return (
-          <li key={piece.id}>
+          <li key={piece.number}>
             <article className={styles.print}>
-              <a className={styles.photoLink} href={piece.image.src}>
+              <a className={styles.photoLink} href={piece.image}>
                 <Image
                   className={styles.photo}
                   src={piece.image}
+                  width={1200}
+                  height={1500}
                   alt={`${piece.name}, ${price}`}
                   sizes={photoSizes}
                   loading={index === 0 ? "eager" : "lazy"}
