@@ -11,7 +11,9 @@ Intenciones:
 
 piece es {"number": N} si nombra la pieza por número, o {"name": "..."} con las palabras que usó para nombrarla.
 
-Copiá sus palabras: no corrijas ni completes nombres y no conviertas precios a cifras.
+Copiá sus palabras: no completes nombres y no conviertas precios a cifras.
+
+El texto puede venir de transcribir un audio, con palabras mal oídas. Si una palabra es claramente una palabra común del español mal escrita, sobre todo del vocabulario de la cerámica, escribí la palabra que quiso decir. Si no es obvio, dejala como está.
 
 Ejemplos:
 "Jarra grande 8000" -> describe, name "Jarra grande", priceText "8000"
