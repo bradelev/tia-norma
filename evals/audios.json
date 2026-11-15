@@ -1,0 +1,23 @@
+[
+  { "file": "01.m4a", "name": "taza azul", "price": 6000 },
+  { "file": "02.m4a", "name": "plato hondo blanco", "price": 8500 },
+  { "file": "03.m4a", "name": "jarra con relieve", "price": 12000 },
+  { "file": "04.m4a", "name": "cuenco de barro", "price": 5000 },
+  { "file": "05.m4a", "name": "florero verde", "price": 15000 },
+  { "file": "06.m4a", "name": "mate de cerámica", "price": 4000 },
+  { "file": "07.m4a", "name": "maceta chica", "price": 3200 },
+  { "file": "08.m4a", "name": "fuente grande para horno", "price": 25000 },
+  { "file": "09.m4a", "name": "azucarero con tapa", "price": 7000 },
+  { "file": "10.m4a", "name": "taza con plato", "price": 9500 },
+  { "file": "11.m4a", "name": "portavelas calado", "price": 2550 },
+  { "file": "12.m4a", "name": "tetera esmaltada", "price": 30500 },
+  { "file": "13.m4a", "name": "bowl celeste", "price": 6500 },
+  { "file": "14.m4a", "name": "jarrón alto", "price": 45000 },
+  { "file": "15.m4a", "name": "plato de postre", "price": 2833 },
+  { "file": "16.m4a", "name": "cenicero de colores", "price": 1500 },
+  { "file": "17.m4a", "name": "mural de azulejos", "price": 120000 },
+  { "file": "18.m4a", "name": "taza grande de desayuno", "price": 5500 },
+  { "file": "19.m4a", "name": "cuenco con flores", "price": 10000 },
+  { "file": "20.m4a", "name": "fuentecita ovalada", "price": 11000 },
+  { "file": "21.m4a", "name": "plato llano", "price": 4500 }
+]
