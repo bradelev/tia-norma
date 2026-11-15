@@ -57,6 +57,9 @@ async function handle(line: string): Promise<Reply | null> {
 }
 
 function print(reply: Reply) {
+  reply.album?.forEach((photo) =>
+    console.log(`Bot   [imagen ${photo.image}] ${photo.caption}`),
+  );
   if (reply.image) console.log(`Bot   [imagen ${reply.image}]`);
   console.log(`Bot   ${reply.text}`);
   reply.buttons?.forEach((b, i) => console.log(`      [${i + 1}] ${b.title}`));
