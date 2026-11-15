@@ -7,6 +7,7 @@ export function createMemoryCatalog(): Catalog {
   const takenDown = new Set<number>();
   /** `before` is the piece as it was, for a change. */
   let last: { action: Action; before?: Piece } | null = null;
+  const messages = new Set<string>();
 
   return {
     async draft() {
@@ -65,6 +66,11 @@ export function createMemoryCatalog(): Catalog {
       if (action.kind === "publish") takenDown.add(action.piece.number);
       else takenDown.delete(action.piece.number);
       return action;
+    },
+    async recordMessage(messageId) {
+      if (messages.has(messageId)) return false;
+      messages.add(messageId);
+      return true;
     },
   };
 }

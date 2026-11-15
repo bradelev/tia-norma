@@ -38,6 +38,14 @@ export const drafts = pgTable("drafts", {
     .defaultNow(),
 }).enableRLS();
 
+/** Every WhatsApp message id that came in, so a redelivery does nothing (R9). */
+export const receivedMessages = pgTable("received_messages", {
+  id: text("id").primaryKey(),
+  receivedAt: timestamp("received_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+}).enableRLS();
+
 /**
  * The last action applied to the page, so Deshacer can revert it. At most one row.
  * A change keeps the price or photo it replaced.

@@ -116,4 +116,12 @@ export function catalogContract(create: () => Catalog) {
     });
     expect(await catalog.piece(number)).toMatchObject({ image: piece.image });
   });
+
+  it("un mensaje de WhatsApp se registra una sola vez", async () => {
+    const catalog = create();
+    const messageId = `wamid.${randomUUID()}`;
+
+    expect(await catalog.recordMessage(messageId)).toBe(true);
+    expect(await catalog.recordMessage(messageId)).toBe(false);
+  });
 }

@@ -29,6 +29,13 @@
       "when": 1794747540177,
       "tag": "0003_change_photo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794750556815,
+      "tag": "0004_received_messages",
+      "breakpoints": true
     }
   ]
 }
