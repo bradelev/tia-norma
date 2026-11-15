@@ -1,0 +1,259 @@
+[
+  {
+    "text": "Sacapuntas de gusanito $5000",
+    "expected": {
+      "kind": "describe",
+      "name": "Sacapuntas de gusanito",
+      "priceText": "$5000"
+    }
+  },
+  {
+    "text": "El nombre, sacapuntas de gusanito",
+    "expected": {
+      "kind": "describe",
+      "name": "Sacapuntas de gusanito"
+    }
+  },
+  {
+    "text": "taza azul, seis mil",
+    "expected": {
+      "kind": "describe",
+      "name": "Taza azul",
+      "priceText": "seis mil"
+    }
+  },
+  {
+    "text": "se llama mate de calabaza y sale seis mil",
+    "expected": {
+      "kind": "describe",
+      "name": "Mate de calabaza",
+      "priceText": "seis mil"
+    }
+  },
+  {
+    "text": "Cuenco blanco a 5 lucas",
+    "expected": {
+      "kind": "describe",
+      "name": "Cuenco blanco",
+      "priceText": "5 lucas"
+    }
+  },
+  {
+    "text": "Jarra de barro grande 22 mil",
+    "expected": {
+      "kind": "describe",
+      "name": "Jarra de barro grande",
+      "priceText": "22 mil"
+    }
+  },
+  {
+    "text": "es un plato playo, 8.500",
+    "expected": {
+      "kind": "describe",
+      "name": "Plato playo",
+      "priceText": "8.500"
+    }
+  },
+  {
+    "text": "Florero calabaza 15000 pesos",
+    "expected": {
+      "kind": "describe",
+      "name": "Florero calabaza",
+      "priceText": "15000 pesos"
+    }
+  },
+  {
+    "text": "taza roja $ 4.500",
+    "expected": {
+      "kind": "describe",
+      "name": "Taza roja",
+      "priceText": "$ 4.500"
+    }
+  },
+  {
+    "text": "jarra con relieve",
+    "expected": {
+      "kind": "describe",
+      "name": "Jarra con relieve"
+    }
+  },
+  {
+    "text": "No, es una fuente",
+    "expected": {
+      "kind": "describe",
+      "name": "Fuente"
+    }
+  },
+  {
+    "text": "seis mil",
+    "expected": {
+      "kind": "describe",
+      "priceText": "seis mil"
+    }
+  },
+  {
+    "text": "sale 12 mil",
+    "expected": {
+      "kind": "describe",
+      "priceText": "12 mil"
+    }
+  },
+  {
+    "text": "El precio, siete mil quinientos",
+    "expected": {
+      "kind": "describe",
+      "priceText": "siete mil quinientos"
+    }
+  },
+  {
+    "text": "no, sale siete mil",
+    "expected": {
+      "kind": "describe",
+      "priceText": "siete mil"
+    }
+  },
+  {
+    "text": "vendí la taza azul",
+    "expected": {
+      "kind": "takeDown",
+      "piece": {
+        "name": "taza azul"
+      }
+    }
+  },
+  {
+    "text": "vendí la 7",
+    "expected": {
+      "kind": "takeDown",
+      "piece": {
+        "number": 7
+      }
+    }
+  },
+  {
+    "text": "sacá la 4",
+    "expected": {
+      "kind": "takeDown",
+      "piece": {
+        "number": 4
+      }
+    }
+  },
+  {
+    "text": "ya vendí el florero",
+    "expected": {
+      "kind": "takeDown",
+      "piece": {
+        "name": "florero"
+      }
+    }
+  },
+  {
+    "text": "la 3 ahora sale siete mil",
+    "expected": {
+      "kind": "changePrice",
+      "piece": {
+        "number": 3
+      },
+      "priceText": "siete mil"
+    }
+  },
+  {
+    "text": "la taza azul ahora cuesta 9000",
+    "expected": {
+      "kind": "changePrice",
+      "piece": {
+        "name": "taza azul"
+      },
+      "priceText": "9000"
+    }
+  },
+  {
+    "text": "a la 5 subile, ahora sale 10 mil",
+    "expected": {
+      "kind": "changePrice",
+      "piece": {
+        "number": 5
+      },
+      "priceText": "10 mil"
+    }
+  },
+  {
+    "text": "esta es la 7",
+    "expected": {
+      "kind": "changePhoto",
+      "piece": {
+        "number": 7
+      }
+    }
+  },
+  {
+    "text": "esta foto es del cuenco blanco",
+    "expected": {
+      "kind": "changePhoto",
+      "piece": {
+        "name": "cuenco blanco"
+      }
+    }
+  },
+  {
+    "text": "deshacé",
+    "expected": {
+      "kind": "undo"
+    }
+  },
+  {
+    "text": "Deshacer",
+    "expected": {
+      "kind": "undo"
+    }
+  },
+  {
+    "text": "me equivoqué, volvé atrás",
+    "expected": {
+      "kind": "undo"
+    }
+  },
+  {
+    "text": "hola",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "gracias",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "Gracias querido!!",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "Buen día, ¿todo bien?",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "¿Cuánto le cobro a una taza?",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "¿Se ve bien en la página?",
+    "expected": {
+      "kind": "unknown"
+    }
+  },
+  {
+    "text": "¿Cómo saco una pieza?",
+    "expected": {
+      "kind": "unknown"
+    }
+  }
+]
