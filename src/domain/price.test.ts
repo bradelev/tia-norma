@@ -27,6 +27,9 @@ describe("parsePrice (R11)", () => {
     ["mil quinientos", 1500],
     ["12,5 mil", 12500],
     ["5 lucas", 5000],
+    ["cuatro quinientos", 4500],
+    ["doce quinientos", 12500],
+    ["veintidós trescientos", 22300],
     ["una luca", 1000],
   ])('"%s" son %i pesos', (said, pesos) => {
     expect(parsePrice(said)).toBe(pesos);

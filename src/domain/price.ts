@@ -26,6 +26,10 @@ const HUNDREDS =
     " ",
   );
 
+function isHundredsWord(word: string): boolean {
+  return word === "cien" || HUNDREDS.includes(word);
+}
+
 function wordValue(word: string): number | undefined {
   if (word === "uno" || word === "una") return 1;
   if (word === "veintiuno") return 21;
@@ -57,7 +61,17 @@ export function parsePrice(said: string): number | null {
   let current = 0;
   for (const token of tokens) {
     const value = numberToken(token) ?? wordValue(token);
-    if (value !== undefined) {
+    if (
+      value !== undefined &&
+      isHundredsWord(token) &&
+      total === 0 &&
+      current > 0 &&
+      current < 100
+    ) {
+      // "cuatro quinientos" leaves "mil" unsaid: it means 4500, not 504.
+      total = current * 1000;
+      current = value;
+    } else if (value !== undefined) {
       current += value;
     } else if (token === "mil" || token === "luca" || token === "lucas") {
       total += (current || 1) * 1000;
