@@ -1,7 +1,9 @@
 import type { Catalog, Draft } from "../ports/catalog";
+import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
 import type { Incoming, Reply } from "./messages";
+import type { PhotoProblem } from "./photo-quality";
 import { formatPrice, parsePrice } from "./price";
 
 const MAX_PRICE = 10_000_000;
@@ -13,10 +15,15 @@ const ASK_PRICE_AGAIN =
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
 const STALE_PREVIEW =
   "Esa vista previa ya cambió. Fijate en la última que te mandé.";
+const ASK_ANOTHER_PHOTO: Record<PhotoProblem, string> = {
+  blurry: "La foto salió movida. ¿Me mandás otra?",
+  dark: "La foto salió oscura. ¿Me mandás otra con más luz?",
+};
 
 export interface BotPorts {
   catalog: Catalog;
   media: MediaStore;
+  images: ImageProcessor;
   interpreter: Interpreter;
   newId: () => string;
 }
@@ -45,6 +52,17 @@ export function createBot(ports: BotPorts): Bot {
         { id: `fix:${previewId}`, title: "No, corregir" },
       ],
     };
+  }
+
+  /** Keeps the original next to the treated one; a rejected photo leaves the draft as it was. */
+  async function receivePhoto(original: Uint8Array): Promise<Reply> {
+    const result = await ports.images.treat(original);
+    if ("problem" in result) return { text: ASK_ANOTHER_PHOTO[result.problem] };
+    const [, photo] = await Promise.all([
+      ports.media.save(original, "image/jpeg"),
+      ports.media.save(result.treated, "image/jpeg"),
+    ]);
+    return update({ photo });
   }
 
   async function takeDown(ref: PieceRef): Promise<Reply> {
@@ -129,10 +147,8 @@ export function createBot(ports: BotPorts): Bot {
   return {
     async receive(message) {
       switch (message.kind) {
-        case "photo": {
-          const photo = await ports.media.save(message.bytes, "image/jpeg");
-          return update({ photo });
-        }
+        case "photo":
+          return receivePhoto(message.bytes);
         case "text":
           return understand(message.text);
         case "button": {
