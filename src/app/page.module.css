@@ -30,7 +30,7 @@
 
 .print {
   background: var(--paper);
-  padding: var(--frame) var(--frame) calc(var(--frame) * 1.5);
+  padding: var(--frame) var(--frame) calc(var(--frame) * var(--frame-bottom));
   box-shadow: 0 1px 3px rgb(28 27 25 / 0.2);
 }
 
@@ -42,33 +42,33 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: var(--photo-ratio);
   object-fit: cover;
   background: var(--ground);
 }
 
 .blank {
-  aspect-ratio: 4 / 5;
+  aspect-ratio: var(--photo-ratio);
   background: var(--ground);
 }
 
 .caption {
-  padding-top: calc(var(--frame) * 1.1);
+  padding-top: calc(var(--frame) * var(--caption-top));
 }
 
 .name {
   font-size: var(--text-name);
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: var(--name-weight);
+  line-height: var(--name-leading);
   text-wrap: balance;
 }
 
 .price {
   font-size: var(--text-price);
-  font-weight: 800;
-  line-height: 1.15;
+  font-weight: var(--price-weight);
+  line-height: var(--price-leading);
   font-variant-numeric: tabular-nums;
-  margin-top: 0.25rem;
+  margin-top: var(--price-gap);
 }
 
 .amount {

@@ -1,19 +1,14 @@
 :root {
   color-scheme: light;
 
-  --ground: #efece6;
-  --paper: #ffffff;
-  --ink: #1c1b19;
+  /* Card tokens (colors, name and price type, frame, column) live in
+     src/domain/card.ts; the layout sets them on <html> for the page and the preview image. */
   --ink-soft: #3d3a35;
 
   --text-base: 1.25rem;
-  --text-name: 1.75rem;
-  --text-price: 2.25rem;
   --text-title: 2rem;
 
   --gutter: 1rem;
-  --column: 40rem;
-  --frame: clamp(0.75rem, 3.5vw, 1.375rem);
 
   --font:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
