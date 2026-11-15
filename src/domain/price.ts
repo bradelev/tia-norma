@@ -40,7 +40,7 @@ function wordValue(word: string): number | undefined {
 }
 
 /**
- * Reads a price the way Norma says or writes it: "seis mil", "6 mil", "6000", "$6.000", "12,5 mil".
+ * Reads a price the way Norma says or writes it: "seis mil", "6 mil", "6000", "$6.000", "12,5 mil", "5 lucas".
  * Returns whole pesos, or null if the text is not a price.
  */
 export function parsePrice(said: string): number | null {
@@ -59,7 +59,7 @@ export function parsePrice(said: string): number | null {
     const value = numberToken(token) ?? wordValue(token);
     if (value !== undefined) {
       current += value;
-    } else if (token === "mil") {
+    } else if (token === "mil" || token === "luca" || token === "lucas") {
       total += (current || 1) * 1000;
       current = 0;
     } else if (token === "millon" || token === "millones") {
