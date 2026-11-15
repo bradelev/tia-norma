@@ -17,3 +17,14 @@ export interface Reply {
   /** Several photos with a caption each, sent before the text, when Norma has to pick one. */
   album?: { image: string; caption: string }[];
 }
+
+/**
+ * The replies the PRD wants as audios recorded by a person. They go as text
+ * until the recordings exist; swapping them for audio only touches this.
+ */
+export const FIXED_REPLIES = {
+  help: {
+    text: "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.",
+  },
+  tryAgain: { text: "No me salió. Probá de nuevo." },
+} as const satisfies Record<string, Reply>;

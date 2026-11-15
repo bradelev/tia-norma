@@ -2,14 +2,14 @@ import type { Catalog, Change, Draft, StoredPiece } from "../ports/catalog";
 import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
-import type { Incoming, Reply } from "./messages";
+import { FIXED_REPLIES, type Incoming, type Reply } from "./messages";
 import type { PhotoProblem } from "./photo-quality";
 import { formatPrice, parsePrice } from "./price";
 
 const MAX_PRICE = 10_000_000;
 const MAX_NAME_LENGTH = 40;
-const HELP =
-  "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.";
+/** A preview with no answer expires silently after this. */
+const PREVIEW_LIFETIME_MS = 24 * 60 * 60 * 1000;
 const ASK_PRICE_AGAIN =
   "¿Cuánto sale? Decímelo en pesos, por ejemplo seis mil.";
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
@@ -26,13 +26,50 @@ export interface BotPorts {
   images: ImageProcessor;
   interpreter: Interpreter;
   newId: () => string;
+  /** Milliseconds since the epoch, like `Date.now`. */
+  now: () => number;
 }
 
 export interface Bot {
-  receive(message: Incoming): Promise<Reply>;
+  /** Once `deadline` aborts, nothing more is written for this message (R10). */
+  receive(message: Incoming, deadline?: AbortSignal): Promise<Reply>;
 }
 
 export function createBot(ports: BotPorts): Bot {
+  return {
+    receive(message, deadline) {
+      const catalog = deadline
+        ? untilDeadline(ports.catalog, deadline)
+        : ports.catalog;
+      return conversation({ ...ports, catalog }).receive(message);
+    },
+  };
+}
+
+/**
+ * A late result may still read, but every write checks the deadline first:
+ * publishing, taking down, changing, undoing and opening a preview.
+ */
+function untilDeadline(catalog: Catalog, deadline: AbortSignal): Catalog {
+  function checked<A extends unknown[], R>(
+    write: (...args: A) => Promise<R>,
+  ): (...args: A) => Promise<R> {
+    return async (...args) => {
+      deadline.throwIfAborted();
+      return write(...args);
+    };
+  }
+  return {
+    ...catalog,
+    saveDraft: checked(catalog.saveDraft),
+    publish: checked(catalog.publish),
+    takeDown: checked(catalog.takeDown),
+    change: checked(catalog.change),
+    undo: checked(catalog.undo),
+  };
+}
+
+function conversation(ports: BotPorts): Bot {
   const { catalog } = ports;
 
   /** Adds to the draft of a new piece; an open change is dropped. */
@@ -46,7 +83,11 @@ export function createBot(ports: BotPorts): Bot {
     }
     const { photo, name, price } = draft;
     const previewId = ports.newId();
-    await catalog.saveDraft({ ...draft, previewId });
+    await catalog.saveDraft({
+      ...draft,
+      previewId,
+      previewSentAt: ports.now(),
+    });
     return {
       text: `${left}${name}, ${formatPrice(price)}`,
       image: photo,
@@ -135,6 +176,12 @@ export function createBot(ports: BotPorts): Bot {
     return propose({ number: piece.number, image }, text, image);
   }
 
+  /** Previews sent before this field existed never expire. */
+  function expired(draft: Draft | null): boolean {
+    const sentAt = draft?.previewSentAt;
+    return sentAt !== undefined && ports.now() - sentAt >= PREVIEW_LIFETIME_MS;
+  }
+
   /** Opens a change preview in place of whatever was open. */
   async function propose(
     change: Change,
@@ -143,7 +190,7 @@ export function createBot(ports: BotPorts): Bot {
   ): Promise<Reply> {
     const previewId = ports.newId();
     const left = discarded(await catalog.draft());
-    await catalog.saveDraft({ change, previewId });
+    await catalog.saveDraft({ change, previewId, previewSentAt: ports.now() });
     return {
       text: left + text,
       image,
@@ -155,8 +202,10 @@ export function createBot(ports: BotPorts): Bot {
   }
 
   async function applyChange(previewId: string): Promise<Reply> {
-    const { change, previewId: open } = (await catalog.draft()) ?? {};
+    const draft = await catalog.draft();
+    const { change, previewId: open } = draft ?? {};
     if (!change || open !== previewId) return { text: STALE_PREVIEW };
+    if (expired(draft)) return FIXED_REPLIES.tryAgain;
     const found = await find({ number: change.number });
     if ("text" in found) return found;
     const piece = await catalog.change(previewId, change);
@@ -199,7 +248,7 @@ export function createBot(ports: BotPorts): Bot {
       return changePrice(intent.piece, intent.priceText);
     if (intent.kind === "changePhoto") return changePhoto(intent.piece);
     if (intent.kind === "undo") return undo();
-    if (intent.kind !== "describe") return { text: HELP };
+    if (intent.kind !== "describe") return FIXED_REPLIES.help;
     const change: Partial<Draft> = {};
     if (intent.name !== undefined) {
       if (intent.name.length > MAX_NAME_LENGTH)
@@ -226,6 +275,7 @@ export function createBot(ports: BotPorts): Bot {
     const draft = await catalog.draft();
     if (draft?.previewId !== previewId || !isComplete(draft))
       return { text: STALE_PREVIEW };
+    if (expired(draft)) return FIXED_REPLIES.tryAgain;
     const piece = await catalog.publish(previewId, {
       name: draft.name,
       price: draft.price,

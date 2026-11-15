@@ -1,21 +1,26 @@
 import { createBot } from "../../domain/bot";
 import type { Reply } from "../../domain/messages";
+import type { Interpreter } from "../../ports/interpreter";
 import { createMemoryCatalog } from "./catalog";
 import { createMemoryImageProcessor } from "./image-processor";
 import { createMemoryInterpreter } from "./interpreter";
 import { createMemoryMediaStore } from "./media-store";
 
 /** The bot wired to in-memory doubles, driven the way Norma would. Used by tests and `pnpm sim`. */
-export function createMemoryWorkshop() {
+export function createMemoryWorkshop({
+  interpreter = createMemoryInterpreter(),
+}: { interpreter?: Interpreter } = {}) {
   const catalog = createMemoryCatalog();
   const media = createMemoryMediaStore();
   let ids = 0;
+  let time = Date.UTC(2026, 0, 1);
   const bot = createBot({
     catalog,
     media,
     images: createMemoryImageProcessor(),
-    interpreter: createMemoryInterpreter(),
+    interpreter,
     newId: () => `p${++ids}`,
+    now: () => time,
   });
   let last: Reply = { text: "" };
 
@@ -39,6 +44,10 @@ export function createMemoryWorkshop() {
       return send({ kind: "button", id: button.id });
     },
     pressButton: (id: string) => send({ kind: "button", id }),
+    /** Moves the workshop's clock forward. */
+    wait(ms: number) {
+      time += ms;
+    },
     lastReply: () => last,
     publishedPieces: () => catalog.published(),
     storedPhotos: () => media.stored(),

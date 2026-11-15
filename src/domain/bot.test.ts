@@ -223,6 +223,44 @@ describe('un "Sí" repetido o viejo', () => {
   });
 });
 
+describe("vista previa vencida", () => {
+  const HOUR = 60 * 60 * 1000;
+
+  it('un "Sí, publicar" pasadas 24 horas responde probá de nuevo y no publica', async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    await norma.say("taza azul, seis mil");
+
+    norma.wait(24 * HOUR);
+    const reply = await norma.tap("Sí, publicar");
+
+    expect(reply).toEqual({ text: "No me salió. Probá de nuevo." });
+    expect(await norma.publishedPieces()).toEqual([]);
+  });
+
+  it('un "Sí, cambiar" pasadas 24 horas no cambia el precio', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    await norma.say("la 1 ahora sale siete mil");
+
+    norma.wait(25 * HOUR);
+    const reply = await norma.tap("Sí, cambiar");
+
+    expect(reply).toEqual({ text: "No me salió. Probá de nuevo." });
+    expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
+  });
+
+  it('un "Sí" antes de las 24 horas todavía publica', async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    await norma.say("taza azul, seis mil");
+
+    norma.wait(24 * HOUR - 1);
+    const reply = await norma.tap("Sí, publicar");
+
+    expect(reply.text).toBe("Listo. Es la pieza 1.");
+  });
+});
+
 describe("mensajes que no son una pieza", () => {
   it("un texto sin nombre ni precio responde con ayuda y no abre nada", async () => {
     const norma = createMemoryWorkshop();

@@ -28,6 +28,8 @@ export interface Draft {
   price?: number;
   /** Changes every time the bot sends a new preview, so a stale "Sí" can be told apart. */
   previewId?: string;
+  /** When that preview was sent, in milliseconds since the epoch. */
+  previewSentAt?: number;
   /** Set when the open preview is a change instead of a new piece. */
   change?: Change;
   /** Norma said which piece a new photo is for and the photo has not arrived. */
