@@ -25,6 +25,9 @@ export function createMemoryWorkshop() {
   }
 
   return {
+    // For another entry point in front of the same bot, like the webhook.
+    bot,
+    catalog,
     sendPhoto: (bytes = new Uint8Array([1, 2, 3])) =>
       send({ kind: "photo", bytes }),
     say: (text: string) => send({ kind: "text", text }),
