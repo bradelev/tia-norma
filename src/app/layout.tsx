@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import type { CSSProperties } from "react";
+import { card, cardCssVariables } from "@/domain/card";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,12 +9,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#efece6",
+  themeColor: card.ground,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-AR">
+    <html lang="es-AR" style={cardCssVariables as CSSProperties}>
       <body>{children}</body>
     </html>
   );
