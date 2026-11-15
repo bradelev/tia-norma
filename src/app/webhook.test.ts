@@ -159,6 +159,20 @@ describe("webhook de WhatsApp", () => {
     log.mockRestore();
   });
 
+  it("el log de una falla no lleva el id de WhatsApp, que trae el número codificado", async () => {
+    const deaf = { transcribe: () => Promise.reject(new Error("Groq 503")) };
+    const { deliver } = setup({ transcriber: deaf });
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await deliver(audio);
+
+    const logged = log.mock.calls.flat().join(" ");
+    const id = audio.entry[0]!.changes[0]!.value.messages[0]!.id;
+    expect(logged).not.toContain(id);
+    expect(logged).not.toContain(id.slice("wamid.".length, 20));
+    log.mockRestore();
+  });
+
   it("un video recibe ayuda; una reacción o un sticker, nada", async () => {
     const { deliver, texts } = setup();
     const video = structuredClone(audio);
