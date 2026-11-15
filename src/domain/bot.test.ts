@@ -404,3 +404,88 @@ describe("foto tratada", () => {
     });
   });
 });
+
+describe("cambiar el precio", () => {
+  const STALE = "Esa vista previa ya cambió. Fijate en la última que te mandé.";
+
+  it('"la 1 ahora sale siete mil" muestra qué cambia, aplica al confirmar y se deshace', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const [cup] = await norma.publishedPieces();
+
+    const preview = await norma.say("la 1 ahora sale siete mil");
+
+    expect(preview.text).toBe("Antes $ 6.000, ahora $ 7.000");
+    expect(preview.image).toBe(cup?.image);
+    expect(preview.buttons?.map((b) => b.title)).toEqual(["Sí, cambiar", "No"]);
+    expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
+
+    const done = await norma.tap("Sí, cambiar");
+
+    expect(done.text).toBe("Listo. La pieza 1 ahora sale $ 7.000");
+    expect(done.buttons?.map((b) => b.title)).toEqual(["Deshacer"]);
+    expect(await norma.publishedPieces()).toEqual([{ ...cup, price: 7000 }]);
+
+    const undone = await norma.tap("Deshacer");
+
+    expect(undone.text).toBe("La pieza 1 vuelve a salir $ 6.000");
+    expect(await norma.publishedPieces()).toEqual([cup]);
+  });
+
+  it("pedir un cambio descarta la vista previa abierta y avisa qué quedó sin publicar", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    await norma.sendPhoto();
+    const draft = await norma.say("plato, ocho mil");
+
+    const preview = await norma.say("la 1 ahora sale siete mil");
+    const old = await norma.pressButton(draft.buttons?.[0]?.id ?? "");
+
+    expect(preview.text).toBe(
+      "Plato quedó sin publicar. Antes $ 6.000, ahora $ 7.000",
+    );
+    expect(old.text).toBe(STALE);
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 1 }]);
+  });
+
+  it('un "Sí, cambiar" de una vista previa reemplazada no cambia nada', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const old = await norma.say("la 1 ahora sale siete mil");
+
+    const preview = await norma.say("la 1 ahora sale ocho mil");
+    const reply = await norma.pressButton(old.buttons?.[0]?.id ?? "");
+
+    expect(preview.text).toBe(
+      "La pieza 1 quedó sin cambiar. Antes $ 6.000, ahora $ 8.000",
+    );
+    expect(reply.text).toBe(STALE);
+    expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
+  });
+
+  it('"No" cierra la vista previa sin cambiar nada', async () => {
+    const norma = await withPublished("taza azul, seis mil");
+    const preview = await norma.say("la 1 ahora sale siete mil");
+
+    const reply = await norma.tap("No");
+    const late = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+
+    expect(reply).toEqual({ text: "No cambié nada." });
+    expect(late.text).toBe(STALE);
+    expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
+  });
+
+  it("una pieza sacada no acepta cambios, ni antes ni después de la vista previa", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    const preview = await norma.say("la 1 ahora sale siete mil");
+    await norma.say("vendí la 1");
+
+    const late = await norma.pressButton(preview.buttons?.[0]?.id ?? "");
+    const asked = await norma.say("la 1 ahora sale ocho mil");
+    await norma.say("deshacer");
+
+    expect(late).toEqual({ text: "La 1 ya no está en la página" });
+    expect(asked).toEqual({ text: "La 1 ya no está en la página" });
+    expect(await norma.publishedPieces()).toMatchObject([
+      { number: 2 },
+      { number: 1, price: 6000 },
+    ]);
+  });
+});

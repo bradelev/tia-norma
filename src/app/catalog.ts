@@ -41,6 +41,11 @@ function revalidating(inner: Catalog): Catalog {
       await inner.takeDown(number, actionId);
       revalidateTag(PIECES_TAG, { expire: 0 });
     },
+    async change(previewId, change) {
+      const changed = await inner.change(previewId, change);
+      if (changed) revalidateTag(PIECES_TAG, { expire: 0 });
+      return changed;
+    },
     async undo(actionId) {
       const undone = await inner.undo(actionId);
       if (undone) revalidateTag(PIECES_TAG, { expire: 0 });

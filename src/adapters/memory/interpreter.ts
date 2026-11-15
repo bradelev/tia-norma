@@ -14,6 +14,16 @@ export function createMemoryInterpreter(): Interpreter {
       );
       if (takeDown?.[1])
         return { kind: "takeDown", piece: pieceRef(takeDown[1]) };
+      const changePrice =
+        /^(?:la|el)?\s*(.+?)\s+ahora\s+(?:sale|cuesta|vale)\s+(.+)$/i.exec(
+          text.trim(),
+        );
+      if (changePrice?.[1] && changePrice[2])
+        return {
+          kind: "changePrice",
+          piece: pieceRef(changePrice[1]),
+          priceText: changePrice[2],
+        };
       if (/[¿?]/.test(text)) return { kind: "unknown" };
       if (parsePrice(text) !== null)
         return { kind: "describe", priceText: text.trim() };

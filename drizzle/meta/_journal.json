@@ -15,6 +15,13 @@
       "when": 1794719481105,
       "tag": "0001_photos-bucket",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794744811290,
+      "tag": "0002_change_price",
+      "breakpoints": true
     }
   ]
 }

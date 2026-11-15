@@ -78,6 +78,32 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
         if (row) await remember(tx, actionId, "takeDown", number);
       });
     },
+    change(previewId, change) {
+      return db.transaction(async (tx) => {
+        // Locks the draft so two "Sí, cambiar" at once apply it only once.
+        const [open] = await tx.select().from(drafts).for("update");
+        if (open?.payload.previewId !== previewId) return null;
+        const [before] = await tx
+          .select()
+          .from(pieces)
+          .where(eq(pieces.number, change.number));
+        if (!before) return null;
+        const [row] = await tx
+          .update(pieces)
+          .set({ price: change.price, updatedAt: sql`now()` })
+          .where(eq(pieces.number, change.number))
+          .returning();
+        await tx.delete(drafts);
+        await remember(
+          tx,
+          previewId,
+          "changePrice",
+          change.number,
+          before.price,
+        );
+        return toPiece(row!);
+      });
+    },
     undo(actionId) {
       return db.transaction(async (tx) => {
         // Locks the row so two Deshacer at once revert only one action.
@@ -85,10 +111,7 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
         if (!last || (actionId && actionId !== last.actionId)) return null;
         const [row] = await tx
           .update(pieces)
-          .set({
-            status: last.kind === "publish" ? "takenDown" : "published",
-            updatedAt: sql`now()`,
-          })
+          .set({ ...revert(last), updatedAt: sql`now()` })
           .where(eq(pieces.number, last.pieceNumber))
           .returning();
         await tx.delete(lastAction);
@@ -112,12 +135,27 @@ function remember(
   actionId: string,
   kind: Action["kind"],
   pieceNumber: number,
+  previousPrice: number | null = null,
 ) {
-  const values = { actionId, kind, pieceNumber };
+  const values = { actionId, kind, pieceNumber, previousPrice };
   return tx
     .insert(lastAction)
     .values(values)
     .onConflictDoUpdate({ target: lastAction.id, set: values });
+}
+
+/** What puts the piece back as it was before `last`. */
+function revert(
+  last: typeof lastAction.$inferSelect,
+): Partial<typeof pieces.$inferInsert> {
+  switch (last.kind) {
+    case "publish":
+      return { status: "takenDown" };
+    case "takeDown":
+      return { status: "published" };
+    case "changePrice":
+      return last.previousPrice === null ? {} : { price: last.previousPrice };
+  }
 }
 
 function toPiece(row: typeof pieces.$inferSelect): Piece {

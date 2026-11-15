@@ -5,6 +5,7 @@
 export type Intent =
   | { kind: "describe"; name?: string; priceText?: string }
   | { kind: "takeDown"; piece: PieceRef }
+  | { kind: "changePrice"; piece: PieceRef; priceText: string }
   | { kind: "undo" }
   | { kind: "unknown" };
 

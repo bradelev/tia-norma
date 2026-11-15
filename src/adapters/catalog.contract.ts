@@ -76,4 +76,24 @@ export function catalogContract(create: () => Catalog) {
     const next = await catalog.publish(randomUUID(), piece);
     expect(next.number).toBe(number + 1);
   });
+
+  it("cambiar el precio aplica la vista previa abierta y Deshacer devuelve el anterior", async () => {
+    const catalog = create();
+    const { number } = await catalog.publish(randomUUID(), piece);
+    const change = { number, price: 7000 };
+    const previewId = randomUUID();
+    await catalog.saveDraft({ change, previewId });
+
+    expect(await catalog.change(randomUUID(), change)).toBeNull();
+    expect(await catalog.change(previewId, change)).toMatchObject(change);
+    expect(await catalog.piece(number)).toMatchObject(change);
+    expect(await catalog.draft()).toBeNull();
+    expect(await catalog.change(previewId, change)).toBeNull();
+
+    expect(await catalog.undo(previewId)).toMatchObject({
+      kind: "changePrice",
+      piece: { number, price: 6000 },
+    });
+    expect(await catalog.piece(number)).toMatchObject({ price: 6000 });
+  });
 }
