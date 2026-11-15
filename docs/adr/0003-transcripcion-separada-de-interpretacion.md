@@ -6,13 +6,16 @@ Claude no acepta audio, así que el audio pasa primero por `Transcriber` (audio 
 
 `pnpm eval:audio` con 21 audios grabados en el celular, transcriptor e intérprete reales. Cuenta como bien el nombre exacto (sin mayúsculas ni tildes) y el precio exacto. La meta es 19 de 21, el equivalente a 18 de 20 de R14.
 
-| Transcriptor                          | Bien     | Precio bien |
-| ------------------------------------- | -------- | ----------- |
-| `whisper-large-v3-turbo`              | 14 de 21 | 19 de 21    |
-| `whisper-large-v3-turbo` con `prompt` | 14 de 21 | 19 de 21    |
-| `whisper-large-v3`                    | 16 de 21 | 21 de 21    |
+| Transcriptor                           | Bien     | Precio bien |
+| -------------------------------------- | -------- | ----------- |
+| `whisper-large-v3-turbo`               | 14 de 21 | 19 de 21    |
+| `whisper-large-v3-turbo` con `prompt`  | 14 de 21 | 19 de 21    |
+| `whisper-large-v3`                     | 16 de 21 | 21 de 21    |
+| `whisper-large-v3`, intérprete avisado | 17 de 21 | 21 de 21    |
 
 Queda `whisper-large-v3`: mejor resultado y la más lenta tardó 1,1 s, dentro del límite de 4 s del adaptador. No llega a la meta. Los cinco errores son el nombre: "Plata azul", "Plataondo blanco", "Tetera asmaltada", "Bowe celeste", "Fuertecita ovalada". Norma los corrige en la vista previa, que es lo que R14 prevé para el resto.
+
+Después se le avisó al intérprete que el texto puede venir de un audio con palabras mal oídas, y que corrija las obvias, sin listar ninguna. Arregló "Tetera asmaltada"; "Plataondo blanco" pasó a "Platillo blanco". El texto escrito sigue en 34 de 34.
 
 El `prompt` probado lleva solo vocabulario genérico de alfarería ("gres, loza, arcilla, engobe, torno, vidriado; precios en pesos, a veces en lucas"), nunca palabras de los nombres esperados, para no amañar la medición. Arregló un precio en euros y rompió "cuatro quinientos", así que no se usa.
 
