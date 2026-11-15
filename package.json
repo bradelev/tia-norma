@@ -15,6 +15,7 @@
     "test:e2e": "playwright test",
     "lighthouse": "lhci autorun",
     "sim": "tsx scripts/sim.ts",
+    "eval:photos": "tsx scripts/eval-photos.ts",
     "test:integration": "vitest run -c vitest.integration.config.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
