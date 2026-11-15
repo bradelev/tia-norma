@@ -4,7 +4,7 @@ import { createMemoryCatalog } from "./catalog";
 import { createMemoryInterpreter } from "./interpreter";
 import { createMemoryMediaStore } from "./media-store";
 
-/** The bot wired to in-memory doubles, driven the way Norma would. Used by tests. */
+/** The bot wired to in-memory doubles, driven the way Norma would. Used by tests and `pnpm sim`. */
 export function createMemoryWorkshop() {
   const catalog = createMemoryCatalog();
   let ids = 0;
@@ -33,6 +33,7 @@ export function createMemoryWorkshop() {
       return send({ kind: "button", id: button.id });
     },
     pressButton: (id: string) => send({ kind: "button", id }),
+    lastReply: () => last,
     publishedPieces: () => catalog.published(),
   };
 }
