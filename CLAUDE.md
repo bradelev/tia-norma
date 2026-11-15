@@ -11,7 +11,7 @@ Norma publica piezas por WhatsApp con una foto y un audio; la página pública l
 ## Arquitectura
 
 - `src/domain/`: reglas puras. No importa nada de Next, de la base ni de proveedores.
-- `src/ports/`: interfaces hacia afuera (Messenger, Transcriber, Interpreter, Catalog, MediaStore, ImageProcessor).
+- `src/ports/`: interfaces hacia afuera (Messenger, Transcriber, Interpreter, Catalog, MediaStore, ImageProcessor, PreviewRenderer).
 - `src/adapters/`: una implementación real y un doble en memoria por puerto.
 - `src/app/`: página pública y webhook. Solo conecta puertos con el dominio.
 
