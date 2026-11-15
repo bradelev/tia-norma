@@ -1,7 +1,9 @@
 import { existsSync } from "node:fs";
 import { defineConfig } from "drizzle-kit";
 
-if (existsSync(".env.local")) process.loadEnvFile(".env.local");
+/** `ENV_FILE=.env.test.local pnpm db:migrate` migrates the test project. */
+const envFile = process.env.ENV_FILE ?? ".env.local";
+if (existsSync(envFile)) process.loadEnvFile(envFile);
 
 export default defineConfig({
   dialect: "postgresql",
