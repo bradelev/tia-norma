@@ -194,6 +194,21 @@ describe('un "Sí" repetido o viejo', () => {
     expect(await norma.publishedPieces()).toEqual([]);
   });
 
+  it("si vuelve a preguntar el precio, el Sí anterior no publica lo que ella no vio", async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    const old = await norma.say("taza azul, seis mil");
+    await norma.tap("No, corregir");
+    await norma.say("El nombre, sacapuntas de gusanito");
+
+    const reply = await norma.pressButton(old.buttons?.[0]?.id ?? "");
+
+    expect(reply.text).toBe(
+      "Esa vista previa ya cambió. Fijate en la última que te mandé.",
+    );
+    expect(await norma.publishedPieces()).toEqual([]);
+  });
+
   it("después de publicar, la pieza siguiente lleva el número siguiente", async () => {
     const norma = createMemoryWorkshop();
     await norma.sendPhoto();
