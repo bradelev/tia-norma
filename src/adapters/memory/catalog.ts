@@ -13,6 +13,8 @@ export function createMemoryCatalog(): Catalog {
       draft = next;
     },
     async publish(previewId, data) {
+      const already = byPreview.get(previewId);
+      if (already) return already;
       const piece = { number: pieces.length + 1, ...data };
       pieces.push(piece);
       byPreview.set(previewId, piece);
@@ -23,7 +25,7 @@ export function createMemoryCatalog(): Catalog {
       return byPreview.get(previewId) ?? null;
     },
     async published() {
-      return [...pieces];
+      return [...pieces].reverse();
     },
   };
 }
