@@ -2,7 +2,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { Action, Catalog, Piece } from "../../ports/catalog";
-import { drafts, lastAction, pieces } from "./schema";
+import { drafts, lastAction, pieces, receivedMessages } from "./schema";
 
 /** `databaseUrl` is Supabase's transaction pooler, which cannot keep prepared statements. */
 export function createPostgresCatalog(databaseUrl: string): Catalog {
@@ -126,6 +126,15 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
         };
         return action;
       });
+    },
+    async recordMessage(messageId) {
+      // The primary key decides: of two deliveries at once, one inserts.
+      const inserted = await db
+        .insert(receivedMessages)
+        .values({ id: messageId })
+        .onConflictDoNothing()
+        .returning({ id: receivedMessages.id });
+      return inserted.length > 0;
     },
   };
 }

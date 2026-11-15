@@ -64,4 +64,6 @@ export interface Catalog {
    * a reverted change brings back the previous price or photo.
    */
   undo(actionId?: string): Promise<Action | null>;
+  /** Records a WhatsApp message id; false if it was already recorded (R9). */
+  recordMessage(messageId: string): Promise<boolean>;
 }
