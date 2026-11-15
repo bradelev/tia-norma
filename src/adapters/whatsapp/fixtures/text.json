@@ -1,0 +1,39 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "200000000000002",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "15550000000",
+              "phone_number_id": "100000000000001"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Norma"
+                },
+                "wa_id": "5491100000000"
+              }
+            ],
+            "messages": [
+              {
+                "from": "5491100000000",
+                "id": "wamid.HBgNNTQ5MTEwMDAwMDAwMBUCABIYFjNFQjBURVhUMDAwMDAwMDAwMDAwMDAA",
+                "timestamp": "1794700000",
+                "text": {
+                  "body": "Taza azul, seis mil"
+                },
+                "type": "text"
+              }
+            ]
+          },
+          "field": "messages"
+        }
+      ]
+    }
+  ]
+}
