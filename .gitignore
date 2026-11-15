@@ -54,3 +54,6 @@ next-env.d.ts
 
 # worktrees created by Claude Code agents
 /.claude/worktrees/
+
+# photo eval output
+/eval-out/

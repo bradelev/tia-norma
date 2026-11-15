@@ -10,7 +10,7 @@ const WIDTH = 1200;
 const HEIGHT = (WIDTH * card.photo.height) / card.photo.width;
 
 /** Measures the photo as Norma took it, since sharpening would hide a blur. */
-async function measure(photo: Uint8Array) {
+export async function measure(photo: Uint8Array) {
   const { data, info } = await sharp(photo)
     .resize(MEASURE_SIZE, MEASURE_SIZE, { fit: "inside" })
     .greyscale()
