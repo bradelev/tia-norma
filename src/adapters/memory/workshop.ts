@@ -13,12 +13,14 @@ export function createMemoryWorkshop({
   const catalog = createMemoryCatalog();
   const media = createMemoryMediaStore();
   let ids = 0;
+  let time = Date.UTC(2026, 0, 1);
   const bot = createBot({
     catalog,
     media,
     images: createMemoryImageProcessor(),
     interpreter,
     newId: () => `p${++ids}`,
+    now: () => time,
   });
   let last: Reply = { text: "" };
 
@@ -42,6 +44,10 @@ export function createMemoryWorkshop({
       return send({ kind: "button", id: button.id });
     },
     pressButton: (id: string) => send({ kind: "button", id }),
+    /** Moves the workshop's clock forward. */
+    wait(ms: number) {
+      time += ms;
+    },
     lastReply: () => last,
     publishedPieces: () => catalog.published(),
     storedPhotos: () => media.stored(),

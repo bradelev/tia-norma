@@ -35,6 +35,7 @@ export function whatsapp(): Webhook {
       messages: claudeMessages(env.ANTHROPIC_API_KEY),
     }),
     newId: () => randomUUID(),
+    now: () => Date.now(),
   });
   cached = createWebhook({
     appSecret: env.WHATSAPP_APP_SECRET,

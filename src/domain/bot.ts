@@ -8,6 +8,8 @@ import { formatPrice, parsePrice } from "./price";
 
 const MAX_PRICE = 10_000_000;
 const MAX_NAME_LENGTH = 40;
+/** A preview with no answer expires silently after this. */
+const PREVIEW_LIFETIME_MS = 24 * 60 * 60 * 1000;
 const ASK_PRICE_AGAIN =
   "¿Cuánto sale? Decímelo en pesos, por ejemplo seis mil.";
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
@@ -24,6 +26,8 @@ export interface BotPorts {
   images: ImageProcessor;
   interpreter: Interpreter;
   newId: () => string;
+  /** Milliseconds since the epoch, like `Date.now`. */
+  now: () => number;
 }
 
 export interface Bot {
@@ -79,7 +83,11 @@ function conversation(ports: BotPorts): Bot {
     }
     const { photo, name, price } = draft;
     const previewId = ports.newId();
-    await catalog.saveDraft({ ...draft, previewId });
+    await catalog.saveDraft({
+      ...draft,
+      previewId,
+      previewSentAt: ports.now(),
+    });
     return {
       text: `${left}${name}, ${formatPrice(price)}`,
       image: photo,
@@ -168,6 +176,12 @@ function conversation(ports: BotPorts): Bot {
     return propose({ number: piece.number, image }, text, image);
   }
 
+  /** Previews sent before this field existed never expire. */
+  function expired(draft: Draft | null): boolean {
+    const sentAt = draft?.previewSentAt;
+    return sentAt !== undefined && ports.now() - sentAt >= PREVIEW_LIFETIME_MS;
+  }
+
   /** Opens a change preview in place of whatever was open. */
   async function propose(
     change: Change,
@@ -176,7 +190,7 @@ function conversation(ports: BotPorts): Bot {
   ): Promise<Reply> {
     const previewId = ports.newId();
     const left = discarded(await catalog.draft());
-    await catalog.saveDraft({ change, previewId });
+    await catalog.saveDraft({ change, previewId, previewSentAt: ports.now() });
     return {
       text: left + text,
       image,
@@ -188,8 +202,10 @@ function conversation(ports: BotPorts): Bot {
   }
 
   async function applyChange(previewId: string): Promise<Reply> {
-    const { change, previewId: open } = (await catalog.draft()) ?? {};
+    const draft = await catalog.draft();
+    const { change, previewId: open } = draft ?? {};
     if (!change || open !== previewId) return { text: STALE_PREVIEW };
+    if (expired(draft)) return FIXED_REPLIES.tryAgain;
     const found = await find({ number: change.number });
     if ("text" in found) return found;
     const piece = await catalog.change(previewId, change);
@@ -259,6 +275,7 @@ function conversation(ports: BotPorts): Bot {
     const draft = await catalog.draft();
     if (draft?.previewId !== previewId || !isComplete(draft))
       return { text: STALE_PREVIEW };
+    if (expired(draft)) return FIXED_REPLIES.tryAgain;
     const piece = await catalog.publish(previewId, {
       name: draft.name,
       price: draft.price,
