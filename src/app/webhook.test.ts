@@ -8,8 +8,10 @@ import reaction from "../adapters/whatsapp/fixtures/reaction.json";
 import sticker from "../adapters/whatsapp/fixtures/sticker.json";
 import stranger from "../adapters/whatsapp/fixtures/stranger.json";
 import text from "../adapters/whatsapp/fixtures/text.json";
+import { createMemoryInterpreter } from "../adapters/memory/interpreter";
 import { createMemoryMessenger } from "../adapters/memory/messenger";
 import { createMemoryWorkshop } from "../adapters/memory/workshop";
+import type { Interpreter } from "../ports/interpreter";
 import { createWebhook } from "./webhook";
 
 const NORMA = "5491100000000";
@@ -20,8 +22,11 @@ function sign(body: string, secret = APP_SECRET) {
 }
 
 /** The webhook wired to in-memory doubles, receiving what Meta would send. */
-function setup({ photos = true } = {}) {
-  const { bot, catalog } = createMemoryWorkshop();
+function setup({
+  photos = true,
+  interpreter = createMemoryInterpreter(),
+} = {}) {
+  const { bot, catalog } = createMemoryWorkshop({ interpreter });
   const photo = { bytes: new Uint8Array([1, 2, 3]), contentType: "image/jpeg" };
   const messenger = createMemoryMessenger(
     photos ? { "300000000000003": photo } : {},
@@ -33,6 +38,7 @@ function setup({ photos = true } = {}) {
     messenger,
     catalog,
     bot,
+    limitMs: 50,
   });
 
   /** Posts a payload like Meta does and waits for the work left for after the 200. */
@@ -135,6 +141,23 @@ describe("webhook de WhatsApp", () => {
     log.mockRestore();
   });
 
+  it("pasado el límite, Norma recibe probá de nuevo y el resultado tardío no se aplica", async () => {
+    const slow = heldInterpreter();
+    const { deliver, texts, catalog } = setup({ interpreter: slow });
+    await deliver(image);
+    await deliver(text);
+    await deliver(button);
+
+    slow.hold();
+    await deliver(saying("vendí la 1", "wamid.vendi"));
+    slow.release();
+    await new Promise((done) => setTimeout(done, 0));
+
+    expect(texts().at(-1)).toBe("No me salió. Probá de nuevo.");
+    expect(texts()).toHaveLength(4);
+    expect(await catalog.published()).toHaveLength(1);
+  });
+
   it("verifica la URL con el token y rechaza otro", () => {
     const { webhook } = setup();
     const url = (token: string) =>
@@ -146,3 +169,29 @@ describe("webhook de WhatsApp", () => {
     expect(webhook.verify(url("otro")).status).toBe(403);
   });
 });
+
+/** The text fixture with other words and id, as a new message from Norma. */
+function saying(body: string, id: string) {
+  const payload = structuredClone(text);
+  const message = payload.entry[0]!.changes[0]!.value.messages[0]!;
+  message.text.body = body;
+  message.id = id;
+  return payload;
+}
+
+/** The rule-based interpreter, which answers only after `release` while held. */
+function heldInterpreter(): Interpreter & { hold(): void; release(): void } {
+  const rules = createMemoryInterpreter();
+  let held: Promise<void> | null = null;
+  let release = () => {};
+  return {
+    async interpret(said) {
+      if (held) await held;
+      return rules.interpret(said);
+    },
+    hold() {
+      held = new Promise((done) => (release = done));
+    },
+    release: () => release(),
+  };
+}

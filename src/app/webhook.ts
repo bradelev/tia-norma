@@ -14,6 +14,7 @@ const NOT_YET: Reply = {
   text: "Por ahora entiendo fotos y texto. Escribime el nombre y el precio.",
 };
 const TRY_AGAIN: Reply = { text: "No me salió. Probá de nuevo." };
+const LIMIT_MS = 15_000;
 
 export interface WebhookSettings {
   appSecret: string;
@@ -23,6 +24,8 @@ export interface WebhookSettings {
   messenger: Messenger;
   catalog: Pick<Catalog, "recordMessage">;
   bot: Bot;
+  /** R10: past this, Norma hears "probá de nuevo" and the late result is dropped. */
+  limitMs?: number;
 }
 
 /** Runs work after the response is sent: `after()` in Next, a collector in tests. */
@@ -35,21 +38,24 @@ export interface Webhook {
 }
 
 export function createWebhook(settings: WebhookSettings): Webhook {
-  const { messenger, bot } = settings;
+  const { messenger, bot, limitMs = LIMIT_MS } = settings;
 
   /** What to send back; null for a reaction or a sticker. */
-  async function reply(content: Content): Promise<Reply | null> {
+  async function reply(
+    content: Content,
+    deadline: AbortSignal,
+  ): Promise<Reply | null> {
     switch (content.kind) {
       case "text":
       case "button":
-        return bot.receive(content);
+        return bot.receive(content, deadline);
       case "photo": {
         // The caption goes first, so a rejected photo still keeps the name and
         // price, and the photo's reply (preview or "send another") is the one sent.
         if (content.caption)
-          await bot.receive({ kind: "text", text: content.caption });
+          await bot.receive({ kind: "text", text: content.caption }, deadline);
         const { bytes } = await messenger.download(content.mediaId);
-        return bot.receive({ kind: "photo", bytes });
+        return bot.receive({ kind: "photo", bytes }, deadline);
       }
       case "ignored":
         return null;
@@ -59,18 +65,27 @@ export function createWebhook(settings: WebhookSettings): Webhook {
   }
 
   async function answer({ id, from, content }: WhatsAppMessage) {
+    const deadline = new AbortController();
+    const timer = setTimeout(
+      () => deadline.abort(new Error(`Pasaron ${limitMs} ms`)),
+      limitMs,
+    );
     try {
-      const outgoing = await reply(content);
+      // The work keeps going after the deadline, but the bot no longer writes
+      // and its reply is never sent.
+      const outgoing = await Promise.race([
+        reply(content, deadline.signal),
+        aborted(deadline.signal),
+      ]);
       if (outgoing) await messenger.send(from, outgoing);
     } catch (error) {
       await failed(id, from, error);
+    } finally {
+      clearTimeout(timer);
     }
   }
 
-  /**
-   * R10, first half: the message is already recorded and Meta's retry dropped,
-   * so Norma hears it from here. #20 adds the 15 s limit and the recorded audio.
-   */
+  /** R10: the message is already recorded and Meta's retry dropped, so Norma hears it from here. */
   async function failed(id: string, from: string, error: unknown) {
     // The message id and the error only: never the number or what she said.
     console.error(`Falló el mensaje ${id}:`, reason(error));
@@ -116,6 +131,14 @@ export function createWebhook(settings: WebhookSettings): Webhook {
       return new Response(null, { status: 200 });
     },
   };
+}
+
+function aborted(signal: AbortSignal): Promise<never> {
+  return new Promise((_, reject) =>
+    signal.addEventListener("abort", () => reject(signal.reason), {
+      once: true,
+    }),
+  );
 }
 
 function reason(error: unknown): string {

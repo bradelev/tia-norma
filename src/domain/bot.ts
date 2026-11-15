@@ -29,10 +29,45 @@ export interface BotPorts {
 }
 
 export interface Bot {
-  receive(message: Incoming): Promise<Reply>;
+  /** Once `deadline` aborts, nothing more is written for this message (R10). */
+  receive(message: Incoming, deadline?: AbortSignal): Promise<Reply>;
 }
 
 export function createBot(ports: BotPorts): Bot {
+  return {
+    receive(message, deadline) {
+      const catalog = deadline
+        ? untilDeadline(ports.catalog, deadline)
+        : ports.catalog;
+      return conversation({ ...ports, catalog }).receive(message);
+    },
+  };
+}
+
+/**
+ * A late result may still read, but every write checks the deadline first:
+ * publishing, taking down, changing, undoing and opening a preview.
+ */
+function untilDeadline(catalog: Catalog, deadline: AbortSignal): Catalog {
+  function checked<A extends unknown[], R>(
+    write: (...args: A) => Promise<R>,
+  ): (...args: A) => Promise<R> {
+    return async (...args) => {
+      deadline.throwIfAborted();
+      return write(...args);
+    };
+  }
+  return {
+    ...catalog,
+    saveDraft: checked(catalog.saveDraft),
+    publish: checked(catalog.publish),
+    takeDown: checked(catalog.takeDown),
+    change: checked(catalog.change),
+    undo: checked(catalog.undo),
+  };
+}
+
+function conversation(ports: BotPorts): Bot {
   const { catalog } = ports;
 
   /** Adds to the draft of a new piece; an open change is dropped. */

@@ -1,12 +1,15 @@
 import { createBot } from "../../domain/bot";
 import type { Reply } from "../../domain/messages";
+import type { Interpreter } from "../../ports/interpreter";
 import { createMemoryCatalog } from "./catalog";
 import { createMemoryImageProcessor } from "./image-processor";
 import { createMemoryInterpreter } from "./interpreter";
 import { createMemoryMediaStore } from "./media-store";
 
 /** The bot wired to in-memory doubles, driven the way Norma would. Used by tests and `pnpm sim`. */
-export function createMemoryWorkshop() {
+export function createMemoryWorkshop({
+  interpreter = createMemoryInterpreter(),
+}: { interpreter?: Interpreter } = {}) {
   const catalog = createMemoryCatalog();
   const media = createMemoryMediaStore();
   let ids = 0;
@@ -14,7 +17,7 @@ export function createMemoryWorkshop() {
     catalog,
     media,
     images: createMemoryImageProcessor(),
-    interpreter: createMemoryInterpreter(),
+    interpreter,
     newId: () => `p${++ids}`,
   });
   let last: Reply = { text: "" };
