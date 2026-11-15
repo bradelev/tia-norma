@@ -2,8 +2,11 @@ import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import audio from "./fixtures/audio.json";
 import button from "./fixtures/button.json";
+import imageCaption from "./fixtures/image-caption.json";
 import image from "./fixtures/image.json";
+import reaction from "./fixtures/reaction.json";
 import status from "./fixtures/status.json";
+import sticker from "./fixtures/sticker.json";
 import text from "./fixtures/text.json";
 import { isSignedByMeta, parseMessages } from "./webhook";
 
@@ -49,6 +52,23 @@ describe("mensajes de un webhook", () => {
     expect(parseMessages(bytes(button))?.[0]?.content).toEqual({
       kind: "button",
       id: "publish:p1",
+    });
+  });
+
+  it("una foto trae su pie, si tiene", () => {
+    expect(parseMessages(bytes(imageCaption))?.[0]?.content).toEqual({
+      kind: "photo",
+      mediaId: "300000000000003",
+      caption: "Taza azul, seis mil",
+    });
+  });
+
+  it("una reacción o un sticker se ignoran", () => {
+    expect(parseMessages(bytes(reaction))?.[0]?.content).toEqual({
+      kind: "ignored",
+    });
+    expect(parseMessages(bytes(sticker))?.[0]?.content).toEqual({
+      kind: "ignored",
     });
   });
 

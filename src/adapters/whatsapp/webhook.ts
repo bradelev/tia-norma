@@ -4,9 +4,11 @@ import { z } from "zod";
 /** What a WhatsApp message brings, before the photo is downloaded. */
 export type Content =
   | { kind: "text"; text: string }
-  | { kind: "photo"; mediaId: string }
+  | { kind: "photo"; mediaId: string; caption?: string }
   | { kind: "button"; id: string }
-  /** Audio, stickers, reactions and anything else the bot does not read yet. */
+  /** Reactions and stickers: no answer at all. */
+  | { kind: "ignored" }
+  /** Audio and anything else the bot does not read yet. */
   | { kind: "other" };
 
 export interface WhatsAppMessage {
@@ -21,7 +23,9 @@ const message = z.object({
   from: z.string().min(1),
   type: z.string(),
   text: z.object({ body: z.string() }).optional(),
-  image: z.object({ id: z.string().min(1) }).optional(),
+  image: z
+    .object({ id: z.string().min(1), caption: z.string().optional() })
+    .optional(),
   interactive: z
     .object({ button_reply: z.object({ id: z.string().min(1) }).optional() })
     .optional(),
@@ -81,8 +85,12 @@ function content({
 }: Omit<z.infer<typeof message>, "id" | "from">): Content {
   const button = interactive?.button_reply;
   if (type === "text" && text) return { kind: "text", text: text.body };
-  if (type === "image" && image) return { kind: "photo", mediaId: image.id };
+  if (type === "image" && image) {
+    const { id: mediaId, caption } = image;
+    return { kind: "photo", mediaId, ...(caption && { caption }) };
+  }
   if (type === "interactive" && button)
     return { kind: "button", id: button.id };
+  if (type === "reaction" || type === "sticker") return { kind: "ignored" };
   return { kind: "other" };
 }

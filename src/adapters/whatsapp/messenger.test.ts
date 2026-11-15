@@ -38,7 +38,7 @@ describe("mensajero de la Cloud API", () => {
     await graph.messenger.send(NORMA, { text: "Listo. Es la pieza 1." });
 
     expect(graph.calls[0]?.url).toBe(
-      "https://graph.facebook.com/v23.0/100000000000001/messages",
+      "https://graph.facebook.com/v25.0/100000000000001/messages",
     );
     expect(graph.calls[0]?.init?.headers).toMatchObject({
       Authorization: "Bearer token-de-prueba",
@@ -161,7 +161,7 @@ describe("mensajero de la Cloud API", () => {
       contentType: "image/jpeg",
     });
     expect(graph.calls.map((call) => call.url)).toEqual([
-      "https://graph.facebook.com/v23.0/200000000000001",
+      "https://graph.facebook.com/v25.0/200000000000001",
       lookaside,
     ]);
     // The lookaside URL only answers with the token.
