@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BLURRY_PHOTO, DARK_PHOTO } from "../adapters/memory/image-processor";
 import { createMemoryWorkshop } from "../adapters/memory/workshop";
+import type { PreviewRenderer } from "../ports/preview-renderer";
 
 describe("publicar una pieza", () => {
   it("con foto y texto, muestra la vista previa y publica al tocar Sí", async () => {
@@ -20,8 +21,67 @@ describe("publicar una pieza", () => {
 
     expect(done.text).toBe("Listo. Es la pieza 1.");
     expect(await norma.publishedPieces()).toEqual([
-      { number: 1, name: "Taza azul", price: 6000, image: preview.image },
+      {
+        number: 1,
+        name: "Taza azul",
+        price: 6000,
+        image: norma.drawnSlips()[0]?.photo,
+      },
     ]);
+  });
+});
+
+describe("la vista previa es la boleta", () => {
+  it("una pieza nueva muestra en el talón el número que va a tener", async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    await norma.say("taza azul, seis mil");
+    await norma.tap("Sí, publicar");
+
+    await norma.sendPhoto();
+    const preview = await norma.say("plato hondo, ocho mil");
+
+    const slip = norma.drawnSlips().at(-1);
+    expect(slip).toMatchObject({ number: 2, name: "Plato hondo", price: 8000 });
+    expect(preview.image).toBe(norma.storedPhotos().at(-1)?.url);
+    expect(preview.image).not.toBe(slip?.photo);
+
+    await norma.tap("Sí, publicar");
+    const [plate] = await norma.publishedPieces();
+    expect(plate).toMatchObject({ number: 2, image: slip?.photo });
+  });
+
+  it("un cambio de precio muestra el número de la pieza con el precio nuevo", async () => {
+    const norma = createMemoryWorkshop();
+    await norma.sendPhoto();
+    await norma.say("taza azul, seis mil");
+    await norma.tap("Sí, publicar");
+    const [cup] = await norma.publishedPieces();
+
+    await norma.say("la 1 ahora sale ocho mil");
+
+    expect(norma.drawnSlips().at(-1)).toEqual({
+      number: 1,
+      name: "Taza azul",
+      price: 8000,
+      photo: cup?.image,
+    });
+  });
+
+  it("si la boleta no se puede dibujar, manda la foto con el texto", async () => {
+    const broken: PreviewRenderer = {
+      render: () => Promise.reject(new Error("sin fuentes")),
+    };
+    const norma = createMemoryWorkshop({ previews: broken });
+    await norma.sendPhoto();
+
+    const preview = await norma.say("taza azul, seis mil");
+
+    expect(preview.text).toBe("Taza azul, $ 6.000");
+    expect(preview.image).toBe(norma.storedPhotos().at(-1)?.url);
+    await norma.tap("Sí, publicar");
+    const [cup] = await norma.publishedPieces();
+    expect(cup?.image).toBe(preview.image);
   });
 });
 
@@ -553,9 +613,10 @@ describe("foto tratada", () => {
 
     const stored = norma.storedPhotos();
     const kept = stored.find(({ bytes }) => bytes.join() === original.join());
-    expect(stored).toHaveLength(2);
+    const photos = stored.filter(({ url }) => url !== preview.image);
+    expect(photos).toHaveLength(2);
     expect(kept).toBeDefined();
-    expect(preview.image).not.toBe(kept?.url);
+    expect(norma.drawnSlips()[0]?.photo).not.toBe(kept?.url);
   });
 
   it("una foto movida no reemplaza la del borrador y se pide otra", async () => {
@@ -567,7 +628,9 @@ describe("foto tratada", () => {
     const preview = await norma.say("siete mil");
 
     expect(reply).toEqual({ text: "La foto salió movida. ¿Me mandás otra?" });
-    expect(preview.image).toBe(first.image);
+    const [before, after] = norma.drawnSlips();
+    expect(after?.photo).toBe(before?.photo);
+    expect(preview.image).not.toBe(first.image);
   });
 
   it("una foto oscura pide otra con más luz", async () => {
@@ -591,7 +654,7 @@ describe("cambiar el precio", () => {
     const preview = await norma.say("la 1 ahora sale siete mil");
 
     expect(preview.text).toBe("Antes $ 6.000, ahora $ 7.000");
-    expect(preview.image).toBe(cup?.image);
+    expect(norma.drawnSlips().at(-1)?.photo).toBe(cup?.image);
     expect(preview.buttons?.map((b) => b.title)).toEqual(["Sí, cambiar", "No"]);
     expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
 
@@ -675,16 +738,15 @@ describe("cambiar la foto", () => {
     const preview = await norma.say("esta es la 1");
 
     expect(preview.text).toBe("Foto nueva para la pieza 1");
-    expect(preview.image).not.toBe(cup?.image);
+    const shown = norma.drawnSlips().at(-1)?.photo;
+    expect(shown).not.toBe(cup?.image);
     expect(preview.buttons?.map((b) => b.title)).toEqual(["Sí, cambiar", "No"]);
     expect(await norma.publishedPieces()).toEqual([cup]);
 
     const done = await norma.tap("Sí, cambiar");
 
     expect(done.text).toBe("Listo. La pieza 1 tiene la foto nueva");
-    expect(await norma.publishedPieces()).toEqual([
-      { ...cup, image: preview.image },
-    ]);
+    expect(await norma.publishedPieces()).toEqual([{ ...cup, image: shown }]);
 
     const undone = await norma.tap("Deshacer");
 

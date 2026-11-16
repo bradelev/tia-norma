@@ -53,6 +53,12 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
         .where(eq(pieces.previewId, previewId));
       return row ? toPiece(row) : null;
     },
+    async nextNumber() {
+      const [row] = await db
+        .select({ next: sql<number>`coalesce(max(${pieces.number}), 0) + 1` })
+        .from(pieces);
+      return Number(row!.next);
+    },
     async published() {
       const rows = await db
         .select()

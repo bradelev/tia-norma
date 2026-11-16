@@ -18,9 +18,12 @@ async function pixels(png: Uint8Array) {
 // To redraw the reference after an intended design change:
 // UPDATE_REFERENCE=1 pnpm test, then look at fixtures/card.png before committing it.
 test("draws the card the way the page shows it", async () => {
-  const renderer = createSatoriPreviewRenderer();
+  const renderer = createSatoriPreviewRenderer({
+    load: (url) => readFile(fixture(url)),
+  });
   const png = await renderer.render({
-    photo: await readFile(fixture("photo.jpg")),
+    photo: "photo.jpg",
+    number: 7,
     name: "Jarra de barro con dos asas",
     price: 6000,
   });

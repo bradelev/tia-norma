@@ -1,23 +1,28 @@
 import { createBot } from "../../domain/bot";
 import type { Reply } from "../../domain/messages";
 import type { Interpreter } from "../../ports/interpreter";
+import type { PreviewRenderer } from "../../ports/preview-renderer";
 import { createMemoryCatalog } from "./catalog";
 import { createMemoryImageProcessor } from "./image-processor";
 import { createMemoryInterpreter } from "./interpreter";
 import { createMemoryMediaStore } from "./media-store";
+import { createMemoryPreviewRenderer } from "./preview-renderer";
 
 /** The bot wired to in-memory doubles, driven the way Norma would. Used by tests and `pnpm sim`. */
 export function createMemoryWorkshop({
   interpreter = createMemoryInterpreter(),
-}: { interpreter?: Interpreter } = {}) {
+  previews,
+}: { interpreter?: Interpreter; previews?: PreviewRenderer } = {}) {
   const catalog = createMemoryCatalog();
   const media = createMemoryMediaStore();
+  const slips = createMemoryPreviewRenderer();
   let ids = 0;
   let time = Date.UTC(2026, 0, 1);
   const bot = createBot({
     catalog,
     media,
     images: createMemoryImageProcessor(),
+    previews: previews ?? slips,
     interpreter,
     newId: () => `p${++ids}`,
     now: () => time,
@@ -54,5 +59,7 @@ export function createMemoryWorkshop({
     lastReply: () => last,
     publishedPieces: () => catalog.published(),
     storedPhotos: () => media.stored(),
+    /** What each preview's slip showed, oldest first. */
+    drawnSlips: () => slips.drawn(),
   };
 }

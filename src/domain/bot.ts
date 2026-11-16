@@ -8,6 +8,7 @@ import type {
 import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
+import type { PreviewRenderer, SlipContent } from "../ports/preview-renderer";
 import { FIXED_REPLIES, type Incoming, type Reply } from "./messages";
 import type { PhotoProblem } from "./photo-quality";
 import { formatPrice, parsePrice } from "./price";
@@ -35,6 +36,7 @@ export interface BotPorts {
   catalog: Catalog;
   media: MediaStore;
   images: ImageProcessor;
+  previews: PreviewRenderer;
   interpreter: Interpreter;
   newId: () => string;
   /** Milliseconds since the epoch, like `Date.now`. */
@@ -93,6 +95,8 @@ function conversation(ports: BotPorts): Bot {
       return { text: left + askForMissing(draft) };
     }
     const { photo, name, price } = draft;
+    const number = await catalog.nextNumber();
+    const image = await slip({ photo, number, name, price });
     const previewId = ports.newId();
     await catalog.saveDraft({
       ...draft,
@@ -101,7 +105,7 @@ function conversation(ports: BotPorts): Bot {
     });
     return {
       text: `${left}${name}, ${formatPrice(price)}`,
-      image: photo,
+      image,
       buttons: [
         { id: `publish:${previewId}`, title: "Sí, publicar" },
         { id: `fix:${previewId}`, title: "No, corregir" },
@@ -214,7 +218,12 @@ function conversation(ports: BotPorts): Bot {
     const price = parsePrice(priceText);
     if (price === null || price > MAX_PRICE) return { text: ASK_PRICE_AGAIN };
     const text = `Antes ${formatPrice(piece.price)}, ahora ${formatPrice(price)}`;
-    return propose({ number: piece.number, price }, text, piece.image);
+    return propose({ number: piece.number, price }, text, {
+      number: piece.number,
+      name: piece.name,
+      price,
+      photo: piece.image,
+    });
   }
 
   /** Without a photo, takes the one in the draft or waits for the next one. */
@@ -229,7 +238,12 @@ function conversation(ports: BotPorts): Bot {
       return { text: discarded(draft) + text };
     }
     const text = `Foto nueva para la pieza ${piece.number}`;
-    return propose({ number: piece.number, image }, text, image);
+    return propose({ number: piece.number, image }, text, {
+      number: piece.number,
+      name: piece.name,
+      price: piece.price,
+      photo: image,
+    });
   }
 
   /** Previews sent before this field existed never expire. */
@@ -238,12 +252,23 @@ function conversation(ports: BotPorts): Bot {
     return sentAt !== undefined && ports.now() - sentAt >= PREVIEW_LIFETIME_MS;
   }
 
+  /** The preview image: the slip as the page will show it, or the bare photo if it cannot be drawn. */
+  async function slip(content: SlipContent): Promise<string> {
+    try {
+      const png = await ports.previews.render(content);
+      return await ports.media.save(png, "image/png");
+    } catch {
+      return content.photo;
+    }
+  }
+
   /** Opens a change preview in place of whatever was open. */
   async function propose(
     change: Change,
     text: string,
-    image: string,
+    shown: SlipContent,
   ): Promise<Reply> {
+    const image = await slip(shown);
     const previewId = ports.newId();
     const left = discarded(await catalog.draft());
     await catalog.saveDraft({ change, previewId, previewSentAt: ports.now() });

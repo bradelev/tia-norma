@@ -1,10 +1,16 @@
-import type { PreviewRenderer } from "../../ports/preview-renderer";
+import type {
+  PreviewRenderer,
+  SlipContent,
+} from "../../ports/preview-renderer";
 
-/** Returns the photo as is: the bot's tests only need to know a preview was drawn. */
-export function createMemoryPreviewRenderer(): PreviewRenderer {
+/** Keeps what it was asked to draw: the bot's tests check the slip's content, not its pixels. */
+export function createMemoryPreviewRenderer() {
+  const drawn: SlipContent[] = [];
   return {
-    async render({ photo }) {
-      return photo;
+    async render(content) {
+      drawn.push(content);
+      return new TextEncoder().encode(`boleta ${drawn.length}`);
     },
-  };
+    drawn: () => drawn,
+  } satisfies PreviewRenderer & { drawn: unknown };
 }

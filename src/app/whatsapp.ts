@@ -4,6 +4,7 @@ import {
   createClaudeInterpreter,
 } from "@/adapters/claude/interpreter";
 import { createGroqTranscriber } from "@/adapters/groq/transcriber";
+import { createSatoriPreviewRenderer } from "@/adapters/satori/preview-renderer";
 import { createSharpImageProcessor } from "@/adapters/sharp/image-processor";
 import { createSupabaseMediaStore } from "@/adapters/supabase-storage/media-store";
 import { createCloudApiMessenger } from "@/adapters/whatsapp/messenger";
@@ -32,6 +33,7 @@ export function whatsapp(): Webhook {
       supabase.SUPABASE_SECRET_KEY,
     ),
     images: createSharpImageProcessor(),
+    previews: createSatoriPreviewRenderer(),
     interpreter: createClaudeInterpreter({
       messages: claudeMessages(env.ANTHROPIC_API_KEY),
     }),

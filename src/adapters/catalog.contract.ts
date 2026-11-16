@@ -77,6 +77,16 @@ export function catalogContract(create: () => Catalog) {
     expect(next.number).toBe(number + 1);
   });
 
+  it("el próximo número es el que toma la próxima pieza, aunque la última esté sacada", async () => {
+    const catalog = create();
+    const { number } = await catalog.publish(randomUUID(), piece);
+    await catalog.takeDown(number, randomUUID());
+
+    expect(await catalog.nextNumber()).toBe(number + 1);
+    const next = await catalog.publish(randomUUID(), piece);
+    expect(next.number).toBe(number + 1);
+  });
+
   it("cambiar el precio aplica la vista previa abierta y Deshacer devuelve el anterior", async () => {
     const catalog = create();
     const { number } = await catalog.publish(randomUUID(), piece);
