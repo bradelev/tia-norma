@@ -36,6 +36,8 @@ export function createMemoryWorkshop({
     sendPhoto: (bytes = new Uint8Array([1, 2, 3])) =>
       send({ kind: "photo", bytes }),
     say: (text: string) => send({ kind: "text", text }),
+    /** An audio, already transcribed to this text. */
+    speak: (text: string) => send({ kind: "audio", text }),
     /** Taps a button from the last reply, like Norma would. */
     tap(title: string) {
       const button = last.buttons?.find((b) => b.title === title);

@@ -1,6 +1,8 @@
 /** What Norma sends, already downloaded and normalized by the messenger adapter. */
 export type Incoming =
   | { kind: "text"; text: string }
+  /** An audio, already transcribed. */
+  | { kind: "audio"; text: string }
   | { kind: "photo"; bytes: Uint8Array }
   | { kind: "button"; id: string };
 
