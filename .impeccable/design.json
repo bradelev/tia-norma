@@ -1,27 +1,87 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-14T00:00:00Z",
+  "generatedAt": "2026-11-16T00:00:00Z",
   "title": "Design System: Taller de Norma",
   "extensions": {
     "colorMeta": {
       "ground": {
         "role": "neutral",
         "displayName": "Mesa de taller",
-        "canonical": "#efece6",
+        "canonical": "#d8d3c9",
         "tonalRamp": [
-          "oklch(15% 0.006 85)",
-          "oklch(25% 0.007 85)",
-          "oklch(35% 0.008 85)",
-          "oklch(45% 0.009 85)",
-          "oklch(55% 0.009 85)",
-          "oklch(68% 0.008 85)",
-          "oklch(82% 0.008 85)",
-          "oklch(94% 0.007 85)"
+          "oklch(15% 0.013 85)",
+          "oklch(25% 0.013 85)",
+          "oklch(35% 0.013 85)",
+          "oklch(45% 0.013 85)",
+          "oklch(55% 0.013 85)",
+          "oklch(68% 0.013 85)",
+          "oklch(82% 0.013 85)",
+          "oklch(95% 0.013 85)"
+        ]
+      },
+      "paper-rosa": {
+        "role": "secondary",
+        "displayName": "Papel rosa",
+        "canonical": "#f8e1e5",
+        "tonalRamp": [
+          "oklch(15% 0.03 355)",
+          "oklch(25% 0.03 355)",
+          "oklch(35% 0.03 355)",
+          "oklch(45% 0.03 355)",
+          "oklch(55% 0.03 355)",
+          "oklch(68% 0.03 355)",
+          "oklch(82% 0.03 355)",
+          "oklch(95% 0.03 355)"
+        ]
+      },
+      "paper-verde": {
+        "role": "secondary",
+        "displayName": "Papel verde",
+        "canonical": "#dff0e0",
+        "tonalRamp": [
+          "oklch(15% 0.03 145)",
+          "oklch(25% 0.03 145)",
+          "oklch(35% 0.03 145)",
+          "oklch(45% 0.03 145)",
+          "oklch(55% 0.03 145)",
+          "oklch(68% 0.03 145)",
+          "oklch(82% 0.03 145)",
+          "oklch(95% 0.03 145)"
+        ]
+      },
+      "paper-amarillo": {
+        "role": "secondary",
+        "displayName": "Papel amarillo",
+        "canonical": "#fbf1c4",
+        "tonalRamp": [
+          "oklch(15% 0.05 98)",
+          "oklch(25% 0.05 98)",
+          "oklch(35% 0.05 98)",
+          "oklch(45% 0.05 98)",
+          "oklch(55% 0.05 98)",
+          "oklch(68% 0.05 98)",
+          "oklch(82% 0.05 98)",
+          "oklch(95% 0.05 98)"
+        ]
+      },
+      "paper-celeste": {
+        "role": "secondary",
+        "displayName": "Papel celeste",
+        "canonical": "#dfeaf6",
+        "tonalRamp": [
+          "oklch(15% 0.025 250)",
+          "oklch(25% 0.025 250)",
+          "oklch(35% 0.025 250)",
+          "oklch(45% 0.025 250)",
+          "oklch(55% 0.025 250)",
+          "oklch(68% 0.025 250)",
+          "oklch(82% 0.025 250)",
+          "oklch(95% 0.025 250)"
         ]
       },
       "paper": {
         "role": "neutral",
-        "displayName": "Papel fotográfico",
+        "displayName": "Papel blanco",
         "canonical": "#ffffff",
         "tonalRamp": [
           "oklch(15% 0 0)",
@@ -31,7 +91,7 @@
           "oklch(55% 0 0)",
           "oklch(68% 0 0)",
           "oklch(82% 0 0)",
-          "oklch(100% 0 0)"
+          "oklch(95% 0 0)"
         ]
       },
       "ink": {
@@ -40,147 +100,169 @@
         "canonical": "#1c1b19",
         "tonalRamp": [
           "oklch(15% 0.004 85)",
-          "oklch(21.5% 0.004 85)",
-          "oklch(35% 0.005 85)",
-          "oklch(45% 0.005 85)",
-          "oklch(55% 0.005 85)",
+          "oklch(25% 0.004 85)",
+          "oklch(35% 0.004 85)",
+          "oklch(45% 0.004 85)",
+          "oklch(55% 0.004 85)",
           "oklch(68% 0.004 85)",
-          "oklch(82% 0.003 85)",
-          "oklch(95% 0.002 85)"
-        ]
-      },
-      "ink-soft": {
-        "role": "neutral",
-        "displayName": "Tinta suave",
-        "canonical": "#3d3a35",
-        "tonalRamp": [
-          "oklch(15% 0.008 80)",
-          "oklch(25% 0.009 80)",
-          "oklch(35.5% 0.009 80)",
-          "oklch(45% 0.009 80)",
-          "oklch(55% 0.008 80)",
-          "oklch(68% 0.007 80)",
-          "oklch(82% 0.005 80)",
-          "oklch(95% 0.003 80)"
+          "oklch(82% 0.004 85)",
+          "oklch(95% 0.004 85)"
         ]
       }
     },
     "typographyMeta": {
+      "number": {
+        "displayName": "Número",
+        "purpose": "El número en el talón; hasta 4rem, se achica solo con tres cifras."
+      },
+      "label": {
+        "displayName": "N.º",
+        "purpose": "Rótulo del número en el talón."
+      },
       "title": {
-        "displayName": "Title",
+        "displayName": "Título",
         "purpose": "Nombre del taller, una vez por página."
       },
       "price": {
-        "displayName": "Price",
-        "purpose": "El dato más grande; nunca se achica; el monto no se parte."
+        "displayName": "Precio",
+        "purpose": "El dato más grande del cuerpo de la boleta; nunca se achica."
       },
       "name": {
-        "displayName": "Name",
-        "purpose": "Nombre de la pieza en el pie de la foto."
+        "displayName": "Nombre",
+        "purpose": "Nombre de la pieza."
       },
       "body": {
-        "displayName": "Body",
-        "purpose": "Texto corriente y crédito, base 20 px."
+        "displayName": "Texto",
+        "purpose": "Línea bajo el título; crédito y estado vacío en 600."
       }
     },
     "shadows": [
       {
-        "name": "contact",
-        "value": "0 1px 3px rgb(28 27 25 / 0.2)",
-        "purpose": "Única sombra: el marco de la foto apoyado sobre la mesa."
+        "name": "contacto",
+        "value": "filter: drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3))",
+        "purpose": "Única sombra; sobre la boleta, sigue el troquel."
       }
     ],
     "motion": [],
     "breakpoints": [
       {
-        "name": "column-max",
-        "value": "40rem + 2 × gutter; en pantallas bajas se angosta a max(20rem, 0.8 × (100svh − 19.5rem) + 2 × frame)"
+        "name": "talon-arriba",
+        "value": "@container (max-width: 15em)"
       }
-    ],
-    "focus": {
-      "value": "outline: 0.25rem solid var(--ink); outline-offset: 0.25rem",
-      "purpose": "Único estado interactivo."
-    }
+    ]
   },
   "components": [
     {
-      "name": "Foto instantánea",
+      "name": "Boleta",
       "kind": "card",
-      "refersTo": "print",
-      "description": "Marco de papel con foto 4:5 enlazada, nombre y precio en el margen inferior ancho.",
-      "html": "<article class=\"ds-print\"><a class=\"ds-print-photo\" href=\"#\"><div class=\"ds-print-img\"></div></a><div class=\"ds-print-caption\"><h2 class=\"ds-print-name\">Cuenco esmaltado</h2><p class=\"ds-print-price\">$ <span class=\"ds-print-amount\">6.000</span></p></div></article>",
-      "css": ".ds-print { --frame: clamp(0.75rem, 3.5vw, 1.375rem); background: var(--paper, #ffffff); color: var(--ink, #1c1b19); padding: var(--frame) var(--frame) calc(var(--frame) * 1.5); box-shadow: 0 1px 3px rgb(28 27 25 / 0.2); border-radius: 0; max-width: 24rem; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; } .ds-print-photo { display: block; } .ds-print-photo:focus-visible { outline: 0.25rem solid var(--ink, #1c1b19); outline-offset: 0.25rem; } .ds-print-img { aspect-ratio: 4 / 5; background: var(--ground, #efece6); } .ds-print-caption { padding-top: calc(var(--frame) * 1.1); } .ds-print-name { margin: 0; font-size: 1.75rem; font-weight: 600; line-height: 1.2; text-wrap: balance; } .ds-print-price { margin: 0.25rem 0 0; font-size: 2.25rem; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; } .ds-print-amount { white-space: nowrap; }"
+      "refersTo": "slip",
+      "description": "Pieza firma: talón numerado, perforación con muescas y cuerpo con foto, nombre y precio.",
+      "html": "<div class=\"ds-piece\"><article class=\"ds-slip\"><p class=\"ds-stub\"><span>N.º</span><span class=\"ds-number\">7</span></p><span class=\"ds-perf\"></span><div class=\"ds-body\"><div class=\"ds-photo\"></div><h2 class=\"ds-name\">Cuenco de gres</h2><p class=\"ds-price\">$ 6.000</p></div></article></div>",
+      "css": ".ds-piece{max-width:24rem;filter:drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3));font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;color:#1c1b19} .ds-slip{display:grid;grid-template-columns:5rem 1.3rem 1fr;background:#dff0e0;--nx:5.65rem;mask:radial-gradient(circle at var(--nx) 0,transparent 0.6rem,#000 calc(0.6rem + 0.5px)),radial-gradient(circle at var(--nx) 100%,transparent 0.6rem,#000 calc(0.6rem + 0.5px));mask-composite:intersect} .ds-stub{display:flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-number{font-size:4rem;letter-spacing:-0.03em;margin-top:0.15em} .ds-perf{background:radial-gradient(circle,#d8d3c9 0.22rem,transparent calc(0.22rem + 0.5px)) 50% 50% / 100% 0.75rem repeat-y} .ds-body{padding:1rem 1rem 1.5rem 0} .ds-photo{aspect-ratio:4/5;background:#d8d3c9} .ds-name{margin:1.1rem 0 0;font-size:1.75rem;font-weight:600;line-height:1.2} .ds-price{margin:0.25rem 0 0;font-size:2.25rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Talón",
+      "kind": "custom",
+      "refersTo": "stub",
+      "description": "N.º y el número en cifras tabulares 800.",
+      "html": "<p class=\"ds-stub-solo\"><span>N.º</span><span class=\"ds-stub-n\">12</span></p>",
+      "css": ".ds-stub-solo{display:inline-flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;width:5rem;background:#fbf1c4;color:#1c1b19;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-stub-n{font-size:min(4rem,calc(4.5rem / 1.24));letter-spacing:-0.03em;margin-top:0.15em}"
     },
     {
       "name": "Precio",
       "kind": "custom",
       "refersTo": "price-tag",
-      "description": "Precio en pesos; el \"$\" puede caer de línea bajo zoom, el monto nunca se parte.",
-      "html": "<p class=\"ds-price\">$ <span class=\"ds-price-amount\">125.000</span></p>",
-      "css": ".ds-price { margin: 0; color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 2.25rem; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; } .ds-price-amount { white-space: nowrap; }"
+      "description": "El precio: 800, 2.25rem, tabulares; el monto nunca se parte.",
+      "html": "<p class=\"ds-price-tag\">$ <span class=\"ds-amount\">12.500</span></p>",
+      "css": ".ds-price-tag{margin:0;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-size:2.25rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:#1c1b19} .ds-amount{white-space:nowrap}"
+    },
+    {
+      "name": "Nombre de la pieza",
+      "kind": "custom",
+      "refersTo": "piece-name",
+      "description": "600, 1.75rem, balanceado.",
+      "html": "<h2 class=\"ds-piece-name\">Fuente honda esmaltada</h2>",
+      "css": ".ds-piece-name{margin:0;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.2;text-wrap:balance;color:#1c1b19}"
     },
     {
       "name": "Título de página",
       "kind": "custom",
       "refersTo": "page-title",
-      "description": "Nombre del taller arriba a la izquierda, una vez por página.",
+      "description": "Nombre del taller sobre la mesa.",
       "html": "<h1 class=\"ds-title\">Taller de Norma</h1>",
-      "css": ".ds-title { margin: 0; color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }"
+      "css": ".ds-title{margin:0;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-size:2.5rem;font-weight:800;line-height:1.1;letter-spacing:-0.02em;color:#1c1b19}"
     },
     {
       "name": "Link",
       "kind": "custom",
-      "description": "Link de texto en tinta con contorno de foco grueso separado.",
-      "html": "<a class=\"ds-link\" href=\"#\">Ver foto completa</a>",
-      "css": ".ds-link { color: var(--ink, #1c1b19); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 1.25rem; font-weight: 600; text-underline-offset: 0.2em; text-decoration-thickness: 0.08em; } .ds-link:focus-visible { outline: 0.25rem solid var(--ink, #1c1b19); outline-offset: 0.25rem; }"
+      "refersTo": "link",
+      "description": "Hereda la tinta; foco con contorno de tinta. Único estado interactivo.",
+      "html": "<a class=\"ds-link\" href=\"#\">Ver la foto completa</a>",
+      "css": ".ds-link{color:#1c1b19;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-size:1.25rem;text-underline-offset:0.2em;text-decoration-thickness:0.08em} .ds-link:focus-visible{outline:0.25rem solid #1c1b19;outline-offset:0.25rem}"
     }
   ],
   "narrative": {
-    "northStar": "La mesa del taller",
-    "overview": "Cada pieza es una foto instantánea apoyada sobre una mesa de trabajo: marco de papel blanco parejo, margen inferior más ancho, y ahí el nombre y el precio. La página es una sola columna de esas fotos, la más nueva arriba. No hay acento de color: el color lo ponen las piezas.\n\nEl sistema existe para que un comprador de 70 años lea nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ninguna decisión visual puede bajarlos. Solo modo claro: el modo oscuro fue rechazado.",
+    "northStar": "El talonario de rifa",
+    "overview": "**Creative North Star: \"El talonario de rifa\"**\n\nLa página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con \"N.º\" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Las boletas se apilan en una sola columna, la más nueva arriba.\n\nEl papel de cada boleta es uno de cuatro tonos pálidos de talonario (rosa, verde, amarillo, celeste) y la pieza lo conserva de por vida: el tono sale de `número % 4`. La mesa es un gris cálido claramente más oscuro que cualquier papel, y se ve a través de los agujeros de la perforación y de las muescas. Tinta casi negra para todo el texto; la tipografía es la del teléfono del comprador.\n\nEl sistema existe para que un comprador de 70 años lea número, nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ningún recurso del talonario puede bajarlos. Solo modo claro.",
     "keyCharacteristics": [
-      "Mesa gris cálida, marcos blancos, tinta casi negra; nada más.",
-      "Tipografía del sistema en dos pesos (600 y 800), cifras tabulares.",
-      "Una sola sombra, corta y de contacto.",
-      "Esquinas rectas en todo."
+      "Mesa gris cálida, boletas en cuatro papeles pálidos que rotan, tinta casi negra.",
+      "Talón con el número en cifras de imprenta tabulares, peso 800.",
+      "Perforación real: agujeros del color de la mesa cada 0.75rem y muescas semicirculares troqueladas.",
+      "Tipografía del sistema, sin fuentes web.",
+      "Una sola sombra de contacto que sigue el troquel.",
+      "Esquinas rectas."
     ],
     "rules": [
       {
-        "name": "The Sin Acento Rule",
-        "body": "No hay color de marca ni de interacción. Si un elemento necesita destacarse, lo hace con tamaño o peso, nunca con color.",
+        "name": "The Papel de por Vida Rule",
+        "body": "El papel de una boleta lo decide su número (`número % 4`) y no cambia nunca, ni al reordenar ni al editar. No se elige papel por pieza ni por contenido.",
+        "section": "colors"
+      },
+      {
+        "name": "The Papel No Es Acento Rule",
+        "body": "Los papeles identifican la boleta; no son color de marca ni de interacción. Nada se destaca con color: se destaca con tamaño o peso. No hay botones, badges ni estados de color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mesa Más Oscura Rule",
+        "body": "La mesa es siempre visiblemente más oscura que los cuatro papeles, para que el troquel y la perforación se lean como agujeros.",
         "section": "colors"
       },
       {
         "name": "The Siete a Uno Rule",
-        "body": "Todo texto, incluido el secundario, cumple 7:1 contra su fondo. Un gris más claro que ink-soft no entra.",
+        "body": "Todo texto cumple 7:1 contra su fondo, sea un papel o la mesa. No hay tinta suave ni gris secundario.",
         "section": "colors"
       },
       {
-        "name": "The Dos Pesos Rule",
-        "body": "Solo 600 y 800. No hay 400 ni cursivas.",
+        "name": "The Precio Entero Rule",
+        "body": "El precio nunca se achica, tampoco con zoom. Bajo zoom fuerte el \"$\" puede pasar a su propia línea; el monto nunca se parte (`white-space: nowrap`).",
         "section": "typography"
       },
       {
-        "name": "The Precio Entero Rule",
-        "body": "El precio nunca se achica, tampoco con zoom. Bajo zoom fuerte el \"$\" puede pasar a su propia línea; el monto nunca se parte (`white-space: nowrap`). Límite declarado: un precio de seis cifras necesita unos 390 px de ancho con texto al 200 %; entre 320 y 360 px al 200 % el monto no entra, y no se resuelve achicando el precio.",
+        "name": "The Mínimos Rule",
+        "body": "Ningún texto baja de los mínimos de PRODUCT.md: texto base 20 px, nombre 28 px, precio 32 px en peso fuerte, contraste 7:1, zoom al 200 % sin scroll horizontal.",
         "section": "typography"
       },
       {
         "name": "The Una Sombra Rule",
-        "body": "La sombra de contacto es la única. Nada de sombras largas, difusas, desplazadas ni de hover.",
+        "body": "La sombra de contacto es la única. Nada de sombras largas, difusas, desplazadas ni de hover. Un `box-shadow` sobre la boleta ignora el troquel y no entra.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** apoyar cada pieza en un marco de papel con margen inferior ancho y nombre y precio debajo de la foto.",
+      "**Do** presentar cada pieza como una boleta: talón con \"N.º\" y número, perforación con muescas, foto 4:5, nombre y precio.",
+      "**Do** asignar el papel por `número % 4` y mantenerlo de por vida.",
+      "**Do** dejar ver la mesa a través de agujeros y muescas, con la mesa más oscura que todo papel.",
       "**Do** dejar que el precio crezca con el zoom y caiga de línea antes que achicarse.",
-      "**Do** usar la pila de fuentes del sistema en 600 y 800, con cifras tabulares en precios.",
+      "**Do** pasar el talón arriba cuando la boleta es angosta, con el número a 4rem.",
+      "**Do** usar la pila de fuentes del sistema, con cifras tabulares en número y precio.",
       "**Do** mantener 7:1 de contraste en todo texto."
     ],
     "donts": [
       "**Don't** agregar color de acento, botones, badges ni grillas de tienda con tarjetas.",
-      "**Don't** usar más sombra que el contacto de 1px/3px.",
-      "**Don't** redondear esquinas.",
+      "**Don't** usar más sombra que el contacto `drop-shadow(0 1px 1.5px)`, ni `box-shadow` sobre la boleta.",
+      "**Don't** redondear esquinas; las únicas curvas son las del troquel.",
+      "**Don't** elegir el papel por pieza ni cambiarlo después de publicada.",
       "**Don't** cargar fuentes web ni introducir un modo oscuro.",
       "**Don't** bajar ningún tamaño por debajo de los mínimos: texto 20 px, nombre 28 px, precio 32 px en peso fuerte."
     ]

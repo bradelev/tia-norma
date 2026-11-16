@@ -1,18 +1,28 @@
 ---
 name: Taller de Norma
-description: Piezas de cerámica de Norma, como fotos instantáneas sobre la mesa del taller.
+description: Piezas de cerámica de Norma, cada una en una boleta de talonario de rifa con su número.
 colors:
-  ground: "#efece6"
+  ground: "#d8d3c9"
+  paper-rosa: "#f8e1e5"
+  paper-verde: "#dff0e0"
+  paper-amarillo: "#fbf1c4"
+  paper-celeste: "#dfeaf6"
   paper: "#ffffff"
   ink: "#1c1b19"
-  ink-soft: "#3d3a35"
 typography:
   title:
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
-    fontSize: "2rem"
+    fontSize: "2.5rem"
     fontWeight: 800
-    lineHeight: 1.15
-    letterSpacing: "-0.01em"
+    lineHeight: 1.1
+    letterSpacing: "-0.02em"
+  number:
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
+    fontSize: "4rem"
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: "-0.03em"
+    fontFeature: "tnum"
   price:
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
     fontSize: "2.25rem"
@@ -27,21 +37,35 @@ typography:
   body:
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
     fontSize: "1.25rem"
-    fontWeight: 600
+    fontWeight: 400
     lineHeight: 1.5
+  label:
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
+    fontSize: "1.25rem"
+    fontWeight: 800
+    lineHeight: 1
 rounded:
   none: "0"
 spacing:
   gutter: "1rem"
   frame: "clamp(0.75rem, 3.5vw, 1.375rem)"
-  stack: "2.5rem"
+  stack: "1.5rem"
   column: "40rem"
+  stub: "clamp(4.25rem, 19vw, 6.5rem)"
+  perforation: "1.3rem"
 components:
-  print:
-    backgroundColor: "{colors.paper}"
+  slip:
+    backgroundColor: "{colors.paper-rosa}"
     textColor: "{colors.ink}"
     rounded: "{rounded.none}"
-    padding: "{spacing.frame} {spacing.frame} calc({spacing.frame} * 1.5)"
+    padding: "{spacing.frame} {spacing.frame} calc({spacing.frame} * 1.5) 0"
+  stub:
+    textColor: "{colors.ink}"
+    typography: "{typography.number}"
+    width: "{spacing.stub}"
+    padding: "{spacing.frame} 0.25rem"
+  perforation:
+    width: "{spacing.perforation}"
   price-tag:
     textColor: "{colors.ink}"
     typography: "{typography.price}"
@@ -57,112 +81,150 @@ components:
 
 ## Overview
 
-**Creative North Star: "La mesa del taller"**
+**Creative North Star: "El talonario de rifa"**
 
-Cada pieza es una foto instantánea apoyada sobre una mesa de trabajo: marco de papel blanco parejo, margen inferior más ancho, y ahí el nombre y el precio. La página es una sola columna de esas fotos, la más nueva arriba. No hay acento de color: el color lo ponen las piezas.
+La página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con "N.º" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Las boletas se apilan en una sola columna, la más nueva arriba.
 
-El sistema existe para que un comprador de 70 años lea nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ninguna decisión visual puede bajarlos. Solo modo claro: el modo oscuro fue rechazado.
+El papel de cada boleta es uno de cuatro tonos pálidos de talonario (rosa, verde, amarillo, celeste) y la pieza lo conserva de por vida: el tono sale de `número % 4`. La mesa es un gris cálido claramente más oscuro que cualquier papel, y se ve a través de los agujeros de la perforación y de las muescas. Tinta casi negra para todo el texto; la tipografía es la del teléfono del comprador.
+
+El sistema existe para que un comprador de 70 años lea número, nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ningún recurso del talonario puede bajarlos. Solo modo claro.
 
 **Key Characteristics:**
 
-- Mesa gris cálida, marcos blancos, tinta casi negra; nada más.
-- Tipografía del sistema en dos pesos (600 y 800), cifras tabulares.
-- Una sola sombra, corta y de contacto.
-- Esquinas rectas en todo.
+- Mesa gris cálida, boletas en cuatro papeles pálidos que rotan, tinta casi negra.
+- Talón con el número en cifras de imprenta tabulares, peso 800.
+- Perforación real: agujeros del color de la mesa cada 0.75rem y muescas semicirculares troqueladas.
+- Tipografía del sistema, sin fuentes web.
+- Una sola sombra de contacto que sigue el troquel.
+- Esquinas rectas.
 
 ## Colors
 
-Paleta neutra y cálida de cuatro valores; el único color saturado de la página es el de las fotos.
+Una mesa neutra y cálida, cuatro papeles pálidos de talonario y una tinta; el color saturado lo ponen las fotos.
 
 ### Neutral
 
-- **Mesa de taller** (ground): fondo de la página, `theme-color` del navegador y relleno de la foto mientras carga.
-- **Papel fotográfico** (paper): el marco de cada foto instantánea. También el texto sobre selección.
-- **Tinta** (ink): todo el texto principal, el contorno de foco y el fondo de la selección.
-- **Tinta suave** (ink-soft): texto secundario (el crédito al pie). Sigue por encima de 7:1 sobre la mesa.
+- **Mesa de taller** (ground): fondo de la página, `theme-color` del navegador, color de los agujeros y muescas de la perforación, y relleno de la foto mientras carga. El encabezado se lee sobre ella.
+- **Tinta** (ink): todo el texto, el contorno de foco, el fondo de la selección y la base de la sombra de contacto.
+- **Papel blanco** (paper): solo el texto sobre la selección. No es papel de boleta.
+
+### Papeles de talonario
+
+- **Rosa** (paper-rosa): boletas con `número % 4 = 0`.
+- **Verde** (paper-verde): `número % 4 = 1`.
+- **Amarillo** (paper-amarillo): `número % 4 = 2`.
+- **Celeste** (paper-celeste): `número % 4 = 3`.
+
+Los cuatro viven en `src/domain/card.ts` como `--paper-0` a `--paper-3`; la página y la imagen de vista previa leen la misma fuente.
 
 ### Named Rules
 
-**The Sin Acento Rule.** No hay color de marca ni de interacción. Si un elemento necesita destacarse, lo hace con tamaño o peso, nunca con color.
+**The Papel de por Vida Rule.** El papel de una boleta lo decide su número (`número % 4`) y no cambia nunca, ni al reordenar ni al editar. No se elige papel por pieza ni por contenido.
 
-**The Siete a Uno Rule.** Todo texto, incluido el secundario, cumple 7:1 contra su fondo. Un gris más claro que ink-soft no entra.
+**The Papel No Es Acento Rule.** Los papeles identifican la boleta; no son color de marca ni de interacción. Nada se destaca con color: se destaca con tamaño o peso. No hay botones, badges ni estados de color.
+
+**The Mesa Más Oscura Rule.** La mesa es siempre visiblemente más oscura que los cuatro papeles, para que el troquel y la perforación se lean como agujeros.
+
+**The Siete a Uno Rule.** Todo texto cumple 7:1 contra su fondo, sea un papel o la mesa. No hay tinta suave ni gris secundario.
 
 ## Typography
 
 **Display Font:** pila del sistema (system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif)
 **Body Font:** la misma pila
 
-**Character:** Una sola familia, la del teléfono del comprador, en dos pesos. Es un compromiso de PRODUCT.md (sin fuentes web), no un placeholder.
+**Character:** Una sola familia, la del teléfono del comprador. Es un compromiso de PRODUCT.md (sin fuentes web), no un placeholder. Las cifras del número y del precio son tabulares, como en un talonario impreso.
 
 ### Hierarchy
 
-- **Title** (800, 2rem, 1.15): el nombre del taller, una vez por página.
-- **Price** (800, 2.25rem, 1.15, tabulares): el dato más grande de la página.
+- **Number** (800, hasta 4rem, 1, -0.03em, tabulares): el número en el talón. Ocupa todo el ancho que el talón permite; con tres cifras se achica para no salirse (`min(4rem, (talón - 0.5rem) / (cifras × 0.62))`). Cuando el talón pasa arriba vuelve a 4rem.
+- **Label** (800, 1.25rem, 1): "N.º" sobre el número en el talón. Es parte de la boleta, no una etiqueta decorativa; el lector de pantalla oye "Número".
+- **Title** (800, 2.5rem, 1.1, -0.02em, `text-wrap: balance`): el nombre del taller, una vez por página.
+- **Price** (800, 2.25rem, 1.15, tabulares): el dato más grande del cuerpo de la boleta.
 - **Name** (600, 1.75rem, 1.2, `text-wrap: balance`): nombre de la pieza.
-- **Body** (base 1.25rem, 1.5; se usa en 600): texto corriente y crédito.
+- **Body** (400, 1.25rem, 1.5): la línea bajo el título. El crédito de las fotos de muestra y el estado vacío van en 600.
 
 ### Named Rules
 
-**The Dos Pesos Rule.** Solo 600 y 800. No hay 400 ni cursivas.
+**The Precio Entero Rule.** El precio nunca se achica, tampoco con zoom. Bajo zoom fuerte el "$" puede pasar a su propia línea; el monto nunca se parte (`white-space: nowrap`).
 
-**The Precio Entero Rule.** El precio nunca se achica, tampoco con zoom. Bajo zoom fuerte el "$" puede pasar a su propia línea; el monto nunca se parte (`white-space: nowrap`). Límite declarado: un precio de seis cifras necesita unos 390 px de ancho con texto al 200 %; entre 320 y 360 px al 200 % el monto no entra, y no se resuelve achicando el precio.
+**The Mínimos Rule.** Ningún texto baja de los mínimos de PRODUCT.md: texto base 20 px, nombre 28 px, precio 32 px en peso fuerte, contraste 7:1, zoom al 200 % sin scroll horizontal.
 
 ## Layout
 
-Una columna centrada, máximo 40rem de foto más el margen lateral (gutter de 1rem). Las fotos se apilan con 2.5rem entre sí. El marco (frame) escala con el ancho, de 0.75rem a 1.375rem; el margen inferior del marco es 1.5 veces el lateral y el pie de foto arranca 1.1 marcos debajo de la imagen.
+Una columna centrada de boletas con margen lateral de 1rem (gutter) y 1.5rem entre boletas (stack). El ancho máximo es la foto (40rem como mucho) más el talón, la perforación y los márgenes. El talón mide entre 4.25rem y 6.5rem (19vw) y la perforación 1.3rem.
 
-En pantallas anchas y bajas la columna se angosta según la altura del viewport, con un piso de 20rem, para que una foto entera, precio incluido, quepa en pantalla y se vea el borde superior de la siguiente. En 390 × 844 rige lo mismo: foto entera y el borde de la próxima.
+Dentro del cuerpo el marco (frame) escala con el ancho, de 0.75rem a 1.375rem. El cuerpo no tiene margen a la izquierda (la perforación hace de borde), el margen inferior es 1.5 marcos y el pie de foto arranca 1.1 marcos debajo de la imagen.
 
-Sin scroll horizontal hasta 200 % de zoom.
+En pantallas anchas y bajas la columna se angosta según la altura del viewport, con un piso de 20rem, para que una boleta entera, precio incluido, quepa en pantalla y se vea el borde de la siguiente.
+
+Cuando la boleta mide menos de 15em de ancho (teléfono chico, texto grande o zoom al 200 %), el talón pasa arriba como una franja horizontal con "N.º" y el número en línea, la perforación corre de lado a lado con las muescas en sus dos extremos, y el cuerpo recupera su margen izquierdo. Sin scroll horizontal hasta 200 % de zoom.
 
 ## Elevation & Depth
 
-Plano salvo por las fotos. Cada marco descansa sobre la mesa con una sola sombra corta de contacto, lo justo para que el papel se separe del fondo.
+Plano salvo por las boletas. Cada boleta descansa sobre la mesa con una sola sombra corta de contacto. Es un `filter: drop-shadow`, no un `box-shadow`, para que siga el contorno troquelado y se vea también dentro de las muescas.
 
 ### Shadow Vocabulary
 
-- **Contacto** (`box-shadow: 0 1px 3px rgb(28 27 25 / 0.2)`): solo en el marco de la foto instantánea.
+- **Contacto** (`filter: drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3))`): solo en la boleta.
 
 ### Named Rules
 
-**The Una Sombra Rule.** La sombra de contacto es la única. Nada de sombras largas, difusas, desplazadas ni de hover.
+**The Una Sombra Rule.** La sombra de contacto es la única. Nada de sombras largas, difusas, desplazadas ni de hover. Un `box-shadow` sobre la boleta ignora el troquel y no entra.
 
 ## Shapes
 
-Esquinas rectas (0) en marcos, fotos y todo lo demás, como papel fotográfico recortado. Sin bordes ni líneas divisorias: la separación la dan el marco blanco y el espacio. Las fotos son siempre 4:5, recortadas con `object-fit: cover`.
+Esquinas rectas (0) en boletas, fotos y todo lo demás, como papel cortado. Las únicas curvas son del troquel: dos muescas semicirculares de 0.6rem de radio donde la perforación toca los bordes, y agujeros redondos de 0.22rem de radio cada 0.75rem a lo largo de la perforación. Ambos se recortan con máscaras y gradientes radiales; dejan ver la mesa. Sin bordes ni líneas divisorias. Las fotos son siempre 4:5, recortadas con `object-fit: cover`.
 
 ## Components
 
-### Foto instantánea (print)
+### Boleta (slip)
 
-La pieza firma del sistema.
+La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres columnas.
 
-- **Corner Style:** recto (0).
-- **Background:** papel sobre la mesa.
+- **Corner Style:** recto (0), con las dos muescas troqueladas en la línea de la perforación.
+- **Background:** el papel de la pieza (`número % 4`).
 - **Shadow Strategy:** contacto (ver Elevation & Depth).
 - **Border:** ninguno.
-- **Internal Padding:** marco parejo arriba y a los lados, 1.5 marcos abajo.
-- **Contenido:** foto 4:5 enlazada a la imagen completa, luego nombre y precio. Nada más.
-- **Vacío:** el mismo marco con un rectángulo 4:5 color mesa y el texto de estado vacío en peso de nombre.
+- **Contenido:** talón con el número; cuerpo con la foto 4:5 enlazada a la imagen completa, nombre y precio. Nada más.
+- **Vacío:** la misma boleta con el talón sin número, un rectángulo 4:5 color mesa y el texto de estado vacío en tamaño de nombre y peso 600.
+
+### Talón (stub)
+
+- "N.º" arriba y el número debajo, centrados, en tinta 800 con cifras tabulares.
+- Relleno: un marco arriba y abajo, 0.25rem a los lados.
+- En boletas angostas pasa a ser una franja horizontal sobre el cuerpo.
+
+### Perforación
+
+- Columna de 1.3rem con agujeros color mesa cada 0.75rem; decorativa para el lector de pantalla (`aria-hidden`).
+- En la variante angosta corre en horizontal y las muescas se dibujan en sus extremos.
 
 ### Links
 
 - **Style:** heredan la tinta; subrayado con offset 0.2em y grosor 0.08em cuando hay texto.
 - **Focus:** contorno de tinta de 0.25rem separado 0.25rem del elemento. Es el único estado interactivo.
 
+### Vista previa de WhatsApp (pendiente)
+
+La vista previa que recibe Norma tiene que ser la misma boleta que ve el comprador, con el número que la pieza va a recibir al publicarse. Hoy `src/adapters/satori/preview-renderer.tsx` todavía dibuja la tarjeta anterior (foto instantánea); se actualiza en un cambio aparte. Hasta entonces la vista previa no es referencia de este sistema.
+
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** apoyar cada pieza en un marco de papel con margen inferior ancho y nombre y precio debajo de la foto.
+- **Do** presentar cada pieza como una boleta: talón con "N.º" y número, perforación con muescas, foto 4:5, nombre y precio.
+- **Do** asignar el papel por `número % 4` y mantenerlo de por vida.
+- **Do** dejar ver la mesa a través de agujeros y muescas, con la mesa más oscura que todo papel.
 - **Do** dejar que el precio crezca con el zoom y caiga de línea antes que achicarse.
-- **Do** usar la pila de fuentes del sistema en 600 y 800, con cifras tabulares en precios.
+- **Do** pasar el talón arriba cuando la boleta es angosta, con el número a 4rem.
+- **Do** usar la pila de fuentes del sistema, con cifras tabulares en número y precio.
 - **Do** mantener 7:1 de contraste en todo texto.
 
 ### Don't:
 
 - **Don't** agregar color de acento, botones, badges ni grillas de tienda con tarjetas.
-- **Don't** usar más sombra que el contacto de 1px/3px.
-- **Don't** redondear esquinas.
+- **Don't** usar más sombra que el contacto `drop-shadow(0 1px 1.5px)`, ni `box-shadow` sobre la boleta.
+- **Don't** redondear esquinas; las únicas curvas son las del troquel.
+- **Don't** elegir el papel por pieza ni cambiarlo después de publicada.
 - **Don't** cargar fuentes web ni introducir un modo oscuro.
 - **Don't** bajar ningún tamaño por debajo de los mínimos: texto 20 px, nombre 28 px, precio 32 px en peso fuerte.
