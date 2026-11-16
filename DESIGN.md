@@ -204,9 +204,9 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 - **Style:** heredan la tinta; subrayado con offset 0.2em y grosor 0.08em cuando hay texto.
 - **Focus:** contorno de tinta de 0.25rem separado 0.25rem del elemento. Es el único estado interactivo.
 
-### Vista previa de WhatsApp (pendiente)
+### Vista previa de WhatsApp
 
-La vista previa que recibe Norma tiene que ser la misma boleta que ve el comprador, con el número que la pieza va a recibir al publicarse. Hoy `src/adapters/satori/preview-renderer.tsx` todavía dibuja la tarjeta anterior (foto instantánea); se actualiza en un cambio aparte. Hasta entonces la vista previa no es referencia de este sistema.
+La vista previa que recibe Norma es la misma boleta que ve el comprador, dibujada en `src/adapters/satori/preview-renderer.tsx` con los tokens de `card.ts`: papel según el número, talón al ancho máximo, perforación con agujeros y muescas, y la mesa alrededor. Una pieza nueva muestra el número que va a recibir al publicarse; un cambio, el de la pieza. La foto va a 24rem, más angosta que la columna de la página, para que nombre y precio se lean al tamaño de WhatsApp.
 
 ## Do's and Don'ts
 

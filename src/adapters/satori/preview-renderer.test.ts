@@ -16,8 +16,8 @@ async function pixels(png: Uint8Array) {
 }
 
 // To redraw the reference after an intended design change:
-// UPDATE_REFERENCE=1 pnpm test, then look at fixtures/card.png before committing it.
-test("draws the card the way the page shows it", async () => {
+// UPDATE_REFERENCE=1 pnpm test, then look at fixtures/slip.png before committing it.
+test("draws the raffle slip the way the page shows it", async () => {
   const renderer = createSatoriPreviewRenderer({
     load: (url) => readFile(fixture(url)),
   });
@@ -27,10 +27,10 @@ test("draws the card the way the page shows it", async () => {
     name: "Jarra de barro con dos asas",
     price: 6000,
   });
-  if (process.env.UPDATE_REFERENCE) await writeFile(fixture("card.png"), png);
+  if (process.env.UPDATE_REFERENCE) await writeFile(fixture("slip.png"), png);
 
   const actual = await pixels(png);
-  const expected = await pixels(await readFile(fixture("card.png")));
+  const expected = await pixels(await readFile(fixture("slip.png")));
   expect([actual.width, actual.height]).toEqual([
     expected.width,
     expected.height,
