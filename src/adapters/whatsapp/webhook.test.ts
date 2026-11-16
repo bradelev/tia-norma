@@ -4,6 +4,7 @@ import audio from "./fixtures/audio.json";
 import button from "./fixtures/button.json";
 import imageCaption from "./fixtures/image-caption.json";
 import image from "./fixtures/image.json";
+import list from "./fixtures/list.json";
 import reaction from "./fixtures/reaction.json";
 import status from "./fixtures/status.json";
 import sticker from "./fixtures/sticker.json";
@@ -52,6 +53,13 @@ describe("mensajes de un webhook", () => {
     expect(parseMessages(bytes(button))?.[0]?.content).toEqual({
       kind: "button",
       id: "publish:p1",
+    });
+  });
+
+  it("una fila tocada en una lista llega como un botón", () => {
+    expect(parseMessages(bytes(list))?.[0]?.content).toEqual({
+      kind: "button",
+      id: "takeDown:2",
     });
   });
 

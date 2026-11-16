@@ -38,9 +38,10 @@ export function createMemoryWorkshop({
     say: (text: string) => send({ kind: "text", text }),
     /** An audio, already transcribed to this text. */
     speak: (text: string) => send({ kind: "audio", text }),
-    /** Taps a button from the last reply, like Norma would. */
+    /** Taps a button or a list row from the last reply, like Norma would. */
     tap(title: string) {
-      const button = last.buttons?.find((b) => b.title === title);
+      const choices = [...(last.buttons ?? []), ...(last.list?.rows ?? [])];
+      const button = choices.find((b) => b.title === title);
       if (!button)
         throw new Error(`No hay botón "${title}" en la última respuesta`);
       return send({ kind: "button", id: button.id });

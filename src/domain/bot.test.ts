@@ -390,23 +390,93 @@ describe("sacar una pieza", () => {
 
     const reply = await norma.say("vendí la taza");
 
-    expect(reply.text).toBe("¿Cuál? Decime el número.");
+    expect(reply.text).toBe("¿Cuál sacás?");
     expect(reply.album).toEqual([
       { image: blue?.image, caption: "La 1, Taza azul" },
       { image: red?.image, caption: "La 3, Taza roja" },
     ]);
+    expect(reply.list?.rows).toEqual([
+      { id: "takeDown:1", title: "1. Taza azul", description: "$ 6.000" },
+      { id: "takeDown:3", title: "3. Taza roja", description: "$ 6.000" },
+    ]);
     expect(await norma.publishedPieces()).toHaveLength(3);
   });
 
-  it("si el nombre no coincide con ninguna, lo dice y no cambia nada", async () => {
-    const norma = await withPublished("taza azul, seis mil");
+  it("si el nombre no coincide con ninguna, muestra las publicadas para elegir", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
 
     const reply = await norma.say("vendí la jarra");
 
-    expect(reply).toEqual({
-      text: "No encontré ninguna pieza que se llame jarra",
-    });
-    expect(await norma.publishedPieces()).toHaveLength(1);
+    expect(reply.text).toBe(
+      "No encontré ninguna pieza que se llame jarra. ¿Cuál sacás?",
+    );
+    expect(reply.list?.button).toBe("Ver piezas");
+    expect(reply.list?.rows.map((row) => row.title)).toEqual([
+      "2. Plato",
+      "1. Taza azul",
+    ]);
+    expect(await norma.publishedPieces()).toHaveLength(2);
+  });
+
+  it("tocar una de la lista la saca como si dijera el número", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    await norma.say("vendí la jarra");
+
+    const reply = await norma.tap("1. Taza azul");
+
+    expect(reply.text).toBe("Saqué la pieza 1");
+    expect(reply.buttons?.map((b) => b.title)).toEqual(["Deshacer"]);
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 2 }]);
+  });
+
+  it("tocar de nuevo una ya sacada avisa y no cambia nada", async () => {
+    const norma = await withPublished("taza azul, seis mil", "plato, ocho mil");
+    await norma.say("vendí la jarra");
+    await norma.tap("1. Taza azul");
+
+    const reply = await norma.pressButton("takeDown:1");
+
+    expect(reply).toEqual({ text: "La 1 ya no está en la página" });
+    expect(await norma.publishedPieces()).toMatchObject([{ number: 2 }]);
+  });
+
+  it("con más de 10, muestra las 10 más nuevas y recuerda el número", async () => {
+    const names = Array.from({ length: 11 }, (_, i) => `taza ${i + 1}, mil`);
+    const norma = await withPublished(...names);
+
+    const reply = await norma.say("vendí la jarra");
+
+    expect(reply.text).toBe(
+      "No encontré ninguna pieza que se llame jarra. ¿Cuál sacás? Si no está, decime el número.",
+    );
+    expect(reply.list?.rows).toHaveLength(10);
+    expect(reply.list?.rows[0]?.title).toBe("11. Taza 11");
+  });
+
+  it("un nombre largo se corta para que entre en la lista", async () => {
+    const norma = await withPublished(
+      "jarrón esmaltado con flores azules, mil",
+    );
+
+    const reply = await norma.say("vendí la jarra");
+
+    expect(reply.list?.rows[0]?.title).toBe("1. Jarrón esmaltado con…");
+  });
+
+  it("sin piezas publicadas, lo dice sin lista", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.say("vendí la jarra");
+
+    expect(reply).toEqual({ text: "No hay ninguna pieza en la página." });
+  });
+
+  it("el nombre ignora las palabras de relleno", async () => {
+    const norma = await withPublished("post whatsapp, mil", "plato, ocho mil");
+
+    const reply = await norma.say("sacá la del post de WhatsApp");
+
+    expect(reply.text).toBe("Saqué la pieza 1");
   });
 
   it("sacar con una vista previa abierta no la toca", async () => {
