@@ -45,6 +45,8 @@ export interface Catalog {
    * Publishing the same preview again returns the piece it already became.
    */
   publish(previewId: string, piece: Omit<Piece, "number">): Promise<Piece>;
+  /** The number the next publish takes. Sacada pieces keep theirs, so it is never reused. */
+  nextNumber(): Promise<number>;
   /** The piece a given preview turned into, if it was already published. */
   publishedFrom(previewId: string): Promise<Piece | null>;
   /** Pieces on the page, newest first. */

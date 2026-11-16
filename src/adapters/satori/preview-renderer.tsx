@@ -26,10 +26,19 @@ const fonts = Promise.all(
   })),
 );
 
-export function createSatoriPreviewRenderer(): PreviewRenderer {
+async function download(url: string): Promise<Uint8Array> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Foto no disponible: ${response.status}`);
+  return new Uint8Array(await response.arrayBuffer());
+}
+
+/** `load` fetches the photo's URL; tests pass a local file instead. */
+export function createSatoriPreviewRenderer({
+  load = download,
+}: { load?: (url: string) => Promise<Uint8Array> } = {}): PreviewRenderer {
   return {
     async render({ photo, name, price }) {
-      const cropped = await sharp(photo)
+      const cropped = await sharp(await load(photo))
         .rotate()
         .resize(photoWidth, photoHeight, { fit: "cover" })
         .jpeg({ quality: 90 })

@@ -26,6 +26,9 @@ export function createMemoryCatalog(): Catalog {
       last = { action: { id: previewId, kind: "publish", piece } };
       return piece;
     },
+    async nextNumber() {
+      return pieces.length + 1;
+    },
     async publishedFrom(previewId) {
       return byPreview.get(previewId) ?? null;
     },
