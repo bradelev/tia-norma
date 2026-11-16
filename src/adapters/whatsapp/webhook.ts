@@ -29,7 +29,10 @@ const message = z.object({
     .optional(),
   audio: z.object({ id: z.string().min(1) }).optional(),
   interactive: z
-    .object({ button_reply: z.object({ id: z.string().min(1) }).optional() })
+    .object({
+      button_reply: z.object({ id: z.string().min(1) }).optional(),
+      list_reply: z.object({ id: z.string().min(1) }).optional(),
+    })
     .optional(),
 });
 
@@ -86,7 +89,8 @@ function content({
   audio,
   interactive,
 }: Omit<z.infer<typeof message>, "id" | "from">): Content {
-  const button = interactive?.button_reply;
+  // A row tapped in a list answers like a button.
+  const button = interactive?.button_reply ?? interactive?.list_reply;
   if (type === "text" && text) return { kind: "text", text: text.body };
   if (type === "image" && image) {
     const { id: mediaId, caption } = image;

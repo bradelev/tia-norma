@@ -118,7 +118,7 @@ El tratamiento nunca agrega ni reemplaza píxeles de la pieza. Una foto movida n
 | Toca "Deshacer" | Revierte la última acción | Vista previa de cómo quedó |
 | Cualquier otra cosa | Nada cambia | Audio grabado de ayuda |
 
-Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "vendí la taza azul" valen igual. Si el nombre coincide con más de una pieza, el bot muestra las fotos y pregunta cuál. El número aparece en los mensajes del bot y no en la página.
+Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "vendí la taza azul" valen igual. Si el nombre coincide con más de una pieza, el bot muestra las fotos y pregunta cuál. El número aparece en los mensajes del bot y no en la página. Para sacar, si el nombre no coincide con ninguna o coincide con varias, el bot manda una lista de WhatsApp con las publicadas (las 10 más nuevas) y tocar una la saca como "sacá la N".
 
 ### Reglas de la conversación
 
@@ -175,7 +175,7 @@ Diecisiete requisitos en dos tablas. Cada uno tiene un criterio que se verifica 
 | R1 | Publicar con foto y audio | Dada una foto y un audio con nombre y precio, cuando Norma toca "Sí, publicar", la pieza aparece en la página en menos de 10 segundos con nombre y precio correctos. |
 | R2 | Vista previa obligatoria | Ninguna alta ni cambio llega a la página sin un "Sí". Sacar una pieza es inmediato y ofrece "Deshacer". |
 | R3 | Texto en lugar de audio | Si Norma escribe en vez de hablar, el resultado es el mismo. Si falta el nombre o el precio, el bot pide solo eso. |
-| R4 | Sacar una pieza | "Vendí la N" o "sacá la N" quitan la pieza N de la página. Vale el número o el nombre. Si no hay coincidencia, o hay más de una, el bot pregunta y no cambia nada. |
+| R4 | Sacar una pieza | "Vendí la N" o "sacá la N" quitan la pieza N de la página. Vale el número o el nombre. Si no hay coincidencia, o hay más de una, el bot pregunta con una lista para tocar y no cambia nada. |
 | R5 | Cambiar precio | "La N ahora sale X" genera vista previa y aplica al confirmar. |
 | R6 | Cambiar foto | Una foto con referencia a la pieza N reemplaza su imagen al confirmar. |
 | R7 | Deshacer | "Deshacer" revierte exactamente la última acción aplicada y nada más. |

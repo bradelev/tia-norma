@@ -18,6 +18,13 @@ export interface Reply {
   buttons?: [Button] | [Button, Button];
   /** Several photos with a caption each, sent before the text, when Norma has to pick one. */
   album?: { image: string; caption: string }[];
+  /** Up to 10 rows behind one button, to pick a piece with a tap. */
+  list?: { button: string; rows: Row[] };
+}
+
+/** A row of a list: tapped, it arrives like a button with its id. */
+export interface Row extends Button {
+  description: string;
 }
 
 /**

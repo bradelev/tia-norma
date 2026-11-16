@@ -1,4 +1,10 @@
-import type { Catalog, Change, Draft, StoredPiece } from "../ports/catalog";
+import type {
+  Catalog,
+  Change,
+  Draft,
+  Piece,
+  StoredPiece,
+} from "../ports/catalog";
 import type { ImageProcessor } from "../ports/image-processor";
 import type { Interpreter, PieceRef } from "../ports/interpreter";
 import type { MediaStore } from "../ports/media-store";
@@ -13,6 +19,9 @@ const PREVIEW_LIFETIME_MS = 24 * 60 * 60 * 1000;
 const ASK_PRICE_AGAIN =
   "¿Cuánto sale? Decímelo en pesos, por ejemplo seis mil.";
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
+/** WhatsApp shows at most 10 rows in a list, each title up to 24 characters. */
+const LIST_ROWS = 10;
+const ROW_TITLE_LENGTH = 24;
 const STALE_PREVIEW =
   "Esa vista previa ya cambió. Fijate en la última que te mandé.";
 /** Keeps "Escuché: "…". No te entendí…" within the 160 characters of a reply. */
@@ -116,12 +125,17 @@ function conversation(ports: BotPorts): Bot {
     return update({ photo });
   }
 
+  /** Published pieces whose name has every word Norma said, by number. */
+  async function named(said: string): Promise<Piece[]> {
+    return (await catalog.published())
+      .filter((piece) => matchesName(piece.name, said))
+      .sort((a, b) => a.number - b.number);
+  }
+
   /** A piece on the page, or what to tell Norma when there is no single one. */
   async function find(ref: PieceRef): Promise<StoredPiece | Reply> {
     if ("name" in ref) {
-      const found = (await catalog.published())
-        .filter((piece) => matchesName(piece.name, ref.name))
-        .sort((a, b) => a.number - b.number);
+      const found = await named(ref.name);
       const [only, ...rest] = found;
       if (!only)
         return { text: `No encontré ninguna pieza que se llame ${ref.name}` };
@@ -142,7 +156,17 @@ function conversation(ports: BotPorts): Bot {
     return piece;
   }
 
+  /** Without a single match by name, Norma picks the piece from a list. */
   async function takeDown(ref: PieceRef): Promise<Reply> {
+    if ("name" in ref) {
+      const found = await named(ref.name);
+      if (found.length > 1) return pickToTakeDown(found, "", true);
+      if (!found[0]) {
+        const notFound = `No encontré ninguna pieza que se llame ${ref.name}. `;
+        return pickToTakeDown(await catalog.published(), notFound, false);
+      }
+      ref = { number: found[0].number };
+    }
     const piece = await find(ref);
     if ("text" in piece) return piece;
     const actionId = ports.newId();
@@ -151,6 +175,36 @@ function conversation(ports: BotPorts): Bot {
       text: `Saqué la pieza ${piece.number}`,
       image: piece.image,
       buttons: [{ id: `undo:${actionId}`, title: "Deshacer" }],
+    };
+  }
+
+  /** Each row takes its piece down like "sacá la N" would. */
+  function pickToTakeDown(
+    pieces: Piece[],
+    before: string,
+    withPhotos: boolean,
+  ): Reply {
+    if (pieces.length === 0)
+      return { text: "No hay ninguna pieza en la página." };
+    const more =
+      pieces.length > LIST_ROWS ? " Si no está, decime el número." : "";
+    const shown = pieces.slice(0, LIST_ROWS);
+    return {
+      text: `${before}¿Cuál sacás?${more}`,
+      ...(withPhotos && {
+        album: shown.map((piece) => ({
+          image: piece.image,
+          caption: `La ${piece.number}, ${piece.name}`,
+        })),
+      }),
+      list: {
+        button: "Ver piezas",
+        rows: shown.map((piece) => ({
+          id: `takeDown:${piece.number}`,
+          title: clip(`${piece.number}. ${piece.name}`, ROW_TITLE_LENGTH),
+          description: formatPrice(piece.price),
+        })),
+      },
     };
   }
 
@@ -302,6 +356,8 @@ function conversation(ports: BotPorts): Bot {
           if (action === "undo") return undo(id);
           if (action === "change") return applyChange(id);
           if (action === "keep") return keep(id);
+          if (action === "takeDown" && /^\d+$/.test(id))
+            return takeDown({ number: Number(id) });
           return { text: "¿Qué cambio?" };
         }
       }
@@ -326,10 +382,13 @@ function shorten(text: string): string {
   return `${space > 0 ? cut.slice(0, space) : cut}…`;
 }
 
-/** Every word Norma said appears in the name, ignoring accents and case. */
+/** Words Norma says around a name: "la del post de WhatsApp". */
+const FILLER = new Set(["la", "el", "los", "las", "del", "de"]);
+
+/** Every word Norma said appears in the name, ignoring accents, case and filler. */
 function matchesName(name: string, said: string): boolean {
   const own = new Set(words(name));
-  const wanted = words(said);
+  const wanted = words(said).filter((word) => !FILLER.has(word));
   return wanted.length > 0 && wanted.every((word) => own.has(word));
 }
 
@@ -375,6 +434,12 @@ function isComplete(draft: Draft): draft is CompleteDraft {
     draft.name !== undefined &&
     draft.price !== undefined
   );
+}
+
+function clip(text: string, length: number): string {
+  return text.length > length
+    ? `${text.slice(0, length - 1).trimEnd()}…`
+    : text;
 }
 
 function confirmation(number: number): Reply {

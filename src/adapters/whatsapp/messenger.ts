@@ -65,8 +65,8 @@ export function createCloudApiMessenger({
   };
 }
 
-/** The reply's own message: buttons win, with the image on top of them. */
-function message({ text, image, buttons }: Reply): object {
+/** The reply's own message: buttons win, with the image on top of them, then a list. */
+function message({ text, image, buttons, list }: Reply): object {
   if (buttons)
     return {
       type: "interactive",
@@ -77,6 +77,15 @@ function message({ text, image, buttons }: Reply): object {
         action: {
           buttons: buttons.map((reply) => ({ type: "reply", reply })),
         },
+      },
+    };
+  if (list)
+    return {
+      type: "interactive",
+      interactive: {
+        type: "list",
+        body: { text },
+        action: { button: list.button, sections: [{ rows: list.rows }] },
       },
     };
   if (image) return photo(image, text);

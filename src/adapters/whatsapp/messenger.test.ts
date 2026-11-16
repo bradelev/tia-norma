@@ -124,6 +124,29 @@ describe("mensajero de la Cloud API", () => {
     ]);
   });
 
+  it("para elegir de una lista, manda las fotos y después la lista", async () => {
+    const graph = fakeGraph();
+    const row = { id: "takeDown:2", title: "2. Taza azul", description: "$ 1" };
+
+    await graph.messenger.send(NORMA, {
+      text: "¿Cuál sacás?",
+      album: [{ image: "https://fotos.ejemplo/a.jpg", caption: "La 2" }],
+      list: { button: "Ver piezas", rows: [row] },
+    });
+
+    expect(graph.bodies()).toEqual([
+      photo("https://fotos.ejemplo/a.jpg", "La 2"),
+      expect.objectContaining({
+        type: "interactive",
+        interactive: {
+          type: "list",
+          body: { text: "¿Cuál sacás?" },
+          action: { button: "Ver piezas", sections: [{ rows: [row] }] },
+        },
+      }),
+    ]);
+  });
+
   it("si Meta rechaza el envío, falla sin repetir lo que Meta contestó", async () => {
     const graph = fakeGraph(() =>
       Response.json(
