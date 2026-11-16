@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   type Content,
   isSignedByMeta,
@@ -95,12 +96,16 @@ export function createWebhook(settings: WebhookSettings): Webhook {
 
   /** R10: the message is already recorded and Meta's retry dropped, so Norma hears it from here. */
   async function failed(id: string, from: string, error: unknown) {
-    // The message id and the error only: never the number or what she said.
-    console.error(`Falló el mensaje ${id}:`, reason(error));
+    // WhatsApp's id encodes her number, so the log keeps only a short hash of it.
+    const ref = createHash("sha256").update(id).digest("hex").slice(0, 8);
+    console.error(`Falló el mensaje ${ref}:`, reason(error));
     try {
       await messenger.send(from, FIXED_REPLIES.tryAgain);
     } catch (again) {
-      console.error(`Tampoco salió el aviso del mensaje ${id}:`, reason(again));
+      console.error(
+        `Tampoco salió el aviso del mensaje ${ref}:`,
+        reason(again),
+      );
     }
   }
 
