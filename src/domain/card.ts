@@ -3,9 +3,12 @@
  * preview image draws with them, so Norma sees what the buyer sees. Sizes in rem.
  */
 export const card = {
-  ground: "#efece6",
+  /** The table the raffle book lies on: clearly darker than every paper. */
+  ground: "#d8d3c9",
   paper: "#ffffff",
   ink: "#1c1b19",
+  /** Raffle-book papers. A piece keeps its paper for life: number % 4. */
+  papers: ["#f8e1e5", "#dff0e0", "#fbf1c4", "#dfeaf6"],
   /** Photo width at its widest. */
   column: 40,
   /** Paper around the photo; on the page it grows with the viewport between min and max. */
@@ -23,6 +26,7 @@ export const cardCssVariables: Record<`--${string}`, string> = {
   "--ground": card.ground,
   "--paper": card.paper,
   "--ink": card.ink,
+  ...Object.fromEntries(card.papers.map((color, i) => [`--paper-${i}`, color])),
   "--column": `${card.column}rem`,
   "--frame": `clamp(${card.frame.min}rem, ${card.frame.fluid}, ${card.frame.max}rem)`,
   "--frame-bottom": `${card.frameBottom}`,

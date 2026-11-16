@@ -7,18 +7,13 @@ related_targets: []
 
 # Página pública
 
-Modo: Experience. Quien entra es un comprador de unos 70 años, con la vista cansada y un celular modesto. Quiere ver qué piezas hay y cuánto salen. Restricciones: mínimos de legibilidad de PRODUCT.md, fondo claro, sin JavaScript, sin fuentes web.
+Modo: Experience. Quien entra es un comprador de unos 70 años, con la vista cansada y un celular modesto. Quiere ver qué piezas hay, cuánto salen y con qué número pedirlas. Restricciones: mínimos de legibilidad de PRODUCT.md, fondo claro, sin JavaScript, sin fuentes web.
 
 ## Direction contract
 
-THESIS: Cada pieza de Norma es una foto instantánea apoyada sobre la mesa del taller: marco blanco parejo y, en el margen ancho de abajo, nombre y precio. Rechaza la grilla de tienda con tarjetas y botones.
-
-OWN-WORLD: Fondo gris cálido claro como una mesa de trabajo; marcos de papel fotográfico blanco con sombra suave y corta; tinta casi negra; tipografía del sistema en dos pesos; cifras tabulares. Sin acento de color: el color lo ponen las piezas. El foco del teclado es un contorno grueso de tinta separado del marco.
-
-STORY: El comprador ve la pieza más nueva enseguida, lee nombre y precio sin acercarse, baja y recorre las demás, y si quiere mirar de cerca toca la foto y la ve completa.
-
-FIRST VIEWPORT: Arriba a la izquierda "Taller de Norma" a 32 px. Debajo, una foto instantánea casi a todo el ancho (16 px de margen): imagen 4:5 y en el margen inferior el nombre a 28 px y el precio a 36 px en negrita. En 390 × 844 se ve la foto entera y el borde de arriba de la siguiente. No hay acción primaria: tocar la foto la abre.
-
-FORM: Foto instantánea, mi primera opción de la lista ordenada (elegida por el usuario en la tercera tirada). seed:a1ca5db369dc9b49
-
+THESIS: La página es un talonario de rifa abierto: cada pieza es una boleta con su talón numerado, separado por una línea perforada de verdad. El número es el dato que Norma usa para hablar de una pieza, así que manda. Rechaza la grilla de tienda y la foto instantánea anterior.
+OWN-WORLD: Mesa gris cálida de fondo. Boletas de papel liviano en cuatro tonos pálidos que rotan (rosa, verde, amarillo, celeste), tinta casi negra, cero sombra salvo el contacto corto. Talón angosto a la izquierda con "N.º" y el número enorme en cifras de imprenta (tabulares, 800). Línea perforada de agujeritos redondos y dos muescas semicirculares arriba y abajo. Tipografía del sistema.
+STORY: El comprador ve la pieza más nueva, lee número, nombre y precio sin acercarse, baja leyendo los números en la columna de talones, y si quiere mirar de cerca toca la foto.
+FIRST VIEWPORT: En 390 × 844: "Taller de Norma" a 40 px y "Cada pieza tiene su número." debajo ("Piezas y precios de muestra." con datos de muestra). Luego la primera boleta a todo el ancho (16 px de margen): talón de ~4.6rem con el número a 4rem, perforación, y del otro lado la foto 4:5, el nombre a 28 px y el precio a 36 px. Se ve el borde de la segunda boleta. Al 200 % de zoom el talón pasa arriba como una franja horizontal con perforación horizontal y el número sigue a 4rem. Cada pieza conserva su papel de por vida (número % 4); la mesa es un gris cálido claramente más oscuro que los papeles y las muescas están troqueladas.
+FORM: Talonario de rifa, mi primera opción de la lista ordenada (IMPECCABLE’S PICK, elegida por el usuario). seed:041bf1458fc13cc2
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

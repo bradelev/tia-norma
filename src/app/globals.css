@@ -3,12 +3,16 @@
 
   /* Card tokens (colors, name and price type, frame, column) live in
      src/domain/card.ts; the layout sets them on <html> for the page and the preview image. */
-  --ink-soft: #3d3a35;
 
   --text-base: 1.25rem;
-  --text-title: 2rem;
+  --text-title: 2.5rem;
 
   --gutter: 1rem;
+
+  /* Raffle slip: the stub with the number and the perforated line.
+     The papers live in src/domain/card.ts. */
+  --stub: clamp(4.25rem, 19vw, 6.5rem);
+  --perforation: 1.3rem;
 
   --font:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,

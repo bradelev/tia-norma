@@ -1,17 +1,25 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { formatPrice } from "@/domain/price";
 import type { Piece } from "@/ports/catalog";
 import { pageContent } from "./catalog";
 import styles from "./page.module.css";
 
-const photoSizes = "(min-width: 42rem) 37rem, calc(100vw - 4.5rem)";
+const photoSizes = "(min-width: 48rem) 37rem, calc(100vw - 8rem)";
 
 export default async function Home() {
   const { pieces, samples } = await pageContent();
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.title}>Taller de Norma</h1>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Taller de Norma</h1>
+        <p>
+          {samples
+            ? "Piezas y precios de muestra."
+            : "Cada pieza tiene su número."}
+        </p>
+      </header>
       {pieces.length === 0 ? <EmptyWorkshop /> : <PieceList pieces={pieces} />}
       {samples && (
         <p className={styles.credit}>
@@ -29,24 +37,34 @@ function PieceList({ pieces }: { pieces: Piece[] }) {
       {pieces.map((piece, index) => {
         const price = formatPrice(piece.price);
         return (
-          <li key={piece.number}>
-            <article className={styles.print}>
-              <a className={styles.photoLink} href={piece.image}>
-                <Image
-                  className={styles.photo}
-                  src={piece.image}
-                  width={1200}
-                  height={1500}
-                  alt={`${piece.name}, ${price}`}
-                  sizes={photoSizes}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
-                  placeholder="empty"
-                />
-              </a>
-              <div className={styles.caption}>
-                <h2 className={styles.name}>{piece.name}</h2>
-                <PriceTag price={price} />
+          <li
+            key={piece.number}
+            className={styles.piece}
+            style={
+              { "--slip": `var(--paper-${piece.number % 4})` } as CSSProperties
+            }
+          >
+            <article className={styles.slip}>
+              <Stub number={piece.number} />
+              <span className={styles.perforation} aria-hidden="true" />
+              <div className={styles.body}>
+                <a className={styles.photoLink} href={piece.image}>
+                  <Image
+                    className={styles.photo}
+                    src={piece.image}
+                    width={1200}
+                    height={1500}
+                    alt={`${piece.name}, ${price}`}
+                    sizes={photoSizes}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
+                    placeholder="empty"
+                  />
+                </a>
+                <div className={styles.caption}>
+                  <h2 className={styles.name}>{piece.name}</h2>
+                  <PriceTag price={price} />
+                </div>
               </div>
             </article>
           </li>
@@ -66,13 +84,31 @@ function PriceTag({ price }: { price: string }) {
   );
 }
 
+/** The stub of the raffle slip: the number Norma uses to talk about a piece. */
+function Stub({ number }: { number?: number }) {
+  const digits = number === undefined ? 1 : String(number).length;
+  return (
+    <p className={styles.stub} style={{ "--digits": digits } as CSSProperties}>
+      <span aria-hidden="true">N.º</span>
+      <span className={styles.visuallyHidden}>Número</span>{" "}
+      <span className={styles.number}>{number}</span>
+    </p>
+  );
+}
+
 function EmptyWorkshop() {
   return (
-    <div className={styles.print}>
-      <div className={styles.blank} aria-hidden="true" />
-      <p className={`${styles.caption} ${styles.empty}`}>
-        Norma está en el taller. Pronto hay piezas nuevas.
-      </p>
+    <div className={styles.piece}>
+      <div className={styles.slip}>
+        <Stub />
+        <span className={styles.perforation} aria-hidden="true" />
+        <div className={styles.body}>
+          <div className={styles.blank} aria-hidden="true" />
+          <p className={`${styles.caption} ${styles.empty}`}>
+            Norma está en el taller. Pronto hay piezas nuevas.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

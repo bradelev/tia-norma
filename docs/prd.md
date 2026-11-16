@@ -131,7 +131,7 @@ Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "v
 
 ## Página pública
 
-Una sola ruta con una columna de piezas. Cada pieza muestra la foto a todo el ancho, el nombre y el precio, como en el boceto.
+Una sola ruta con una columna de piezas. Cada pieza es una boleta de talonario: el número en el talón, la foto, el nombre y el precio. Con el número, Norma y los compradores nombran la pieza ("sacá la 3").
 
 ### Estructura
 

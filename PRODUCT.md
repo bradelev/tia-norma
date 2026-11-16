@@ -28,7 +28,7 @@ Las fotos se ven bien sin que Norma sepa de fotografía, y sin inventar nada de 
 ## Capabilities and Constraints
 
 - Una sola ruta pública: encabezado con el nombre del taller y una columna de piezas, la más nueva arriba.
-- Cada pieza muestra tres datos: foto 4:5, nombre y precio. Nada más.
+- Cada pieza muestra cuatro datos: número, foto 4:5, nombre y precio. Nada más.
 - Tocar la foto abre la imagen completa con un link común.
 - Funciona con JavaScript desactivado. HTML estático que se regenera al publicar.
 - Primera vista de hasta 500 KB y contenido principal en menos de 2,5 s en 4G lenta. Sin tracking, cookies ni banners.
