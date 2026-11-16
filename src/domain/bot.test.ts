@@ -118,6 +118,15 @@ describe("corregir la vista previa", () => {
     expect(preview.image).not.toBe(first.image);
   });
 
+  it('después de "No, corregir", un audio con solo el nombre conserva el precio', async () => {
+    const { norma } = await withPreview();
+    await norma.tap("No, corregir");
+
+    const preview = await norma.speak("lápiz acrílico azul");
+
+    expect(preview.text).toBe("Lápiz acrílico azul, $ 6.000");
+  });
+
   it("publica lo corregido, no lo primero", async () => {
     const { norma } = await withPreview();
     await norma.say("siete mil");
@@ -270,6 +279,50 @@ describe("mensajes que no son una pieza", () => {
     expect(reply.text).toBe(
       "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.",
     );
+  });
+});
+
+describe("un audio que no se entiende", () => {
+  const help =
+    "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.";
+
+  it("dice qué escuchó y pide que lo repita", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.speak("¿le pongo esmalte?");
+
+    expect(reply.text).toBe(
+      'Escuché: "¿le pongo esmalte?". No te entendí, ¿me lo decís de nuevo?',
+    );
+  });
+
+  it("si es largo, recorta lo que escuchó y no pasa de 160 letras", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.speak(
+      `¿${"y la del post de WhatsApp ".repeat(8)}?`,
+    );
+
+    expect(reply.text).toMatch(
+      /^Escuché: "¿y la del post de WhatsApp .*…"\. No te entendí, ¿me lo decís de nuevo\?$/,
+    );
+    expect(reply.text.length).toBeLessThanOrEqual(160);
+  });
+
+  it("si no escuchó nada, responde con ayuda", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.speak("  ");
+
+    expect(reply.text).toBe(help);
+  });
+
+  it("un texto que no se entiende sigue respondiendo con ayuda", async () => {
+    const norma = createMemoryWorkshop();
+
+    const reply = await norma.say("¿le pongo esmalte?");
+
+    expect(reply.text).toBe(help);
   });
 });
 

@@ -145,6 +145,17 @@ describe("webhook de WhatsApp", () => {
     expect(spoken.sent).toEqual(written.sent);
   });
 
+  it("si no entiende un audio, Norma recibe lo que se escuchó", async () => {
+    const lost = { interpret: async () => ({ kind: "unknown" as const }) };
+    const { deliver, texts } = setup({ interpreter: lost });
+
+    await deliver(audio);
+
+    expect(texts()).toEqual([
+      'Escuché: "Taza azul, seis mil". No te entendí, ¿me lo decís de nuevo?',
+    ]);
+  });
+
   it("si la transcripción falla, Norma recibe probá de nuevo y el borrador no cambia", async () => {
     const deaf = { transcribe: () => Promise.reject(new Error("Groq 503")) };
     const { deliver, texts, catalog } = setup({ transcriber: deaf });

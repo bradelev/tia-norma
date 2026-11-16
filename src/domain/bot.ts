@@ -15,6 +15,8 @@ const ASK_PRICE_AGAIN =
 const ASK_SHORTER_NAME = "¿Me decís un nombre más corto? Hasta 40 letras.";
 const STALE_PREVIEW =
   "Esa vista previa ya cambió. Fijate en la última que te mandé.";
+/** Keeps "Escuché: "…". No te entendí…" within the 160 characters of a reply. */
+const MAX_HEARD_LENGTH = 100;
 const ASK_ANOTHER_PHOTO: Record<PhotoProblem, string> = {
   blurry: "La foto salió movida. ¿Me mandás otra?",
   dark: "La foto salió oscura. ¿Me mandás otra con más luz?",
@@ -241,14 +243,15 @@ function conversation(ports: BotPorts): Bot {
     return { text: texts[action.kind], image };
   }
 
-  async function understand(text: string): Promise<Reply> {
+  async function understand(text: string, spoken = false): Promise<Reply> {
     const intent = await ports.interpreter.interpret(text);
     if (intent.kind === "takeDown") return takeDown(intent.piece);
     if (intent.kind === "changePrice")
       return changePrice(intent.piece, intent.priceText);
     if (intent.kind === "changePhoto") return changePhoto(intent.piece);
     if (intent.kind === "undo") return undo();
-    if (intent.kind !== "describe") return FIXED_REPLIES.help;
+    if (intent.kind !== "describe")
+      return spoken ? misheard(text) : FIXED_REPLIES.help;
     const change: Partial<Draft> = {};
     if (intent.name !== undefined) {
       if (intent.name.length > MAX_NAME_LENGTH)
@@ -291,6 +294,8 @@ function conversation(ports: BotPorts): Bot {
           return receivePhoto(message.bytes);
         case "text":
           return understand(message.text);
+        case "audio":
+          return understand(message.text, true);
         case "button": {
           const [action, id = ""] = message.id.split(":");
           if (action === "publish") return publish(id);
@@ -302,6 +307,23 @@ function conversation(ports: BotPorts): Bot {
       }
     },
   };
+}
+
+/** What the bot heard, so Norma knows what to repeat and we can tell a mishearing from a misunderstanding. */
+function misheard(said: string): Reply {
+  const heard = said.trim().replace(/\s+/g, " ");
+  if (!heard) return FIXED_REPLIES.help;
+  return {
+    text: `Escuché: "${shorten(heard)}". No te entendí, ¿me lo decís de nuevo?`,
+  };
+}
+
+/** Cuts at the last whole word that fits. */
+function shorten(text: string): string {
+  if (text.length <= MAX_HEARD_LENGTH) return text;
+  const cut = text.slice(0, MAX_HEARD_LENGTH - 1);
+  const space = cut.lastIndexOf(" ");
+  return `${space > 0 ? cut.slice(0, space) : cut}…`;
 }
 
 /** Every word Norma said appears in the name, ignoring accents and case. */

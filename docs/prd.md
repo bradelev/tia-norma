@@ -128,6 +128,7 @@ Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "v
 - Una vista previa sin respuesta vence a las 24 horas y no cambia nada.
 - "Deshacer" vale hasta la siguiente acción de Norma.
 - El bot nunca queda en silencio: ante cualquier falla responde con el audio de "probá de nuevo".
+- Si no entiende un audio, repite lo que escuchó: «Escuché: "…". No te entendí, ¿me lo decís de nuevo?».
 
 ## Página pública
 

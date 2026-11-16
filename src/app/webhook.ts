@@ -63,7 +63,7 @@ export function createWebhook(settings: WebhookSettings): Webhook {
         const said = await transcriber.transcribe(
           await messenger.download(content.mediaId),
         );
-        return bot.receive({ kind: "text", text: said }, deadline);
+        return bot.receive({ kind: "audio", text: said }, deadline);
       }
       case "ignored":
         return null;
