@@ -1,23 +1,30 @@
+/* The page is an open raffle book: every piece is a slip with a numbered stub,
+   torn along a real perforation. The number is how Norma talks about a piece. */
+
 .page {
-  /* On short, wide screens the column narrows so a whole print, price included, fits in one viewport
-     and the top of the next print still shows. */
+  /* On short, wide screens the column narrows so a whole slip, price included, fits in one viewport
+     and the top of the next slip still shows. */
   max-width: calc(
     min(
         var(--column),
         max(20rem, calc(0.8 * (100svh - 19.5rem) + 2 * var(--frame)))
       ) +
-      2 * var(--gutter)
+      var(--stub) + var(--perforation) + 2 * var(--gutter)
   );
   margin-inline: auto;
   padding: 1.5rem var(--gutter) 3rem;
 }
 
+.header {
+  margin-bottom: 1.5rem;
+}
+
 .title {
   font-size: var(--text-title);
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  margin-bottom: 1.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 .pieces {
@@ -25,13 +32,104 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
-.print {
-  background: var(--paper);
-  padding: var(--frame) var(--frame) calc(var(--frame) * var(--frame-bottom));
-  box-shadow: 0 1px 3px rgb(28 27 25 / 0.2);
+.piece {
+  container-type: inline-size;
+  /* The slip's shadow follows its die-cut notches. */
+  filter: drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3));
+}
+
+.slip {
+  display: grid;
+  grid-template-columns: var(--stub) var(--perforation) 1fr;
+  background: var(--slip);
+  /* Half-moon notches die-cut where the perforation meets the top and bottom edges. */
+  --notch-x: calc(var(--stub) + var(--perforation) / 2);
+  mask:
+    radial-gradient(
+      circle at var(--notch-x) 0,
+      transparent 0.6rem,
+      #000 calc(0.6rem + 0.5px)
+    ),
+    radial-gradient(
+      circle at var(--notch-x) 100%,
+      transparent 0.6rem,
+      #000 calc(0.6rem + 0.5px)
+    );
+  mask-composite: intersect;
+}
+
+.stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--frame) 0.25rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.number {
+  /* As big as the stub allows: three-digit numbers shrink so they never spill out. */
+  font-size: min(4rem, calc((var(--stub) - 0.5rem) / (var(--digits) * 0.62)));
+  letter-spacing: -0.03em;
+  margin-top: 0.15em;
+}
+
+/* Holes punched every 0.75rem, in the color of the table showing through. */
+.perforation {
+  --hole: radial-gradient(
+    circle,
+    var(--ground) 0.22rem,
+    transparent calc(0.22rem + 0.5px)
+  );
+  --notch: radial-gradient(
+    circle,
+    var(--ground) 0.6rem,
+    transparent calc(0.6rem + 0.5px)
+  );
+  background: var(--hole) 50% 50% / 100% 0.75rem repeat-y;
+}
+
+.body {
+  min-width: 0;
+  padding: var(--frame) var(--frame) calc(var(--frame) * var(--frame-bottom)) 0;
+}
+
+/* Too narrow for a side stub (a small phone, big text or 200% zoom):
+   the stub becomes a band on top and the perforation runs across. */
+@container (max-width: 15em) {
+  .slip {
+    grid-template-columns: 1fr;
+    mask: none;
+  }
+
+  .stub {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: var(--frame) var(--frame) 0.5rem;
+  }
+
+  .number {
+    font-size: 4rem;
+    margin-top: 0;
+  }
+
+  /* Across the slip the notches sit at both ends of the line. */
+  .perforation {
+    height: var(--perforation);
+    background:
+      var(--notch) -0.6rem 50% / 1.2rem 1.2rem no-repeat,
+      var(--notch) calc(100% + 0.6rem) 50% / 1.2rem 1.2rem no-repeat,
+      var(--hole) 50% 50% / 0.75rem 100% repeat-x;
+  }
+
+  .body {
+    padding-left: var(--frame);
+  }
 }
 
 .photoLink {
@@ -83,6 +181,14 @@
 
 .credit {
   margin-top: 3rem;
-  color: var(--ink-soft);
   font-weight: 600;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

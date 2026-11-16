@@ -1,11 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-test("every piece shows its photo, name and price", async ({ page }) => {
+test("every piece shows its number, photo, name and price", async ({
+  page,
+}) => {
   await page.goto("/");
   const pieces = page.getByRole("listitem");
   await expect(pieces).not.toHaveCount(0);
   for (const piece of await pieces.all()) {
+    await expect(piece.getByText(/^\d+$/)).toBeVisible();
+    await expect(piece).toContainText(/Número\s*\d+/);
     await expect(piece.getByRole("heading", { level: 2 })).toBeVisible();
     await expect(piece.getByText(/^\$\s[\d.]+$/)).toBeVisible();
     await expect(piece.getByRole("img")).toHaveAttribute("alt", /, \$/);
