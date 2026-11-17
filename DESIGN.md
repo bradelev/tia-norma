@@ -217,6 +217,10 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 - **Style:** heredan la tinta; subrayado con offset 0.2em y grosor 0.08em cuando hay texto.
 - **Focus:** contorno de tinta de 0.25rem separado 0.25rem del elemento. Es el único estado interactivo.
 
+### Visor de foto
+
+Tocar la foto la abre grande sobre la mesa oscurecida al 94 %, con la foto entera (`object-fit: contain`) y un botón "Cerrar ✕" color tapa arriba a la derecha, de 3rem de alto y texto de 1.25rem. Se abre con `:target` (`#foto-N`), así que anda sin JavaScript. Cerrar, tocar fuera de la foto o "atrás" vuelven a la boleta (`#pieza-N`). El visor vive fuera de la lista porque la sombra de la boleta (`filter`) atraparía un elemento fijo. Con movimiento permitido, el velo aparece en 180ms y la foto crece desde 96 %.
+
 ### Vista previa de WhatsApp
 
 La vista previa que recibe Norma es la misma boleta que ve el comprador, dibujada en `src/adapters/satori/preview-renderer.tsx` con los tokens de `card.ts`: papel según el número, talón al ancho máximo, perforación con agujeros y muescas, y la mesa alrededor. Una pieza nueva muestra el número que va a recibir al publicarse; un cambio, el de la pieza. La foto va a 24rem, más angosta que la columna de la página, para que nombre y precio se lean al tamaño de WhatsApp.
