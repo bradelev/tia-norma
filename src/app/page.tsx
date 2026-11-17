@@ -10,8 +10,8 @@ const photoSizes =
 
 /** Where buyers write to Norma. */
 const whatsapp = {
-  shown: "+54 9 11 3847-2916",
-  link: "https://wa.me/5491138472916",
+  shown: "+54-9-11-1234-5678",
+  link: "https://wa.me/5491112345678",
 };
 
 export default async function Home() {
@@ -27,7 +27,7 @@ export default async function Home() {
             : "Cada pieza tiene su número."}
         </p>
         <p className={styles.contact}>
-          Para comprar, escribile por WhatsApp:{" "}
+          Para comprar, escribime por WhatsApp{" "}
           <a className={styles.phone} href={whatsapp.link}>
             {whatsapp.shown}
           </a>

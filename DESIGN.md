@@ -193,7 +193,7 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 ### Portada
 
 - Papel crema (cover) a todo el ancho del talonario, con una fila de agujeros color mesa sobre el borde inferior: de ahí se arrancan las boletas.
-- Título en mayúsculas, la línea de estado y "Para comprar, escribile por WhatsApp:" con el número enlazado a `wa.me`, todo en tinta.
+- Título en mayúsculas, la línea de estado y "Para comprar, escribime por WhatsApp" con el número enlazado a `wa.me`, todo en tinta.
 
 ### Talón (stub)
 
