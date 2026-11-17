@@ -57,3 +57,6 @@ next-env.d.ts
 
 # photo eval output
 /eval-out/
+
+# eval recordings: real voices, kept on the machine that runs `pnpm eval:audio`
+/evals/audios/

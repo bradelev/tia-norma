@@ -4,4 +4,4 @@ Norma publica piezas de cerámica por WhatsApp con una foto y un audio; la pági
 
 ## Mediciones
 
-- **R14, audio confiable:** 17 de 21 audios dan nombre y precio exactos (meta: 19). Los 21 precios salen bien. Detalle en [ADR 0003](docs/adr/0003-transcripcion-separada-de-interpretacion.md); se mide con `pnpm eval:audio`.
+- **R14, audio confiable:** 17 de 21 audios dan nombre y precio exactos (meta: 19). Los 21 precios salen bien. Detalle en [ADR 0003](docs/adr/0003-transcripcion-separada-de-interpretacion.md); se mide con `pnpm eval:audio`. Los audios son voces reales y no están en el repo: para repetir la medición, grabá cada frase de [evals/audios.json](evals/audios.json) en `evals/audios/`.
