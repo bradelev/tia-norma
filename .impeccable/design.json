@@ -7,7 +7,7 @@
       "ground": {
         "role": "neutral",
         "displayName": "Mesa de taller",
-        "canonical": "#d8d3c9",
+        "canonical": "#3b2a20",
         "tonalRamp": [
           "oklch(15% 0.013 85)",
           "oklch(25% 0.013 85)",
@@ -22,7 +22,7 @@
       "paper-rosa": {
         "role": "secondary",
         "displayName": "Papel rosa",
-        "canonical": "#f8e1e5",
+        "canonical": "#f9b9c7",
         "tonalRamp": [
           "oklch(15% 0.03 355)",
           "oklch(25% 0.03 355)",
@@ -37,7 +37,7 @@
       "paper-verde": {
         "role": "secondary",
         "displayName": "Papel verde",
-        "canonical": "#dff0e0",
+        "canonical": "#a9e1b6",
         "tonalRamp": [
           "oklch(15% 0.03 145)",
           "oklch(25% 0.03 145)",
@@ -52,7 +52,7 @@
       "paper-amarillo": {
         "role": "secondary",
         "displayName": "Papel amarillo",
-        "canonical": "#fbf1c4",
+        "canonical": "#ffe16b",
         "tonalRamp": [
           "oklch(15% 0.05 98)",
           "oklch(25% 0.05 98)",
@@ -67,7 +67,7 @@
       "paper-celeste": {
         "role": "secondary",
         "displayName": "Papel celeste",
-        "canonical": "#dfeaf6",
+        "canonical": "#a8cff3",
         "tonalRamp": [
           "oklch(15% 0.025 250)",
           "oklch(25% 0.025 250)",
@@ -158,7 +158,7 @@
       "refersTo": "slip",
       "description": "Pieza firma: talón numerado, perforación con muescas y cuerpo con foto, nombre y precio.",
       "html": "<div class=\"ds-piece\"><article class=\"ds-slip\"><p class=\"ds-stub\"><span>N.º</span><span class=\"ds-number\">7</span></p><span class=\"ds-perf\"></span><div class=\"ds-body\"><div class=\"ds-photo\"></div><h2 class=\"ds-name\">Cuenco de gres</h2><p class=\"ds-price\">$ 6.000</p></div></article></div>",
-      "css": ".ds-piece{max-width:24rem;filter:drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3));font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;color:#1c1b19} .ds-slip{display:grid;grid-template-columns:5rem 1.3rem 1fr;background:#dff0e0;--nx:5.65rem;mask:radial-gradient(circle at var(--nx) 0,transparent 0.6rem,#000 calc(0.6rem + 0.5px)),radial-gradient(circle at var(--nx) 100%,transparent 0.6rem,#000 calc(0.6rem + 0.5px));mask-composite:intersect} .ds-stub{display:flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-number{font-size:4rem;letter-spacing:-0.03em;margin-top:0.15em} .ds-perf{background:radial-gradient(circle,#d8d3c9 0.22rem,transparent calc(0.22rem + 0.5px)) 50% 50% / 100% 0.75rem repeat-y} .ds-body{padding:1rem 1rem 1.5rem 0} .ds-photo{aspect-ratio:4/5;background:#d8d3c9} .ds-name{margin:1.1rem 0 0;font-size:1.75rem;font-weight:600;line-height:1.2} .ds-price{margin:0.25rem 0 0;font-size:2.25rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}"
+      "css": ".ds-piece{max-width:24rem;filter:drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3));font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;color:#1c1b19} .ds-slip{display:grid;grid-template-columns:5rem 1.3rem 1fr;background:#a9e1b6;--nx:5.65rem;mask:radial-gradient(circle at var(--nx) 0,transparent 0.6rem,#000 calc(0.6rem + 0.5px)),radial-gradient(circle at var(--nx) 100%,transparent 0.6rem,#000 calc(0.6rem + 0.5px));mask-composite:intersect} .ds-stub{display:flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-number{font-size:4rem;letter-spacing:-0.03em;margin-top:0.15em} .ds-perf{background:radial-gradient(circle,#3b2a20 0.22rem,transparent calc(0.22rem + 0.5px)) 50% 50% / 100% 0.75rem repeat-y} .ds-body{padding:1rem 1rem 1.5rem 0} .ds-photo{aspect-ratio:4/5;background:#3b2a20} .ds-name{margin:1.1rem 0 0;font-size:1.75rem;font-weight:600;line-height:1.2} .ds-price{margin:0.25rem 0 0;font-size:2.25rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}"
     },
     {
       "name": "Talón",
@@ -166,7 +166,7 @@
       "refersTo": "stub",
       "description": "N.º y el número en cifras tabulares 800.",
       "html": "<p class=\"ds-stub-solo\"><span>N.º</span><span class=\"ds-stub-n\">12</span></p>",
-      "css": ".ds-stub-solo{display:inline-flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;width:5rem;background:#fbf1c4;color:#1c1b19;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-stub-n{font-size:min(4rem,calc(4.5rem / 1.24));letter-spacing:-0.03em;margin-top:0.15em}"
+      "css": ".ds-stub-solo{display:inline-flex;flex-direction:column;align-items:center;margin:0;padding:1rem 0.25rem;width:5rem;background:#ffe16b;color:#1c1b19;font-family:system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;font-weight:800;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums} .ds-stub-n{font-size:min(4rem,calc(4.5rem / 1.24));letter-spacing:-0.03em;margin-top:0.15em}"
     },
     {
       "name": "Precio",
