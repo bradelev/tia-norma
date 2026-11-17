@@ -9,12 +9,16 @@ Un objeto de cerámica de Norma, con nombre, precio, foto y número.
 _Avoid_: producto, artículo, ítem
 
 **Número**:
-Identificador correlativo que recibe una pieza al publicarse. Nunca se reutiliza y no se muestra en la página.
+Identificador correlativo que recibe una pieza al publicarse. Nunca se reutiliza y se ve en el talón de la pieza.
 _Avoid_: id, código
 
 **Publicada**:
 Estado de una pieza que se ve en la página.
 _Avoid_: activa, visible
+
+**Nueva**:
+Una pieza publicada hace menos de 7 días. En la página lleva un sello.
+_Avoid_: novedad, reciente
 
 **Sacada**:
 Estado de una pieza que dejó de verse en la página, se haya vendido o no. Conserva su número y solo Deshacer la devuelve.

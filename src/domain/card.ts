@@ -8,6 +8,8 @@ export const card = {
   /** The raffle book's cover, and any text that sits on the table. */
   cover: "#f6ead6",
   paper: "#ffffff",
+  /** Red stamp ink, on the cover color: 7.7:1. */
+  stamp: "#8c1c13",
   ink: "#1c1b19",
   /** Raffle-book papers. A piece keeps its paper for life: number % 4. */
   papers: ["#f9b9c7", "#a9e1b6", "#ffe16b", "#a8cff3"],
@@ -28,6 +30,7 @@ export const cardCssVariables: Record<`--${string}`, string> = {
   "--ground": card.ground,
   "--cover": card.cover,
   "--paper": card.paper,
+  "--stamp": card.stamp,
   "--ink": card.ink,
   ...Object.fromEntries(card.papers.map((color, i) => [`--paper-${i}`, color])),
   "--column": `${card.column}rem`,

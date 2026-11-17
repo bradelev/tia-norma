@@ -5,6 +5,9 @@ export interface Piece {
   image: string;
 }
 
+/** A piece on the page, with when it was published. */
+export type ShownPiece = Piece & { publishedAt: Date };
+
 /** A piece with its state. Sacada pieces keep their number and leave the page. */
 export type StoredPiece = Piece & { status: "published" | "takenDown" };
 
@@ -50,7 +53,7 @@ export interface Catalog {
   /** The piece a given preview turned into, if it was already published. */
   publishedFrom(previewId: string): Promise<Piece | null>;
   /** Pieces on the page, newest first. */
-  published(): Promise<Piece[]>;
+  published(): Promise<ShownPiece[]>;
   /** Any piece ever published, sacada or not. */
   piece(number: number): Promise<StoredPiece | null>;
   /** Takes a published piece off the page. Becomes the last action. */

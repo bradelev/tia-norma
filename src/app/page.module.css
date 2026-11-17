@@ -77,6 +77,8 @@
   display: grid;
   grid-template-columns: var(--stub) var(--perforation) 1fr;
   background: var(--slip);
+  /* The stamp's landing never spills past the paper. */
+  overflow: clip;
   /* Half-moon notches die-cut where the perforation meets the top and bottom edges. */
   --notch-x: calc(var(--stub) + var(--perforation) / 2);
   mask:
@@ -126,6 +128,7 @@
 }
 
 .body {
+  position: relative;
   min-width: 0;
   padding: var(--frame) var(--frame) calc(var(--frame) * var(--frame-bottom)) 0;
 }
@@ -161,6 +164,41 @@
 
   .body {
     padding-left: var(--frame);
+  }
+}
+
+/* A rubber stamp over the photo's corner on pieces published this week.
+   It lands once, with a short thump; without motion it is simply there. */
+.stamp {
+  position: absolute;
+  top: calc(var(--frame) - 0.5rem);
+  right: calc(var(--frame) - 0.5rem);
+  z-index: 1;
+  padding: 0.2rem 0.6rem;
+  border: 3px solid var(--stamp);
+  border-radius: 4px;
+  background: var(--cover);
+  color: var(--stamp);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stamp {
+    animation: stamp 320ms cubic-bezier(0.3, 0, 0.4, 1) 200ms backwards;
+  }
+}
+
+@keyframes stamp {
+  from {
+    transform: rotate(-14deg) scale(1.8);
+    box-shadow: 0 12px 16px rgb(0 0 0 / 0.25);
+  }
+  70% {
+    transform: rotate(-8deg) scale(0.94);
   }
 }
 
