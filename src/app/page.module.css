@@ -29,6 +29,12 @@
     var(--cover);
 }
 
+/* The one thing a buyer has to do, so it reads first after the title. */
+.howToBuy {
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
 .title {
   font-size: var(--text-title);
   font-weight: 800;

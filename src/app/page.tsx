@@ -14,7 +14,10 @@ export default async function Home() {
     <main className={styles.page}>
       <header className={styles.cover}>
         <h1 className={styles.title}>Taller de Norma</h1>
-        <p>Cada pieza tiene su número.</p>
+        <p>Cerámica hecha a mano. Todas las piezas están a la venta.</p>
+        <p className={styles.howToBuy}>
+          ¿Te gusta una? Escribile a Norma y decile el número.
+        </p>
       </header>
       {pieces.length === 0 ? <EmptyWorkshop /> : <PieceList pieces={pieces} />}
       {samples && (

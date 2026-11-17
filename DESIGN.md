@@ -199,7 +199,7 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 ### Portada
 
 - Papel crema (cover) a todo el ancho del talonario, con una fila de agujeros color mesa sobre el borde inferior: de ahí se arrancan las boletas.
-- Título en mayúsculas y la línea de estado, en tinta. Sin teléfono ni link a WhatsApp: quien compra ya sabe cómo escribirle a Norma.
+- Título en mayúsculas y dos líneas en tinta: "Cerámica hecha a mano. Todas las piezas están a la venta." y, en negrita, "¿Te gusta una? Escribile a Norma y decile el número.". Sin teléfono ni link a WhatsApp: quien compra ya sabe cómo escribirle; la portada le dice qué decir.
 
 ### Talón (stub)
 
