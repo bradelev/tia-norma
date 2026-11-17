@@ -339,9 +339,14 @@ function conversation(ports: BotPorts): Bot {
     }
     if (intent.priceText !== undefined) {
       const price = parsePrice(intent.priceText);
-      if (price === null || price > MAX_PRICE) {
+      const open = await catalog.draft();
+      const unreadable = price === null || price > MAX_PRICE;
+      // A new name with a misheard price keeps the price she already gave; the preview shows it.
+      if (unreadable && change.name && pieceDraft(open).price !== undefined)
+        return update(change);
+      if (unreadable) {
         // The open preview no longer shows the draft, so its "Sí" must not publish it.
-        const draft = { ...pieceDraft(await catalog.draft()), ...change };
+        const draft = { ...pieceDraft(open), ...change };
         delete draft.previewId;
         await catalog.saveDraft(draft);
         return { text: ASK_PRICE_AGAIN };

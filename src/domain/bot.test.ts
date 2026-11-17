@@ -187,6 +187,18 @@ describe("corregir la vista previa", () => {
     expect(preview.text).toBe("Lápiz acrílico azul, $ 6.000");
   });
 
+  it("un nombre nuevo con un precio que no se entiende conserva el precio anterior", async () => {
+    const { norma } = await withPreview();
+
+    const preview = await norma.say("plato hondo, carísima");
+
+    expect(preview.text).toBe("Plato hondo, $ 6.000");
+    expect(preview.buttons?.map((b) => b.title)).toEqual([
+      "Sí, publicar",
+      "No, corregir",
+    ]);
+  });
+
   it("publica lo corregido, no lo primero", async () => {
     const { norma } = await withPreview();
     await norma.say("siete mil");

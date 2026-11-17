@@ -31,6 +31,10 @@ describe("parsePrice (R11)", () => {
     ["doce quinientos", 12500],
     ["veintidós trescientos", 22300],
     ["una luca", 1000],
+    // Transcriptions often write thousands with a comma.
+    ["16,500", 16500],
+    ["$16,500", 16500],
+    ["1,500,000", 1500000],
   ])('"%s" son %i pesos', (said, pesos) => {
     expect(parsePrice(said)).toBe(pesos);
   });

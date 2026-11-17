@@ -87,10 +87,10 @@ export function parsePrice(said: string): number | null {
   return Number.isInteger(pesos) && pesos > 0 ? pesos : null;
 }
 
-/** "6000", "6.000" (thousands) or "12,5" (decimal comma). */
+/** "6000", "6.000" or "16,500" (thousands, as transcriptions write them) or "12,5" (decimal comma). */
 function numberToken(token: string): number | undefined {
-  if (/^\d{1,3}(\.\d{3})+$/.test(token))
-    return Number(token.replaceAll(".", ""));
+  if (/^\d{1,3}([.,]\d{3})+$/.test(token))
+    return Number(token.replaceAll(/[.,]/g, ""));
   if (/^\d+(,\d+)?$/.test(token)) return Number(token.replace(",", "."));
   return undefined;
 }
