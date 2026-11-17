@@ -38,15 +38,6 @@
   text-wrap: balance;
 }
 
-.contact {
-  margin-top: 0.75rem;
-  font-weight: 600;
-}
-
-.phone {
-  white-space: nowrap;
-}
-
 .pieces {
   list-style: none;
   margin: 0;
