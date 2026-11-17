@@ -51,4 +51,14 @@ describe("encuadre alrededor de la pieza", () => {
 
     expect(frame(piece, photo).width).toBe(600);
   });
+
+  it("con una foto apaisada, el recorte entra entero en la foto", () => {
+    const landscape = { width: 2576, height: 1932 };
+
+    const crop = frame({ left: 0, top: 0, right: 1, bottom: 1 }, landscape);
+
+    expect(crop.top).toBeGreaterThanOrEqual(0);
+    expect(crop.top + crop.height).toBeLessThanOrEqual(landscape.height);
+    expect(crop.left + crop.width).toBeLessThanOrEqual(landscape.width);
+  });
 });

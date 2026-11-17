@@ -21,8 +21,9 @@ export function frame(
   const pieceWidth = (piece.right - piece.left) * photo.width;
   const pieceHeight = (piece.bottom - piece.top) * photo.height;
   const needed = Math.max(pieceWidth / FILL, (pieceHeight / FILL) * ratio);
-  const width = Math.round(clamp(needed, widest * MIN_SHARE, widest));
-  const height = Math.round(width / ratio);
+  // Rounded down, so the crop never ends up a pixel taller or wider than the photo.
+  const width = Math.floor(clamp(needed, widest * MIN_SHARE, widest));
+  const height = Math.floor(width / ratio);
   const centerX = ((piece.left + piece.right) / 2) * photo.width;
   const centerY = ((piece.top + piece.bottom) / 2) * photo.height;
   return {
