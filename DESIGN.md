@@ -2,11 +2,12 @@
 name: Taller de Norma
 description: Piezas de cerámica de Norma, cada una en una boleta de talonario de rifa con su número.
 colors:
-  ground: "#d8d3c9"
-  paper-rosa: "#f8e1e5"
-  paper-verde: "#dff0e0"
-  paper-amarillo: "#fbf1c4"
-  paper-celeste: "#dfeaf6"
+  ground: "#3b2a20"
+  cover: "#f6ead6"
+  paper-rosa: "#f9b9c7"
+  paper-verde: "#a9e1b6"
+  paper-amarillo: "#ffe16b"
+  paper-celeste: "#a8cff3"
   paper: "#ffffff"
   ink: "#1c1b19"
 typography:
@@ -14,8 +15,8 @@ typography:
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
     fontSize: "2.5rem"
     fontWeight: 800
-    lineHeight: 1.1
-    letterSpacing: "-0.02em"
+    lineHeight: 1.05
+    letterSpacing: "0.01em"
   number:
     fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"
     fontSize: "4rem"
@@ -83,15 +84,15 @@ components:
 
 **Creative North Star: "El talonario de rifa"**
 
-La página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con "N.º" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Las boletas se apilan en una sola columna, la más nueva arriba.
+La página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con "N.º" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Arriba está la portada del talonario, crema y perforada, con el nombre del taller y el WhatsApp para comprar. Las boletas se apilan en una columna, la más nueva arriba; en pantallas anchas el talonario se abre en dos.
 
-El papel de cada boleta es uno de cuatro tonos pálidos de talonario (rosa, verde, amarillo, celeste) y la pieza lo conserva de por vida: el tono sale de `número % 4`. La mesa es un gris cálido claramente más oscuro que cualquier papel, y se ve a través de los agujeros de la perforación y de las muescas. Tinta casi negra para todo el texto; la tipografía es la del teléfono del comprador.
+El papel de cada boleta es uno de cuatro colores vivos de talonario de feria (rosa, verde, amarillo, celeste) y la pieza lo conserva de por vida: el tono sale de `número % 4`. La mesa es madera oscura, mucho más oscura que cualquier papel, y se ve a través de los agujeros de la perforación y de las muescas. Tinta casi negra para todo el texto; la tipografía es la del teléfono del comprador.
 
 El sistema existe para que un comprador de 70 años lea número, nombre y precio a un brazo de distancia. Todo tamaño, peso y contraste se mide contra los mínimos de PRODUCT.md; ningún recurso del talonario puede bajarlos. Solo modo claro.
 
 **Key Characteristics:**
 
-- Mesa gris cálida, boletas en cuatro papeles pálidos que rotan, tinta casi negra.
+- Mesa de madera oscura, boletas en cuatro papeles vivos que rotan, tinta casi negra.
 - Talón con el número en cifras de imprenta tabulares, peso 800.
 - Perforación real: agujeros del color de la mesa cada 0.75rem y muescas semicirculares troqueladas.
 - Tipografía del sistema, sin fuentes web.
@@ -100,11 +101,12 @@ El sistema existe para que un comprador de 70 años lea número, nombre y precio
 
 ## Colors
 
-Una mesa neutra y cálida, cuatro papeles pálidos de talonario y una tinta; el color saturado lo ponen las fotos.
+Una mesa de madera oscura, una portada crema, cuatro papeles vivos de talonario y una tinta.
 
 ### Neutral
 
-- **Mesa de taller** (ground): fondo de la página, `theme-color` del navegador, color de los agujeros y muescas de la perforación, y relleno de la foto mientras carga. El encabezado se lee sobre ella.
+- **Mesa de taller** (ground): fondo de la página, `theme-color` del navegador, color de los agujeros y muescas de la perforación, y relleno de la foto mientras carga.
+- **Portada** (cover): el papel crema de la portada del talonario, y el color del texto que se apoya directo sobre la mesa, como el crédito de las fotos de muestra.
 - **Tinta** (ink): todo el texto, el contorno de foco, el fondo de la selección y la base de la sombra de contacto.
 - **Papel blanco** (paper): solo el texto sobre la selección. No es papel de boleta.
 
@@ -138,7 +140,7 @@ Los cuatro viven en `src/domain/card.ts` como `--paper-0` a `--paper-3`; la pág
 
 - **Number** (800, hasta 4rem, 1, -0.03em, tabulares): el número en el talón. Ocupa todo el ancho que el talón permite; con tres cifras se achica para no salirse (`min(4rem, (talón - 0.5rem) / (cifras × 0.62))`). Cuando el talón pasa arriba vuelve a 4rem.
 - **Label** (800, 1.25rem, 1): "N.º" sobre el número en el talón. Es parte de la boleta, no una etiqueta decorativa; el lector de pantalla oye "Número".
-- **Title** (800, 2.5rem, 1.1, -0.02em, `text-wrap: balance`): el nombre del taller, una vez por página.
+- **Title** (800, 2.5rem, 1.05, 0.01em, mayúsculas, `text-wrap: balance`): el nombre del taller en la portada, una vez por página.
 - **Price** (800, 2.25rem, 1.15, tabulares): el dato más grande del cuerpo de la boleta.
 - **Name** (600, 1.75rem, 1.2, `text-wrap: balance`): nombre de la pieza.
 - **Body** (400, 1.25rem, 1.5): la línea bajo el título. El crédito de las fotos de muestra y el estado vacío van en 600.
@@ -151,7 +153,7 @@ Los cuatro viven en `src/domain/card.ts` como `--paper-0` a `--paper-3`; la pág
 
 ## Layout
 
-Una columna centrada de boletas con margen lateral de 1rem (gutter) y 1.5rem entre boletas (stack). El ancho máximo es la foto (40rem como mucho) más el talón, la perforación y los márgenes. El talón mide entre 4.25rem y 6.5rem (19vw) y la perforación 1.3rem.
+Una columna centrada de boletas con margen lateral de 1rem (gutter) y 1.5rem entre boletas (stack). Desde 64rem el talonario se abre en dos columnas de boletas, con un ancho máximo de 76rem. El ancho máximo es la foto (40rem como mucho) más el talón, la perforación y los márgenes. El talón mide entre 4.25rem y 6.5rem (19vw) y la perforación 1.3rem.
 
 Dentro del cuerpo el marco (frame) escala con el ancho, de 0.75rem a 1.375rem. El cuerpo no tiene margen a la izquierda (la perforación hace de borde), el margen inferior es 1.5 marcos y el pie de foto arranca 1.1 marcos debajo de la imagen.
 
@@ -187,6 +189,11 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 - **Border:** ninguno.
 - **Contenido:** talón con el número; cuerpo con la foto 4:5 enlazada a la imagen completa, nombre y precio. Nada más.
 - **Vacío:** la misma boleta con el talón sin número, un rectángulo 4:5 color mesa y el texto de estado vacío en tamaño de nombre y peso 600.
+
+### Portada
+
+- Papel crema (cover) a todo el ancho del talonario, con una fila de agujeros color mesa sobre el borde inferior: de ahí se arrancan las boletas.
+- Título en mayúsculas, la línea de estado y "Para comprar, escribile por WhatsApp:" con el número enlazado a `wa.me`, todo en tinta.
 
 ### Talón (stub)
 

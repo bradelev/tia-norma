@@ -15,16 +15,36 @@
   padding: 1.5rem var(--gutter) 3rem;
 }
 
-.header {
+/* The raffle book's cover: cream paper, perforated along the bottom where the slips begin. */
+.cover {
+  --hole: radial-gradient(
+    circle,
+    var(--ground) 0.22rem,
+    transparent calc(0.22rem + 0.5px)
+  );
   margin-bottom: 1.5rem;
+  padding: var(--frame) var(--frame) calc(var(--frame) + 1.25rem);
+  background:
+    var(--hole) 50% calc(100% - 0.5rem) / 0.75rem 0.75rem repeat-x,
+    var(--cover);
 }
 
 .title {
   font-size: var(--text-title);
   font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
   text-wrap: balance;
+}
+
+.contact {
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+.phone {
+  white-space: nowrap;
 }
 
 .pieces {
@@ -35,10 +55,22 @@
   gap: 1.5rem;
 }
 
+/* On a wide screen the book opens to a page of two slips side by side. */
+@media (min-width: 64rem) {
+  .page {
+    max-width: 76rem;
+  }
+
+  .pieces {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
 .piece {
   container-type: inline-size;
   /* The slip's shadow follows its die-cut notches. */
-  filter: drop-shadow(0 1px 1.5px rgb(28 27 25 / 0.3));
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
 }
 
 .slip {
@@ -182,6 +214,7 @@
 .credit {
   margin-top: 3rem;
   font-weight: 600;
+  color: var(--cover);
 }
 
 .visuallyHidden {
