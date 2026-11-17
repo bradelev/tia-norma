@@ -1,5 +1,6 @@
 import { cacheTag, revalidateTag } from "next/cache";
 import { createPostgresCatalog } from "@/adapters/postgres/catalog";
+import { isNew } from "@/domain/new-piece";
 import type { Catalog, Piece } from "@/ports/catalog";
 import { supabaseEnv } from "./env";
 import { samplePieces } from "./sample-pieces";
@@ -16,16 +17,28 @@ export function catalog(): Catalog | null {
   return cached;
 }
 
-/** What the page shows. It stays cached until an action changes it. */
+export type PagePiece = Piece & { isNew: boolean };
+
+/**
+ * What the page shows. An action expires it right away; otherwise Next
+ * rebuilds it every 15 minutes, so a "Nueva" stamp leaves on its own.
+ */
 export async function pageContent(): Promise<{
-  pieces: Piece[];
+  pieces: PagePiece[];
   samples: boolean;
 }> {
   "use cache";
   cacheTag(PIECES_TAG);
   const real = catalog();
-  if (!real) return { pieces: samplePieces, samples: true };
-  return { pieces: await real.published(), samples: false };
+  const shown = real ? await real.published() : samplePieces;
+  const now = new Date();
+  return {
+    pieces: shown.map(({ publishedAt, ...piece }) => ({
+      ...piece,
+      isNew: isNew(publishedAt, now),
+    })),
+    samples: !real,
+  };
 }
 
 /** Every action expires the page right away, so the next visit shows it (R1). */

@@ -20,7 +20,10 @@ export function catalogContract(create: () => Catalog) {
     const second = await catalog.publish(randomUUID(), piece);
 
     expect(second.number).toBe(first.number + 1);
-    expect((await catalog.published()).slice(0, 2)).toEqual([second, first]);
+    expect((await catalog.published()).slice(0, 2)).toMatchObject([
+      second,
+      first,
+    ]);
   });
 
   it("la misma vista previa publica una sola vez", async () => {
@@ -30,10 +33,24 @@ export function catalogContract(create: () => Catalog) {
 
     expect(await catalog.publish(previewId, piece)).toEqual(first);
     expect(await catalog.publishedFrom(previewId)).toEqual(first);
-    expect(await catalog.published()).toContainEqual(first);
+    expect(await catalog.published()).toContainEqual(
+      expect.objectContaining(first),
+    );
     expect(
       (await catalog.published()).filter((p) => p.number === first.number),
     ).toHaveLength(1);
+  });
+
+  it("una pieza en la página dice cuándo se publicó", async () => {
+    const catalog = create();
+    const before = Date.now();
+    const { number } = await catalog.publish(randomUUID(), piece);
+    const shown = (await catalog.published()).find((p) => p.number === number);
+
+    // A minute either way allows for the database clock.
+    const minute = 60_000;
+    expect(shown?.publishedAt.getTime()).toBeGreaterThan(before - minute);
+    expect(shown?.publishedAt.getTime()).toBeLessThan(Date.now() + minute);
   });
 
   it("publicar cierra el borrador", async () => {

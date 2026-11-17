@@ -65,7 +65,10 @@ export function createPostgresCatalog(databaseUrl: string): Catalog {
         .from(pieces)
         .where(eq(pieces.status, "published"))
         .orderBy(desc(pieces.number));
-      return rows.map(toPiece);
+      return rows.map((row) => ({
+        ...toPiece(row),
+        publishedAt: row.createdAt,
+      }));
     },
     async piece(number) {
       const [row] = await db

@@ -20,7 +20,7 @@ describe("publicar una pieza", () => {
     const done = await norma.tap("Sí, publicar");
 
     expect(done.text).toBe("Listo. Es la pieza 1.");
-    expect(await norma.publishedPieces()).toEqual([
+    expect(await norma.publishedPieces()).toMatchObject([
       {
         number: 1,
         name: "Taza azul",

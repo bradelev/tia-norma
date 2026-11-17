@@ -109,6 +109,7 @@ Una mesa de madera oscura, una portada crema, cuatro papeles vivos de talonario 
 - **Portada** (cover): el papel crema de la portada del talonario, y el color del texto que se apoya directo sobre la mesa, como el crédito de las fotos de muestra.
 - **Tinta** (ink): todo el texto, el contorno de foco, el fondo de la selección y la base de la sombra de contacto.
 - **Papel blanco** (paper): solo el texto sobre la selección. No es papel de boleta.
+- **Tinta de sello** (stamp): el rojo del sello "Nueva", sobre papel de portada (7.7:1). No se usa en ningún otro lado.
 
 ### Papeles de talonario
 
@@ -123,7 +124,7 @@ Los cuatro viven en `src/domain/card.ts` como `--paper-0` a `--paper-3`; la pág
 
 **The Papel de por Vida Rule.** El papel de una boleta lo decide su número (`número % 4`) y no cambia nunca, ni al reordenar ni al editar. No se elige papel por pieza ni por contenido.
 
-**The Papel No Es Acento Rule.** Los papeles identifican la boleta; no son color de marca ni de interacción. Nada se destaca con color: se destaca con tamaño o peso. No hay botones, badges ni estados de color.
+**The Papel No Es Acento Rule.** Los papeles identifican la boleta; no son color de marca ni de interacción. Nada se destaca con color: se destaca con tamaño o peso. No hay botones, badges ni estados de color. La única excepción es el sello "Nueva", que es un objeto del talonario y no un estado de interfaz.
 
 **The Mesa Más Oscura Rule.** La mesa es siempre visiblemente más oscura que los cuatro papeles, para que el troquel y la perforación se lean como agujeros.
 
@@ -190,6 +191,11 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 - **Contenido:** talón con el número; cuerpo con la foto 4:5 enlazada a la imagen completa, nombre y precio. Nada más.
 - **Vacío:** una sola boleta amarilla, del ancho de una columna, sin foto. El talón tiene "N.º" y una raya para escribir el número; el cuerpo dice "Norma está en el taller." en tamaño de nombre y "Pronto hay piezas nuevas." en tamaño de texto.
 
+### Sello "Nueva"
+
+- Las piezas publicadas en los últimos 7 días llevan un sello de goma sobre la esquina de la foto: papel de portada, borde y texto en tinta de sello, mayúsculas 800, girado -8°.
+- Al cargar la página cae una sola vez: entra grande y torcido, rebota y queda (320 ms). Con `prefers-reduced-motion` está quieto desde el principio. Es la única animación de la página.
+
 ### Portada
 
 - Papel crema (cover) a todo el ancho del talonario, con una fila de agujeros color mesa sobre el borde inferior: de ahí se arrancan las boletas.
@@ -229,7 +235,7 @@ La vista previa que recibe Norma es la misma boleta que ve el comprador, dibujad
 
 ### Don't:
 
-- **Don't** agregar color de acento, botones, badges ni grillas de tienda con tarjetas.
+- **Don't** agregar color de acento, botones, badges ni grillas de tienda con tarjetas. El sello "Nueva" es la única marca sobre una boleta.
 - **Don't** usar más sombra que el contacto `drop-shadow(0 1px 1.5px)`, ni `box-shadow` sobre la boleta.
 - **Don't** redondear esquinas; las únicas curvas son las del troquel.
 - **Don't** elegir el papel por pieza ni cambiarlo después de publicada.

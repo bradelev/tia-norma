@@ -16,6 +16,15 @@ test("every piece shows its number, photo, name and price", async ({
   }
 });
 
+test("only pieces published this week carry the Nueva stamp", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const stamped = page.getByRole("listitem").filter({ hasText: "Nueva" });
+  await expect(stamped).toHaveCount(1);
+  await expect(stamped.getByRole("heading")).toHaveText("Jarra con relieve");
+});
+
 test("has no axe violations, AAA contrast included", async ({ page }) => {
   await page.goto("/");
   const results = await new AxeBuilder({ page })

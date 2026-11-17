@@ -1,8 +1,7 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { formatPrice } from "@/domain/price";
-import type { Piece } from "@/ports/catalog";
-import { pageContent } from "./catalog";
+import { type PagePiece, pageContent } from "./catalog";
 import styles from "./page.module.css";
 
 const photoSizes =
@@ -40,7 +39,7 @@ export default async function Home() {
   );
 }
 
-function PieceList({ pieces }: { pieces: Piece[] }) {
+function PieceList({ pieces }: { pieces: PagePiece[] }) {
   return (
     <ol className={styles.pieces}>
       {pieces.map((piece, index) => {
@@ -57,6 +56,7 @@ function PieceList({ pieces }: { pieces: Piece[] }) {
               <Stub number={piece.number} />
               <span className={styles.perforation} aria-hidden="true" />
               <div className={styles.body}>
+                {piece.isNew && <p className={styles.stamp}>Nueva</p>}
                 <a className={styles.photoLink} href={piece.image}>
                   <Image
                     className={styles.photo}

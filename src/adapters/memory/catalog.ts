@@ -5,6 +5,7 @@ export function createMemoryCatalog(): Catalog {
   const pieces: Piece[] = [];
   const byPreview = new Map<string, Piece>();
   const takenDown = new Set<number>();
+  const publishedAt = new Map<number, Date>();
   /** `before` is the piece as it was, for a change. */
   let last: { action: Action; before?: Piece } | null = null;
   const messages = new Set<string>();
@@ -21,6 +22,7 @@ export function createMemoryCatalog(): Catalog {
       if (already) return already;
       const piece = { number: pieces.length + 1, ...data };
       pieces.push(piece);
+      publishedAt.set(piece.number, new Date());
       byPreview.set(previewId, piece);
       draft = null;
       last = { action: { id: previewId, kind: "publish", piece } };
@@ -33,7 +35,13 @@ export function createMemoryCatalog(): Catalog {
       return byPreview.get(previewId) ?? null;
     },
     async published() {
-      return pieces.filter((piece) => !takenDown.has(piece.number)).reverse();
+      return pieces
+        .filter((piece) => !takenDown.has(piece.number))
+        .map((piece) => ({
+          ...piece,
+          publishedAt: publishedAt.get(piece.number)!,
+        }))
+        .reverse();
     },
     async piece(number) {
       const piece = pieces[number - 1];
