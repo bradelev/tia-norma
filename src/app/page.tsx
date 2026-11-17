@@ -21,11 +21,7 @@ export default async function Home() {
     <main className={styles.page}>
       <header className={styles.cover}>
         <h1 className={styles.title}>Taller de Norma</h1>
-        <p>
-          {samples
-            ? "Piezas y precios de muestra."
-            : "Cada pieza tiene su número."}
-        </p>
+        <p>Cada pieza tiene su número.</p>
         <p className={styles.contact}>
           Para comprar, escribime por WhatsApp{" "}
           <a className={styles.phone} href={whatsapp.link}>
