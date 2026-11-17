@@ -330,7 +330,7 @@ function conversation(ports: BotPorts): Bot {
     if (intent.kind === "changePhoto") return changePhoto(intent.piece);
     if (intent.kind === "undo") return undo();
     if (intent.kind !== "describe")
-      return spoken ? misheard(text) : FIXED_REPLIES.help;
+      return spoken ? misheard(text) : helpOrWelcome();
     const change: Partial<Draft> = {};
     if (intent.name !== undefined) {
       if (intent.name.length > MAX_NAME_LENGTH)
@@ -354,6 +354,12 @@ function conversation(ports: BotPorts): Bot {
       change.price = price;
     }
     return update(change);
+  }
+
+  /** Before her first piece, the help is the welcome. */
+  async function helpOrWelcome(): Promise<Reply> {
+    const first = (await catalog.nextNumber()) === 1;
+    return first ? FIXED_REPLIES.welcome : FIXED_REPLIES.help;
   }
 
   async function publish(previewId: string): Promise<Reply> {
@@ -401,6 +407,7 @@ function misheard(said: string): Reply {
   if (!heard) return FIXED_REPLIES.help;
   return {
     text: `Escuché: "${shorten(heard)}". No te entendí, ¿me lo decís de nuevo?`,
+    audio: FIXED_REPLIES.tryAgain.audio,
   };
 }
 

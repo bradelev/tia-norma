@@ -25,6 +25,7 @@ export function whatsapp(): Webhook {
   const messenger = createCloudApiMessenger({
     token: env.WHATSAPP_TOKEN,
     phoneNumberId: env.WHATSAPP_PHONE_NUMBER_ID,
+    siteUrl: env.VERCEL_PROJECT_PRODUCTION_URL,
   });
   const bot = createBot({
     catalog: real,

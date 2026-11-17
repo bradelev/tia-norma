@@ -41,6 +41,12 @@ const whatsappSchema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1),
   /** The Transcriber: without it the bot hears no audio. */
   GROQ_API_KEY: z.string().min(1),
+  /** Set by Vercel; the recorded audios are served from there. Without it they go as text only. */
+  VERCEL_PROJECT_PRODUCTION_URL: z
+    .string()
+    .min(1)
+    .transform((host) => `https://${host}`)
+    .optional(),
 });
 
 export type WhatsAppEnv = z.infer<typeof whatsappSchema>;

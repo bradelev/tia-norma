@@ -10,6 +10,8 @@ const mediaInfo = z.object({ url: z.url(), mime_type: z.string().min(1) });
 export interface CloudApiSettings {
   token: string;
   phoneNumberId: string;
+  /** Where the site serves the recorded audios; without it they are left out. */
+  siteUrl?: string | undefined;
   /** Replaced in tests; the Graph API in production. */
   fetch?: typeof globalThis.fetch;
 }
@@ -17,6 +19,7 @@ export interface CloudApiSettings {
 export function createCloudApiMessenger({
   token,
   phoneNumberId,
+  siteUrl,
   fetch = globalThis.fetch,
 }: CloudApiSettings): Messenger {
   const auth = { Authorization: `Bearer ${token}` };
@@ -48,6 +51,11 @@ export function createCloudApiMessenger({
   return {
     async send(to, reply) {
       // One after another: WhatsApp shows them in the order they arrive.
+      // The voice note goes with the text and never stops it: the text alone still answers.
+      if (reply.audio && siteUrl)
+        await post(to, voiceNote(new URL(reply.audio, siteUrl).href)).catch(
+          () => undefined,
+        );
       for (const { image, caption } of reply.album ?? [])
         await post(to, photo(image, caption));
       await post(to, message(reply));
@@ -90,6 +98,11 @@ function message({ text, image, buttons, list }: Reply): object {
     };
   if (image) return photo(image, text);
   return { type: "text", text: { body: text } };
+}
+
+/** Ogg with OPUS, as WhatsApp needs to show it as a voice message. */
+function voiceNote(link: string): object {
+  return { type: "audio", audio: { link, voice: true } };
 }
 
 function photo(link: string, caption: string): object {
