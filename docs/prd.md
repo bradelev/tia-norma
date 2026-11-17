@@ -118,7 +118,7 @@ El tratamiento nunca agrega ni reemplaza píxeles de la pieza. Una foto movida n
 | Toca "Deshacer" | Revierte la última acción | Vista previa de cómo quedó |
 | Cualquier otra cosa | Nada cambia | Audio grabado de ayuda |
 
-Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "vendí la taza azul" valen igual. Si el nombre coincide con más de una pieza, el bot muestra las fotos y pregunta cuál. El número aparece en los mensajes del bot y no en la página. Para sacar, si el nombre no coincide con ninguna o coincide con varias, el bot manda una lista de WhatsApp con las publicadas (las 10 más nuevas) y tocar una la saca como "sacá la N".
+Norma puede nombrar una pieza por su número o por su nombre: "vendí la 7" y "vendí la taza azul" valen igual. Si el nombre coincide con más de una pieza, el bot muestra las fotos y pregunta cuál. El número aparece en el talón de cada pieza en la página y en los mensajes del bot. Para sacar, si el nombre no coincide con ninguna o coincide con varias, el bot manda una lista de WhatsApp con las publicadas (las 10 más nuevas) y tocar una la saca como "sacá la N".
 
 ### Reglas de la conversación
 
