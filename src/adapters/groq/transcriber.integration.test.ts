@@ -4,14 +4,17 @@ import { createGroqTranscriber } from "./transcriber";
 
 const apiKey = process.env.GROQ_API_KEY;
 
-it.skipIf(!apiKey)("Groq transcribe un audio real de Norma", async () => {
+/** The audio is a synthetic voice: it checks that Groq answers, not how well it hears Norma. */
+it.skipIf(!apiKey)("Groq transcribe un audio", async () => {
   const transcriber = createGroqTranscriber({ apiKey: apiKey ?? "" });
-  const bytes = new Uint8Array(await readFile("evals/audios/01.m4a"));
+  const bytes = new Uint8Array(
+    await readFile("src/adapters/groq/jarra-con-relieve.m4a"),
+  );
 
   const said = await transcriber.transcribe({
     bytes,
     contentType: "audio/mp4",
   });
 
-  expect(said.toLowerCase()).toContain("taza azul");
+  expect(said.toLowerCase()).toContain("jarra con relieve");
 });

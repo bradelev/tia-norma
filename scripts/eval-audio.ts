@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
@@ -21,6 +22,9 @@ const audios = z.array(
 /** Groq's free tier takes 20 requests a minute. */
 const PAUSE_MS = 3_100;
 
+/** Real voices stay out of the repo; each person records their own. */
+const DIR = "evals/audios";
+
 async function main() {
   process.loadEnvFile(".env.local");
   const { ANTHROPIC_API_KEY, GROQ_API_KEY } = process.env;
@@ -34,14 +38,17 @@ async function main() {
   const set = audios.parse(
     JSON.parse(await readFile("evals/audios.json", "utf8")),
   );
+  const missing = set.filter(({ file }) => !existsSync(join(DIR, file)));
+  if (missing.length > 0)
+    throw new Error(
+      `Faltan ${missing.length} audios en ${DIR}/. Grabá cada frase de evals/audios.json con el nombre de archivo que indica.`,
+    );
   let correct = 0;
   let slowest = 0;
 
   for (const [index, expected] of set.entries()) {
     if (index > 0) await sleep(PAUSE_MS);
-    const bytes = new Uint8Array(
-      await readFile(join("evals/audios", expected.file)),
-    );
+    const bytes = new Uint8Array(await readFile(join(DIR, expected.file)));
     const start = performance.now();
     const said = await transcriber.transcribe({
       bytes,
