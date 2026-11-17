@@ -2,7 +2,7 @@
 
 Norma tiene 70 años, hace cerámica y solo usa WhatsApp. Para publicar una pieza le saca una foto, manda un audio diciendo qué es y cuánto sale, y toca "Sí". La pieza aparece en su página con un número, para que después pueda decir "vendí la 7".
 
-**Página:** [tia-norma-mocha.vercel.app](https://tia-norma-mocha.vercel.app)
+**Página:** [taller-de-norma.vercel.app](https://taller-de-norma.vercel.app)
 
 ## Cómo funciona
 
