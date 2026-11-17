@@ -315,7 +315,10 @@ describe("vista previa vencida", () => {
     norma.wait(24 * HOUR);
     const reply = await norma.tap("Sí, publicar");
 
-    expect(reply).toEqual({ text: "No me salió. Probá de nuevo." });
+    expect(reply).toEqual({
+      text: "No me salió. Probá de nuevo.",
+      audio: "/audios/try-again.ogg",
+    });
     expect(await norma.publishedPieces()).toEqual([]);
   });
 
@@ -326,7 +329,10 @@ describe("vista previa vencida", () => {
     norma.wait(25 * HOUR);
     const reply = await norma.tap("Sí, cambiar");
 
-    expect(reply).toEqual({ text: "No me salió. Probá de nuevo." });
+    expect(reply).toEqual({
+      text: "No me salió. Probá de nuevo.",
+      audio: "/audios/try-again.ogg",
+    });
     expect(await norma.publishedPieces()).toMatchObject([{ price: 6000 }]);
   });
 
@@ -343,11 +349,23 @@ describe("vista previa vencida", () => {
 });
 
 describe("mensajes que no son una pieza", () => {
-  it("un texto sin nombre ni precio responde con ayuda y no abre nada", async () => {
+  it("antes de la primera pieza, un saludo recibe la bienvenida con su audio", async () => {
     const norma = createMemoryWorkshop();
 
     const reply = await norma.say("hola, ¿cómo andás?");
 
+    expect(reply).toEqual({
+      text: "Hola, Norma. Soy tu página. Para publicar, mandame una foto y decime cómo se llama y cuánto sale.",
+      audio: "/audios/welcome.ogg",
+    });
+  });
+
+  it("con piezas publicadas, un texto sin nombre ni precio responde con ayuda y su audio", async () => {
+    const norma = await withPublished("taza azul, seis mil");
+
+    const reply = await norma.say("hola, ¿cómo andás?");
+
+    expect(reply.audio).toBe("/audios/help.ogg");
     expect(reply.text).toBe(
       "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.",
     );
@@ -366,6 +384,7 @@ describe("un audio que no se entiende", () => {
     expect(reply.text).toBe(
       'Escuché: "¿le pongo esmalte?". No te entendí, ¿me lo decís de nuevo?',
     );
+    expect(reply.audio).toBe("/audios/try-again.ogg");
   });
 
   it("si es largo, recorta lo que escuchó y no pasa de 160 letras", async () => {
@@ -382,7 +401,7 @@ describe("un audio que no se entiende", () => {
   });
 
   it("si no escuchó nada, responde con ayuda", async () => {
-    const norma = createMemoryWorkshop();
+    const norma = await withPublished("taza azul, seis mil");
 
     const reply = await norma.speak("  ");
 
@@ -390,7 +409,7 @@ describe("un audio que no se entiende", () => {
   });
 
   it("un texto que no se entiende sigue respondiendo con ayuda", async () => {
-    const norma = createMemoryWorkshop();
+    const norma = await withPublished("taza azul, seis mil");
 
     const reply = await norma.say("¿le pongo esmalte?");
 

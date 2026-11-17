@@ -4,7 +4,10 @@ import { createCloudApiMessenger } from "./messenger";
 const NORMA = "5491100000000";
 
 /** Records every call to the Graph API and answers like Meta does. */
-function fakeGraph(answer: (url: string) => Response = () => sent()) {
+function fakeGraph(
+  answer: (url: string) => Response = () => sent(),
+  siteUrl?: string,
+) {
   const calls: { url: string; init: RequestInit | undefined }[] = [];
   const fetch = async (input: string | URL | Request, init?: RequestInit) => {
     calls.push({ url: String(input), init });
@@ -13,6 +16,7 @@ function fakeGraph(answer: (url: string) => Response = () => sent()) {
   const messenger = createCloudApiMessenger({
     token: "token-de-prueba",
     phoneNumberId: "100000000000001",
+    siteUrl,
     fetch,
   });
   const bodies = () =>
@@ -52,6 +56,55 @@ describe("mensajero de la Cloud API", () => {
         text: { body: "Listo. Es la pieza 1." },
       },
     ]);
+  });
+
+  it("un audio grabado va como nota de voz del sitio, antes del texto", async () => {
+    const graph = fakeGraph(undefined, "https://taller.example");
+
+    await graph.messenger.send(NORMA, {
+      text: "No me salió. Probá de nuevo.",
+      audio: "/audios/try-again.ogg",
+    });
+
+    expect(graph.bodies()).toEqual([
+      expect.objectContaining({
+        type: "audio",
+        audio: {
+          link: "https://taller.example/audios/try-again.ogg",
+          voice: true,
+        },
+      }),
+      expect.objectContaining({
+        type: "text",
+        text: { body: "No me salió. Probá de nuevo." },
+      }),
+    ]);
+  });
+
+  it("si la nota de voz no sale, el texto sale igual", async () => {
+    let calls = 0;
+    const graph = fakeGraph(
+      () => (++calls === 1 ? new Response(null, { status: 400 }) : sent()),
+      "https://taller.example",
+    );
+
+    await graph.messenger.send(NORMA, {
+      text: "No me salió. Probá de nuevo.",
+      audio: "/audios/try-again.ogg",
+    });
+
+    expect(graph.bodies().at(-1)).toMatchObject({ type: "text" });
+  });
+
+  it("sin la dirección del sitio, manda solo el texto", async () => {
+    const graph = fakeGraph();
+
+    await graph.messenger.send(NORMA, {
+      text: "No me salió. Probá de nuevo.",
+      audio: "/audios/try-again.ogg",
+    });
+
+    expect(graph.bodies()).toEqual([expect.objectContaining({ type: "text" })]);
   });
 
   it("manda la vista previa como un solo mensaje con foto y botones", async () => {

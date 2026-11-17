@@ -18,6 +18,8 @@ export interface Reply {
   buttons?: [Button] | [Button, Button];
   /** Several photos with a caption each, sent before the text, when Norma has to pick one. */
   album?: { image: string; caption: string }[];
+  /** A voice note recorded by a person, sent before the text: a path on the site. */
+  audio?: string;
   /** Up to 10 rows behind one button, to pick a piece with a tap. */
   list?: { button: string; rows: Row[] };
 }
@@ -27,13 +29,18 @@ export interface Row extends Button {
   description: string;
 }
 
-/**
- * The replies the PRD wants as audios recorded by a person. They go as text
- * until the recordings exist; swapping them for audio only touches this.
- */
+/** The replies recorded by a person: each audio goes with its text. The files live in `public/audios/`. */
 export const FIXED_REPLIES = {
+  welcome: {
+    text: "Hola, Norma. Soy tu página. Para publicar, mandame una foto y decime cómo se llama y cuánto sale.",
+    audio: "/audios/welcome.ogg",
+  },
   help: {
     text: "Para publicar, mandame una foto de la pieza y decime cómo se llama y cuánto sale.",
+    audio: "/audios/help.ogg",
   },
-  tryAgain: { text: "No me salió. Probá de nuevo." },
+  tryAgain: {
+    text: "No me salió. Probá de nuevo.",
+    audio: "/audios/try-again.ogg",
+  },
 } as const satisfies Record<string, Reply>;
