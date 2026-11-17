@@ -94,8 +94,8 @@ function PriceTag({ price }: { price: string }) {
 }
 
 /** The stub of the raffle slip: the number Norma uses to talk about a piece. */
-function Stub({ number }: { number?: number }) {
-  const digits = number === undefined ? 1 : String(number).length;
+function Stub({ number }: { number: number }) {
+  const digits = String(number).length;
   return (
     <p className={styles.stub} style={{ "--digits": digits } as CSSProperties}>
       <span aria-hidden="true">N.º</span>
@@ -105,17 +105,22 @@ function Stub({ number }: { number?: number }) {
   );
 }
 
+/** No pieces yet: one blank slip, its number still to be written. */
 function EmptyWorkshop() {
   return (
-    <div className={styles.piece}>
+    <div
+      className={`${styles.piece} ${styles.emptyPiece}`}
+      style={{ "--slip": "var(--paper-2)" } as CSSProperties}
+    >
       <div className={styles.slip}>
-        <Stub />
+        <p className={styles.stub}>
+          <span aria-hidden="true">N.º</span>
+          <span className={styles.blankNumber} aria-hidden="true" />
+        </p>
         <span className={styles.perforation} aria-hidden="true" />
         <div className={styles.body}>
-          <div className={styles.blank} aria-hidden="true" />
-          <p className={`${styles.caption} ${styles.empty}`}>
-            Norma está en el taller. Pronto hay piezas nuevas.
-          </p>
+          <p className={styles.empty}>Norma está en el taller.</p>
+          <p className={styles.emptyNext}>Pronto hay piezas nuevas.</p>
         </div>
       </div>
     </div>

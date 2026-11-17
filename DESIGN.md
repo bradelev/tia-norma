@@ -143,7 +143,7 @@ Los cuatro viven en `src/domain/card.ts` como `--paper-0` a `--paper-3`; la pág
 - **Title** (800, 2.5rem, 1.05, 0.01em, mayúsculas, `text-wrap: balance`): el nombre del taller en la portada, una vez por página.
 - **Price** (800, 2.25rem, 1.15, tabulares): el dato más grande del cuerpo de la boleta.
 - **Name** (600, 1.75rem, 1.2, `text-wrap: balance`): nombre de la pieza.
-- **Body** (400, 1.25rem, 1.5): la línea bajo el título. El crédito de las fotos de muestra y el estado vacío van en 600.
+- **Body** (400, 1.25rem, 1.5): la línea bajo el título. El crédito de las fotos de muestra va en 600.
 
 ### Named Rules
 
@@ -188,7 +188,7 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 - **Shadow Strategy:** contacto (ver Elevation & Depth).
 - **Border:** ninguno.
 - **Contenido:** talón con el número; cuerpo con la foto 4:5 enlazada a la imagen completa, nombre y precio. Nada más.
-- **Vacío:** la misma boleta con el talón sin número, un rectángulo 4:5 color mesa y el texto de estado vacío en tamaño de nombre y peso 600.
+- **Vacío:** una sola boleta amarilla, del ancho de una columna, sin foto. El talón tiene "N.º" y una raya para escribir el número; el cuerpo dice "Norma está en el taller." en tamaño de nombre y "Pronto hay piezas nuevas." en tamaño de texto.
 
 ### Portada
 
