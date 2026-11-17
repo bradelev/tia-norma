@@ -3,6 +3,7 @@ import {
   claudeMessages,
   createClaudeInterpreter,
 } from "@/adapters/claude/interpreter";
+import { createClaudePieceFinder } from "@/adapters/claude/piece-finder";
 import { createGroqTranscriber } from "@/adapters/groq/transcriber";
 import { createSatoriPreviewRenderer } from "@/adapters/satori/preview-renderer";
 import { createSharpImageProcessor } from "@/adapters/sharp/image-processor";
@@ -27,17 +28,18 @@ export function whatsapp(): Webhook {
     phoneNumberId: env.WHATSAPP_PHONE_NUMBER_ID,
     siteUrl: env.VERCEL_PROJECT_PRODUCTION_URL,
   });
+  const claude = claudeMessages(env.ANTHROPIC_API_KEY);
   const bot = createBot({
     catalog: real,
     media: createSupabaseMediaStore(
       supabase.SUPABASE_URL,
       supabase.SUPABASE_SECRET_KEY,
     ),
-    images: createSharpImageProcessor(),
-    previews: createSatoriPreviewRenderer(),
-    interpreter: createClaudeInterpreter({
-      messages: claudeMessages(env.ANTHROPIC_API_KEY),
+    images: createSharpImageProcessor({
+      finder: createClaudePieceFinder({ messages: claude }),
     }),
+    previews: createSatoriPreviewRenderer(),
+    interpreter: createClaudeInterpreter({ messages: claude }),
     newId: () => randomUUID(),
     now: () => Date.now(),
   });
