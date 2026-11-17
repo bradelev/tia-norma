@@ -84,7 +84,7 @@ components:
 
 **Creative North Star: "El talonario de rifa"**
 
-La página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con "N.º" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Arriba está la portada del talonario, crema y perforada, con el nombre del taller y el WhatsApp para comprar. Las boletas se apilan en una columna, la más nueva arriba; en pantallas anchas el talonario se abre en dos.
+La página es un talonario de rifa abierto sobre una mesa. Cada pieza es una boleta: a la izquierda un talón angosto con "N.º" y el número enorme, después una línea perforada de agujeritos redondos con dos muescas troqueladas arriba y abajo, y del otro lado la foto 4:5, el nombre y el precio. El número es como Norma habla de una pieza, así que es el dato que manda en el talón; en el cuerpo de la boleta manda el precio. Arriba está la portada del talonario, crema y perforada, con el nombre del taller. Las boletas se apilan en una columna, la más nueva arriba; en pantallas anchas el talonario se abre en dos.
 
 El papel de cada boleta es uno de cuatro colores vivos de talonario de feria (rosa, verde, amarillo, celeste) y la pieza lo conserva de por vida: el tono sale de `número % 4`. La mesa es madera oscura, mucho más oscura que cualquier papel, y se ve a través de los agujeros de la perforación y de las muescas. Tinta casi negra para todo el texto; la tipografía es la del teléfono del comprador.
 
@@ -193,7 +193,7 @@ La pieza firma del sistema: talón, perforación y cuerpo en una grilla de tres 
 ### Portada
 
 - Papel crema (cover) a todo el ancho del talonario, con una fila de agujeros color mesa sobre el borde inferior: de ahí se arrancan las boletas.
-- Título en mayúsculas, la línea de estado y "Para comprar, escribime por WhatsApp" con el número enlazado a `wa.me`, todo en tinta.
+- Título en mayúsculas y la línea de estado, en tinta. Sin teléfono ni link a WhatsApp: quien compra ya sabe cómo escribirle a Norma.
 
 ### Talón (stub)
 
