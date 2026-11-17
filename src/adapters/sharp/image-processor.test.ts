@@ -48,3 +48,37 @@ test.each([
 ] as const)("rejects %s as %s", async (file, problem) => {
   expect(await processor.treat(await fixture(file))).toEqual({ problem });
 });
+
+test("frames around the piece the finder points to", async () => {
+  // A dark square in the top-left corner of a light 3:4 photo, with some texture so it passes the quality check.
+  const base = await fixture("sharp.jpg");
+  const { width = 0, height = 0 } = await sharp(base).metadata();
+  const square = await sharp({
+    create: { width: 200, height: 200, channels: 3, background: "#000" },
+  })
+    .png()
+    .toBuffer();
+  const photo = await sharp(base)
+    .composite([{ input: square, left: 40, top: 40 }])
+    .jpeg()
+    .toBuffer();
+  const finder = {
+    find: async () => ({
+      left: 40 / width,
+      top: 40 / height,
+      right: 240 / width,
+      bottom: 240 / height,
+    }),
+  };
+
+  const result = await createSharpImageProcessor({ finder }).treat(photo);
+  if (!("treated" in result)) throw new Error(`Rejected: ${result.problem}`);
+
+  const { data } = await sharp(result.treated)
+    .extract({ left: 500, top: 650, width: 200, height: 200 })
+    .greyscale()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const mean = data.reduce((sum, gray) => sum + gray, 0) / data.length;
+  expect(mean).toBeLessThan(40);
+});

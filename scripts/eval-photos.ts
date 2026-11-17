@@ -1,6 +1,9 @@
+import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import sharp from "sharp";
+import { claudeMessages } from "../src/adapters/claude/interpreter";
+import { createClaudePieceFinder } from "../src/adapters/claude/piece-finder";
 import {
   createSharpImageProcessor,
   measure,
@@ -8,7 +11,7 @@ import {
 
 const HELP = `Uso: pnpm eval:photos [carpeta] [salida]
 
-Trata cada foto de la carpeta como lo haría el bot y guarda, por cada una,
+Trata cada foto de la carpeta como lo haría el bot (busca la pieza con Claude si hay ANTHROPIC_API_KEY en .env.local) y guarda, por cada una,
 la original a la izquierda y la tratada a la derecha, para revisarlas a ojo (R17).
 Imprime la luz y la nitidez medidas y si la foto pasaría el control.
 
@@ -27,7 +30,7 @@ async function main() {
     .filter((file) => PHOTO.has(extname(file).toLowerCase()))
     .sort();
   await mkdir(output, { recursive: true });
-  const processor = createSharpImageProcessor();
+  const processor = createSharpImageProcessor({ finder: finder() });
   let rejected = 0;
 
   for (const file of files) {
@@ -46,6 +49,19 @@ async function main() {
   console.log(
     `\n${files.length - rejected} de ${files.length} pasan. Pares en ${output}/`,
   );
+}
+
+/** With ANTHROPIC_API_KEY in .env.local, frames like the bot; without it, by attention only. */
+function finder() {
+  if (existsSync(".env.local")) process.loadEnvFile(".env.local");
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.log(
+      "Sin ANTHROPIC_API_KEY: encuadre por atención, sin buscar la pieza.\n",
+    );
+    return undefined;
+  }
+  return createClaudePieceFinder({ messages: claudeMessages(apiKey) });
 }
 
 /** Original and treated side by side, at the same height. */

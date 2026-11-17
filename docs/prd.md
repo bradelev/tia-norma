@@ -101,7 +101,7 @@ Cada foto pasa por el mismo tratamiento antes de la vista previa, y Norma aprueb
 | Paso | Qué hace |
 | --- | --- |
 | Enderezar | Corrige la orientación según los metadatos EXIF. No corrige perspectiva. |
-| Encuadrar | Recorta alrededor de la pieza en formato 4:5, con el mismo margen en todas. Primero con el recorte por atención de `sharp`; un modelo entra solo si el set de 20 fotos muestra que hace falta. |
+| Encuadrar | Recorta alrededor de la pieza en formato 4:5, con el mismo margen en todas. Claude Haiku marca dónde está la pieza y `sharp` recorta alrededor; si no responde a tiempo, queda el recorte por atención de `sharp`. |
 | Luz y color | Ajusta niveles y balance de blancos. |
 | Nitidez | Enfoque suave y reducción de ruido. |
 | Control de calidad | Si la foto salió movida o muy oscura, no avanza. El bot pide otra con un audio: "salió oscura, acercate a la ventana". |
@@ -227,7 +227,7 @@ La vista previa se arma con la foto tratada y con el nombre y el precio del audi
 ### Tratamiento de imagen
 
 - Un puerto, `ImageProcessor`, con un adaptador sobre `sharp` que corre dentro de Next: orientación, recorte, niveles y nitidez. Es determinístico y se prueba con imágenes fijas. Sin Python ni workers.
-- El encuadre usa el recorte por atención de `sharp`. Si en el set de 20 fotos falla, un modelo devuelve la caja que rodea la pieza y el recorte lo sigue haciendo `sharp`.
+- El encuadre: Claude Haiku devuelve la caja que rodea la pieza y `sharp` recorta en 4:5 con la pieza al 70 % como mucho. El recorte por atención solo no alcanzaba: una foto de celular ya es casi 4:5, así que no acercaba una pieza chica ni la centraba. Si el modelo tarda más de 4 s o no ve una pieza, se usa ese recorte.
 - El control de calidad usa dos medidas baratas: varianza del laplaciano para la nitidez y luminancia media para la luz. Ninguna necesita un modelo.
 - Se guardan la original y la tratada. Deshacer y volver a tratar no pierde nada.
 
