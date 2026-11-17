@@ -268,3 +268,80 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Photo viewer: hidden until its #foto-N is the URL's target. */
+.viewer {
+  display: none;
+}
+
+.viewer:target {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 5rem 1rem 1rem;
+  background: rgb(28 27 25 / 0.94);
+}
+
+:root:has(.viewer:target) {
+  overflow: hidden;
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+}
+
+.viewerPhoto {
+  position: relative;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.close {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  background: var(--cover);
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.close:focus-visible {
+  outline-color: var(--cover);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .viewer:target {
+    animation: veil 180ms ease-out;
+  }
+
+  .viewer:target .viewerPhoto {
+    animation: lift 220ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@keyframes veil {
+  from {
+    background: rgb(28 27 25 / 0);
+  }
+}
+
+@keyframes lift {
+  from {
+    transform: scale(0.96);
+  }
+}

@@ -69,14 +69,21 @@ for (const zoom of zoomCases) {
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("pieces render and the photo opens full size", async ({ page }) => {
+  test("the photo opens full size and closes back to its piece", async ({
+    page,
+  }) => {
     await page.goto("/");
     const first = page.getByRole("listitem").first();
     await expect(first.getByRole("heading", { level: 2 })).toBeVisible();
-    const link = first.getByRole("link");
-    const href = await link.getAttribute("href");
-    expect(href).toMatch(/\.jpg$/);
-    const response = await page.request.get(href!);
-    expect(response.ok()).toBe(true);
+    const viewer = page.getByRole("dialog");
+    await expect(viewer).toHaveCount(0);
+
+    await first.getByRole("link", { name: /Ver la foto grande/ }).click();
+    await expect(viewer).toBeVisible();
+    await expect(viewer.getByRole("img")).toBeVisible();
+
+    await viewer.getByRole("link", { name: "Cerrar" }).click();
+    await expect(viewer).toHaveCount(0);
+    await expect(first).toBeInViewport();
   });
 });
