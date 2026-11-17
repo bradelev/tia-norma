@@ -6,7 +6,7 @@ Norma tiene 70 años, hace cerámica y solo usa WhatsApp. Para publicar una piez
 
 ## Cómo funciona
 
-1. Norma manda una foto. El bot la endereza, la encuadra y le corrige la luz, sin inventar nada de la pieza.
+1. Norma manda una foto. El bot la gira si salió acostada, la recorta al formato de la página y le corrige la luz y la nitidez, sin inventar nada de la pieza.
 2. Manda un audio: "taza azul, seis mil". También puede escribirlo, o mandar el audio primero.
 3. El bot le devuelve la boleta tal como se va a ver en la página, con dos botones: "Sí, publicar" y "No, corregir".
 4. Con "Sí", la pieza queda publicada con el número siguiente.
@@ -50,7 +50,7 @@ pnpm sim    # el bot en la terminal: escribís como Norma y ves qué responde
 
 - **Página accesible (R12):** cero violaciones de axe en nivel AAA y contraste de 7:1 o más. Lighthouse en celular: rendimiento 98, accesibilidad 100, buenas prácticas 96 y SEO 100 (mediana de tres corridas). CI corta cualquier PR que baje de 95.
 - **Audio confiable (R14):** 17 de 21 audios dan nombre y precio exactos (meta: 19). Los 21 precios salen bien; los errores son nombres mal oídos, como "Bowe celeste", que Norma corrige en la vista previa. Detalle en [ADR 0003](docs/adr/0003-transcripcion-separada-de-interpretacion.md). Los audios son voces reales y no están en el repo: para repetir la medición, grabá cada frase de [evals/audios.json](evals/audios.json) en `evals/audios/`.
-- **Fidelidad de la foto (R17):** el tratamiento solo ajusta orientación, encuadre, luz y nitidez. Original a la izquierda, tratada a la derecha:
+- **Fidelidad de la foto (R17):** el tratamiento solo gira, recorta y ajusta luz y nitidez: no agrega ni reemplaza nada de la pieza. Original a la izquierda, tratada a la derecha:
 
 ![Un florero antes y después del tratamiento: la misma pieza, un poco más clara](docs/img/foto-antes-despues.jpg)
 
@@ -80,7 +80,7 @@ El código, los tests y casi toda la documentación los escribió Claude Code, u
 
 Las decisiones fueron humanas: qué entra y qué queda afuera del PRD, cada regla del dominio, la dirección visual de la página y la revisión de cada PR que toca una zona de peligro (webhook, datos, modelo, secretos, legibilidad). La lista está en [CLAUDE.md](CLAUDE.md).
 
-Dentro del producto, la IA hace solo dos cosas: Whisper pasa el audio a texto y Claude Haiku saca de ese texto el nombre y el precio. La foto se trata con `sharp`, sin IA generativa: la pieza que se ve es la que el comprador recibe.
+Dentro del producto, la IA hace solo dos cosas: Whisper pasa el audio a texto y Claude Haiku saca de ese texto el nombre y el precio. La foto se ajusta con procesamiento clásico de imagen (la librería `sharp`), sin IA generativa: la pieza que se ve es la que el comprador recibe.
 
 ## Licencia
 
