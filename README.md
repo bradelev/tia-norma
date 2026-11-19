@@ -4,6 +4,10 @@ Norma tiene 70 años, hace cerámica y solo usa WhatsApp. Para publicar una piez
 
 **Página:** [taller-de-norma.vercel.app](https://taller-de-norma.vercel.app)
 
+Demo de dos minutos: publicar una pieza por WhatsApp y verla en la página.
+
+https://github.com/user-attachments/assets/d8ce428b-61bb-4f95-ac48-3604f9de399a
+
 ## Cómo funciona
 
 1. Norma manda una foto. El bot la gira si salió acostada, la recorta al formato de la página y le corrige la luz y la nitidez, sin inventar nada de la pieza.
